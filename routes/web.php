@@ -25,17 +25,17 @@ Route::middleware('throttle:registration')->group(function()
 {
     Route::get("kayit-ol", [RegisterController::class, 'showForm'])->name("register");
     Route::post("kayit-ol", [RegisterController::class, 'register']);
-
 });
 
+Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
 
 
 Route::get("giris", [LoginController::class, 'showForm'])->name("login")->middleware('throttle:5,60');
 Route::post("giris", [LoginController::class, 'login']);
 
-Route::prefix("admin")->group(function (){
+Route::prefix("admin")->middleware("auth")->group(function (){
 
-    Route::get("/", [DashboardController::class, 'index']);
+    Route::get("/", [DashboardController::class, 'index'])->name("admin.index");
 
 });
 
