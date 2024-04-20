@@ -10,7 +10,7 @@ use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [FrontController::class, "index"]);
+Route::get('/', [FrontController::class, "index"])->name('index');
 
 Route::get('/urun-listesi', [ProductController::class, "list"]);
 Route::get('/urun-detay', [ProductController::class, "detail"]);
@@ -21,23 +21,32 @@ Route::get("/odeme", [CheckoutController::class, 'index']);
 Route::get("/siparislerim", [MyOrdersController::class, "index"]);
 Route::get("/siparislerim-detay", [MyOrdersController::class, "detail"]);
 
-Route::middleware('throttle:registration')->group(function()
-{
-    Route::get("kayit-ol", [RegisterController::class, 'showForm'])->name("register");
-    Route::post("kayit-ol", [RegisterController::class, 'register']);
-});
-
-Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
 
 
-Route::get("giris", [LoginController::class, 'showForm'])->name("login")->middleware('throttle:5,60');
-Route::post("giris", [LoginController::class, 'login']);
 
-Route::prefix("admin")->middleware("auth")->group(function (){
+Route::prefix("admin")->name('admin.')->middleware("auth")->group(function (){
 
-    Route::get("/", [DashboardController::class, 'index'])->name("admin.index");
+    Route::get("/", [DashboardController::class, 'index'])->name("index");
+
+//    Route::get("/", [DashboardController::class, 'index'])->name("report");
+    Route::get("/order", [DashboardController::class, 'index'])->name("orders");
+
 
 });
 
 //Route::get("/admin", [DashboardController::class, 'index']);
 
+
+/** Auth */
+Route::prefix("kayit-ol")->middleware('throttle:registration')->group(function()
+{
+    Route::get("/", [RegisterController::class, 'showForm'])->name("register");
+    Route::post("/", [RegisterController::class, 'register']);
+});
+Route::prefix('giris')->middleware('throttle:100,60')->group(function ()
+{
+    Route::get("/", [LoginController::class, 'showForm'])->name('login');
+    Route::post("/", [LoginController::class, 'login']);
+});
+Route::post('logout', [LoginController::class, 'logout'])->name("logout");
+Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");

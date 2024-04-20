@@ -43,11 +43,18 @@ class RegisterController extends Controller
             return redirect()->route('register');
         }
 
-        $user = User::findOrFail($userID);
-        $user->email_verified_at = now();
-        $user->save();
+//        $user = User::findOrFail($userID);
+//        $user->email_verified_at = now();
+//        $user->save();
 
-        Cache::forget('verify_token_' . $request->token);
+        $userQuery = User::query()
+            ->where('id', $userID);
+
+        $user = $userQuery->firstOrFail();
+
+        $userQuery->update(['email_verified_at' => now()]);
+
+//        Cache::forget('verify_token_' . $request->token);
 
         Auth::login($user);
         alert()->success('Başarılı','Hesabınız onaylandı.');

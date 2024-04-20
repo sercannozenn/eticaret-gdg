@@ -102,10 +102,13 @@
                             </a>
                         </li>
                         <li class="dropdown-item py-2">
-                            <a href="javascript:;" class="text-body ms-0">
+                            <a href="javascript:;" onclick="event.preventDefault();document.getElementById('logoutForm').submit()" class="text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="log-out"></i>
                                 <span>Log Out</span>
                             </a>
+                            <form action="{{ route('logout') }}" id="logoutForm" method="POST">
+                                @csrf
+                            </form>
                         </li>
                     </ul>
                 </div>

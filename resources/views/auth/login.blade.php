@@ -8,10 +8,11 @@
         <a href="#" class="noble-ui-logo d-block mb-2">GDG<span>ETicaret</span></a>
 
         <h5 class="text-muted fw-normal mb-4">Hoş geldiniz. Hesabınıza giriş yapabilirsiniz.</h5>
-        <form class="forms-sample">
+        <form class="forms-sample" id="loginForm" action="{{ route('login') }}" method="POST">
+            @csrf
             <div class="mb-3">
                 <label for="email" class="form-label">Email Adresi</label>
-                <input type="email" name="email" class="form-control" id="email" placeholder="Email">
+                <input type="email" name="email" class="form-control" id="email" placeholder="Email" value="{{ old('email') }}">
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Parola</label>
@@ -37,4 +38,7 @@
     </div>
 @endsection
 
-@push('js') @endpush
+@push('js')
+    <script src="{{ asset('assets/js/auth/login.js') }}"></script>
+
+@endpush
