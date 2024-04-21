@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -29,7 +30,14 @@ class LoginController extends Controller
                 return redirect()->back();
             }
         }
-        return redirect()->intended("/admin");
+
+        if ($user->hasRole(['super-admin', 'category-manager','product-manager', 'order-manager', 'user-manager']))
+        {
+            return redirect()->route('admin.index');
+        }
+        return redirect()->route('order.index');
+
+//        return redirect()->intended("/admin");
     }
 
     public function logout()

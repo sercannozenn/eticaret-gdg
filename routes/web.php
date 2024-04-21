@@ -18,8 +18,8 @@ Route::get('/urun-detay', [ProductController::class, "detail"]);
 Route::get("/sepet", [CardController::class, 'card']);
 Route::get("/odeme", [CheckoutController::class, 'index']);
 
-Route::get("/siparislerim", [MyOrdersController::class, "index"]);
-Route::get("/siparislerim-detay", [MyOrdersController::class, "detail"]);
+Route::get("/siparislerim", [MyOrdersController::class, "index"])->name('order.index');
+Route::get("/siparislerim-detay", [MyOrdersController::class, "detail"])->name('order.detail');
 
 
 
@@ -50,3 +50,6 @@ Route::prefix('giris')->middleware('throttle:100,60')->group(function ()
 });
 Route::post('logout', [LoginController::class, 'logout'])->name("logout");
 Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
+
+Route::get('/dogurla-mail', [RegisterController::class, 'sendVerifyMailShowForm'])->name('send-verify-mail');
+Route::post('/dogurla-mail', [RegisterController::class, 'sendVerifyMail']);
