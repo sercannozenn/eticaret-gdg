@@ -8,6 +8,7 @@ use App\Http\Controllers\Front\DashboardController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
+use \App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, "index"])->name('index');
@@ -21,20 +22,19 @@ Route::get("/odeme", [CheckoutController::class, 'index']);
 Route::get("/siparislerim", [MyOrdersController::class, "index"])->name('order.index');
 Route::get("/siparislerim-detay", [MyOrdersController::class, "detail"])->name('order.detail');
 
+Route::get('front', [CategoryController::class, 'front']);
 
 
-
-Route::prefix("admin")->name('admin.')->middleware("auth")->group(function (){
+Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->group(function (){
 
     Route::get("/", [DashboardController::class, 'index'])->name("index");
-
-//    Route::get("/", [DashboardController::class, 'index'])->name("report");
     Route::get("/order", [DashboardController::class, 'index'])->name("orders");
 
+    Route::resource('category', CategoryController::class);
+    Route::post('category/change-status', [CategoryController::class, 'changeStatus'])->name('category.change-status');
 
 });
 
-//Route::get("/admin", [DashboardController::class, 'index']);
 
 
 /** Auth */
@@ -49,7 +49,10 @@ Route::prefix('giris')->middleware('throttle:100,60')->group(function ()
     Route::post("/", [LoginController::class, 'login']);
 });
 Route::post('logout', [LoginController::class, 'logout'])->name("logout");
-Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
 
-Route::get('/dogurla-mail', [RegisterController::class, 'sendVerifyMailShowForm'])->name('send-verify-mail');
-Route::post('/dogurla-mail', [RegisterController::class, 'sendVerifyMail']);
+Route::get('auth/{driver}/callback', [LoginController::class, 'socialiteVerify'])->name('login.socialite-verify');
+Route::get('auth/{driver}', [LoginController::class, 'socialite'])->name('login.socialite');
+
+Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
+Route::get('/dogrula-mail', [RegisterController::class, 'sendVerifyMailShowForm'])->name('send-verify-mail');
+Route::post('/dogrula-mail', [RegisterController::class, 'sendVerifyMail']);

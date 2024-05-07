@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/demo1/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+
+    <link rel="stylesheet" href="{{ asset('assets/vendors/sweetalert2/sweetalert2.min.css') }}">
     @stack("css")
 </head>
 <body>
@@ -43,6 +45,7 @@
 <script>
     feather.replace();
 </script>
+<script src="{{ asset('assets/vendors/sweetalert2/sweetalert2.min.js') }}"></script>
 @include('sweetalert::alert')
 @stack("js")
 </body>

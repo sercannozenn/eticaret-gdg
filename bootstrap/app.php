@@ -14,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\VerifySendMailCommand::class
                    ])
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'admin.check' => \App\Http\Middleware\AdminPanelRoleCheckMiddleware::class
+                           ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
