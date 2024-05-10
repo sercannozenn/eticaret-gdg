@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Front\CardController;
@@ -8,7 +9,7 @@ use App\Http\Controllers\Front\DashboardController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
-use \App\Http\Controllers\CategoryController;
+use \App\Http\Controllers\Admin\BrandController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, "index"])->name('index');
@@ -32,6 +33,18 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
     Route::resource('category', CategoryController::class);
     Route::post('category/change-status', [CategoryController::class, 'changeStatus'])->name('category.change-status');
+
+    Route::prefix('brand')->name('brand.')->group(function (){
+       Route::get("/", [BrandController::class, 'index'])->name('index');
+       Route::get("/create", [BrandController::class, 'create'])->name('create');
+       Route::post("/create", [BrandController::class, 'store'])->name('store');
+       Route::get("/edit/{brand}", [BrandController::class, 'edit'])->name('edit');
+       Route::put("/edit/{brand}", [BrandController::class, 'update'])->name('update');
+       Route::delete('/delete/{brand}', [BrandController::class, 'delete'])->name('destroy');
+
+       Route::post('/change-status', [BrandController::class, 'changeStatus'])->name('change-status');
+       Route::post('/change-is-featured', [BrandController::class, 'changeIsFeatured'])->name('change-is-featured');
+    });
 
 });
 

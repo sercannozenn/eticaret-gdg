@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
+use App\Traits\GdgException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 
 class CategoryController extends Controller
 {
+    use GdgException;
 
     public function __construct(public CategoryService $categoryService)
     {
@@ -53,7 +53,7 @@ class CategoryController extends Controller
         }
         catch (Throwable $exception)
         {
-            return $this->exceptionCategory($exception, "Kategori eklenmedi");
+            return $this->exception($exception, "admin.category.index","Kategori eklenmedi");
         }
     }
 
@@ -91,7 +91,7 @@ class CategoryController extends Controller
         }
         catch (Throwable $exception)
         {
-            return $this->exceptionCategory($exception, "Kategori güncellenemedi");
+            return $this->exception($exception, "admin.category.index","Kategori güncellenemedi");
         }
     }
 
@@ -109,7 +109,7 @@ class CategoryController extends Controller
         }
         catch (Throwable $exception)
         {
-            return $this->exceptionCategory($exception, 'Kategori Silinemedi');
+            return $this->exception($exception, "admin.category.index",'Kategori Silinemedi');
         }
 
     }
@@ -155,21 +155,5 @@ class CategoryController extends Controller
             ->header('Content-Type', 'application/json')
             ->setEncodingOptions(JSON_UNESCAPED_UNICODE);
 
-    }
-
-    private function exceptionCategory(Throwable $exception, string $errorDescription = "Hata alındı")
-    {
-        alert()->error('Başarısız', $errorDescription);
-
-        if ($exception->getCode() == 400)
-        {
-            return redirect()
-                ->back()
-                ->withErrors(['slug' => $exception->getMessage()])
-                ->withInput();
-        }
-
-        Log::error($exception->getMessage(), [$exception->getTraceAsString()]);
-        return redirect()->route('admin.category.index');
     }
 }
