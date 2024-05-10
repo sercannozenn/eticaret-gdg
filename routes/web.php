@@ -38,12 +38,12 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
 
 /** Auth */
-Route::prefix("kayit-ol")->middleware('throttle:registration')->group(function()
+Route::prefix("kayit-ol")->middleware(['throttle:registration', 'guest'])->group(function()
 {
     Route::get("/", [RegisterController::class, 'showForm'])->name("register");
     Route::post("/", [RegisterController::class, 'register']);
 });
-Route::prefix('giris')->middleware('throttle:100,60')->group(function ()
+Route::prefix('giris')->middleware(['throttle:100,60', 'guest'])->group(function ()
 {
     Route::get("/", [LoginController::class, 'showForm'])->name('login');
     Route::post("/", [LoginController::class, 'login']);

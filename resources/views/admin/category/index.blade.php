@@ -114,8 +114,7 @@
                             {
                                 if (!response.ok)
                                 {
-                                    Swal.fire("Kategori silinmedi.", "Hata alındı.", "info");
-                                    console.log(response.json());
+                                    Swal.fire("Kategori durumu güncellenemedi.", "Hata alındı.", "info");
                                 }
                                 return response.json();
                             })
@@ -132,7 +131,9 @@
                                  element.classList.remove("btn-inverse-success");
                                  element.classList.add('btn-inverse-danger')
                              }
-                             console.log(data);
+                             Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
+
+
                          })
                 }
             });

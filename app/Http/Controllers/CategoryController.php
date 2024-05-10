@@ -5,17 +5,26 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 class CategoryController extends Controller
 {
+
+    public function __construct(public CategoryService $categoryService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::orderBy('id', 'DESC')->paginate(10);
+        $categories = $this->categoryService->getAllCategoriesPaginate();
 
         return view('admin.category.index', compact('categories'));
     }
@@ -25,8 +34,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
-        //        $categories = Category::query()->whereNull('parent_id')->get();
+        $categories = $this->categoryService->getAllCategories();
 
         return view('admin.category.create_edit')->with('categories', $categories);
     }
@@ -36,32 +44,17 @@ class CategoryController extends Controller
      */
     public function store(CategoryStoreRequest $request)
     {
-        $data = $request->only('name', 'short_description', 'description');
+        try
+        {
+            $this->categoryService->prepareDataRequest()->create();
 
-        $slug = Str::slug($request->slug);
-
-        if (is_null($request->slug)) {
-            $slug  = Str::slug(mb_substr($data['name'], 0, 70));
-            $check = Category::query()->where('slug', $slug)->first();
-
-            if ($check) {
-                return redirect()
-                    ->back()
-                    ->withErrors(['slug' => 'Slug değeriniz boş veya daha önce farklı bir kategori tarafından kullanılıyor olablir.'])
-                    ->withInput();
-            }
+            alert()->success('Başarılı', 'Kategori kaydedildi');
+            return redirect()->route('admin.category.index');
         }
-
-        $data['slug']   = $slug;
-        $data['status'] = $request->has('status');
-        if ($request->parent_id != -1) {
-            $data['parent_id'] = $request->parent_id;
+        catch (Throwable $exception)
+        {
+            return $this->exceptionCategory($exception, "Kategori eklenmedi");
         }
-
-        Category::create($data);
-
-        alert()->success('Başarılı', 'Kategori kaydedildi');
-        return redirect()->route('admin.category.index');
     }
 
     /**
@@ -77,7 +70,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
         return view('admin.category.create_edit', compact('category', 'categories'));
     }
 
@@ -86,33 +79,20 @@ class CategoryController extends Controller
      */
     public function update(CategoryUpdateRequest $request, Category $category)
     {
-        $data = $request->only('name', 'short_description', 'description');
+        try
+        {
+            $this->categoryService
+                ->setCategory($category)
+                ->prepareDataRequest()
+                ->update();
 
-        if ($request->parent_id != -1) {
-            $data['parent_id'] = $request->parent_id;
+            alert()->success('Başarılı', 'Kategori güncellendi');
+            return redirect()->route('admin.category.index');
         }
-
-        $slug = Str::slug($request->slug);
-
-        if (is_null($request->slug)) {
-            $slug  = Str::slug(mb_substr($data['name'], 0, 70));
-            $check = Category::query()->where('slug', $slug)->first();
-
-            if ($check) {
-                return redirect()
-                    ->back()
-                    ->withErrors(['slug' => 'Slug değeriniz boş veya daha önce farklı bir kategori tarafından kullanılıyor olablir.'])
-                    ->withInput();
-            }
+        catch (Throwable $exception)
+        {
+            return $this->exceptionCategory($exception, "Kategori güncellenemedi");
         }
-
-        $data['slug']   = $slug;
-        $data['status'] = $request->has('status');
-
-        $category->update($data);
-
-        alert()->success('Başarılı', 'Kategori güncellendi');
-        return redirect()->route('admin.category.index');
     }
 
     /**
@@ -120,10 +100,18 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->delete();
-        alert()->success('Başarılı', 'Kategori silindi');
+        try
+        {
+            $this->categoryService->setCategory($category)->delete();
+            alert()->success('Başarılı', 'Kategori silindi');
 
-        return redirect()->back();
+            return redirect()->back();
+        }
+        catch (Throwable $exception)
+        {
+            return $this->exceptionCategory($exception, 'Kategori Silinemedi');
+        }
+
     }
 
     public function front()
@@ -140,8 +128,7 @@ class CategoryController extends Controller
     {
         $id = $request->id;
 
-        $category = Category::query()->where('id', $id)->first();
-
+        $category = $this->categoryService->getById($id);
         if (is_null($category))
         {
             return response()
@@ -153,9 +140,12 @@ class CategoryController extends Controller
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
 
+        $data = ['status' => !$category->status];
 
-        $category->status = !$category->status;
-        $category->save();
+        $this->categoryService
+            ->setCategory($category)
+            ->setPrepareData($data)
+            ->update();
 
         return response()
             ->json()
@@ -165,5 +155,21 @@ class CategoryController extends Controller
             ->header('Content-Type', 'application/json')
             ->setEncodingOptions(JSON_UNESCAPED_UNICODE);
 
+    }
+
+    private function exceptionCategory(Throwable $exception, string $errorDescription = "Hata alındı")
+    {
+        alert()->error('Başarısız', $errorDescription);
+
+        if ($exception->getCode() == 400)
+        {
+            return redirect()
+                ->back()
+                ->withErrors(['slug' => $exception->getMessage()])
+                ->withInput();
+        }
+
+        Log::error($exception->getMessage(), [$exception->getTraceAsString()]);
+        return redirect()->route('admin.category.index');
     }
 }
