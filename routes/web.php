@@ -10,6 +10,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
 use \App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, "index"])->name('index');
@@ -44,6 +45,12 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
        Route::post('/change-status', [BrandController::class, 'changeStatus'])->name('change-status');
        Route::post('/change-is-featured', [BrandController::class, 'changeIsFeatured'])->name('change-is-featured');
+    });
+
+    Route::prefix('product')->name('product.')->group(function (){
+        Route::get('/', [AdminProductController::class, 'index'])->name('index');
+        Route::get('/create', [AdminProductController::class, 'create'])->name('create');
+
     });
 
 });

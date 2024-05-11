@@ -31,6 +31,10 @@ class BrandService
     {
         return $this->brand::orderBy($orderBy[0], $orderBy[1])->paginate($page);
     }
+    public function getAll($orderBy = ['order', 'DESC'])
+    {
+        return $this->brand::orderBy($orderBy[0], $orderBy[1])->get();
+    }
 
     public function create(array $data = null): Brand
     {
