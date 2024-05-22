@@ -21698,8 +21698,8 @@ div.apexcharts-canvas .apexcharts-yaxistooltip-right:after {
 }
 div.apexcharts-canvas .apexcharts-tooltip-marker {
   /*rtl:raw:
-  margin-right: 0; 
-  margin-left: 10px; 
+  margin-right: 0;
+  margin-left: 10px;
   */
 }
 
@@ -22410,7 +22410,7 @@ div.tox .tox-dialog__body {
 
 .wizard > .actions {
   /*rtl:raw:
-    text-align: left; 
+    text-align: left;
   */
 }
 
@@ -22470,3 +22470,7 @@ div.tox .tox-dialog__body {
   margin: 0 0 0 0.7em;
 }
 /*# sourceMappingURL=../maps/demo1/style.css.map */
+.form-control:disabled, .form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}

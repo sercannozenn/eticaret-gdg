@@ -2,6 +2,8 @@
 
 document.addEventListener("DOMContentLoaded", function ()
 {
+    let btnSubmit = document.querySelector('#btnSubmit');
+    let gdgForm = document.querySelector('#gdgForm');
     let addVariant = document.querySelector('#addVariant');
     let variants = document.querySelector('#variants');
     let typeID = document.querySelector('#type_id');
@@ -36,6 +38,26 @@ document.addEventListener("DOMContentLoaded", function ()
         2: shoesSize,
         3: standartSize
     };
+
+    btnSubmit.addEventListener('click', function ()
+    {
+        let result = validateForm();
+        let isValid = result.isValid;
+        let message = result.message;
+        if (isValid)
+        {
+            gdgForm.submit();
+        }
+        else
+        {
+            message = message != null ? message : 'Lütfen gerekli alanları doldurunuz.';
+            Swal.fire({
+                title: 'Uyarı!',
+                text: message,
+                icon: 'warning'
+                      });
+        }
+    });
 
     addVariant.addEventListener('click', function ()
     {
@@ -77,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunAdditionalPriceNameAttr = 'variant[' + variantCount + '][additional_price]';
         let urunAdditionalPriceDiv = createDiv("col-md-6 mb-4")
         let urunAdditionalPriceLabel = createLabel("form-label", urunAdditionalPriceID, "Fiyat");
-        let urunAdditionalPriceInput = createInput("form-control", urunAdditionalPriceID, "off", "Fiyat", urunAdditionalPriceNameAttr);
+        let urunAdditionalPriceInput = createInput("form-control additional-price-input", urunAdditionalPriceID, "off", "Fiyat", urunAdditionalPriceNameAttr, ['data-variant-id', variantCount]);
         urunAdditionalPriceDiv.appendChild(urunAdditionalPriceLabel);
         urunAdditionalPriceDiv.appendChild(urunAdditionalPriceInput);
 
@@ -85,7 +107,8 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunFinalPriceNameAttr = 'variant[' + variantCount + '][final_price]';
         let urunFinalPriceDiv = createDiv("col-md-6 mb-4")
         let urunFinalPriceLabel = createLabel("form-label", urunFinalPriceID, "Son Fiyat");
-        let urunFinalPriceInput = createInput("form-control", urunFinalPriceID, "off", "Son Fiyat", urunFinalPriceNameAttr);
+        let getPriceValue = document.querySelector('#price').value;
+        let urunFinalPriceInput = createInput("form-control readonly", urunFinalPriceID, "off", "Son Fiyat", urunFinalPriceNameAttr, ['readonly', ""], null, getPriceValue);
         urunFinalPriceDiv.appendChild(urunFinalPriceLabel);
         urunFinalPriceDiv.appendChild(urunFinalPriceInput);
 
@@ -135,13 +158,17 @@ document.addEventListener("DOMContentLoaded", function ()
         urunAddSizeAElementImageSetAttribute.push({'data-variant-id' : variantCount});
 
         let imageDataInputElementNameAttr = 'image[' + variantCount + '][]';
-        let imageDataInputElement = createInput("form-control", dataInputAttr, 'off', '', imageDataInputElementNameAttr,null)
+        let imageDataInputElement = createInput("form-control", dataInputAttr, 'off', '', imageDataInputElementNameAttr,null, 'hidden')
         let imageDataPreviewElement = createDiv('col-md-12', dataPreviewAttr);
 
         let urunAddSizeAElementImage = createAElement(null, 'btn btn-info btn-add-image mb-4', 'javascript:void(0)', urunAddSizeAElementImageSetAttribute,  'Görsel Ekle ');
         let urunAddSizeAElementDiv = createDiv("col-md-12");
         urunAddSizeAElementImage.appendChild(urunAddSizeIElementImage);
         urunAddSizeAElementDiv.appendChild(urunAddSizeAElementImage);
+
+        let variantFeatureSpan = createSpan('form-label d-block my-3', 'Varyant İçin Öne Çıkan Görsel Seçin', null);
+        urunAddSizeAElementDiv.appendChild(variantFeatureSpan);
+
 
         urunAddSizeAElement.appendChild(urunAddSizeIElement);
         urunAddSizeAElement.appendChild(urunAddSizeSpan);
@@ -265,21 +292,48 @@ document.addEventListener("DOMContentLoaded", function ()
                 target_input.dispatchEvent(new Event('change'));
 
                 // clear previous preview
-                target_preview.innerHtml = '';
+                target_preview.innerHTML = '';
 
                 // set or change the preview image src
-                items.forEach(function (item)
+                items.forEach(function (item,index)
                               {
+
+                                  let container = document.createElement('div')
+                                  container.className = "image-container";
+                                  container.id= "image-container-" + variantID + "-" + index;
+
                                   let radio = document.createElement('input');
                                   radio.type = "radio";
                                   radio.setAttribute('name', 'variant[' + variantID + '][image]');
                                   radio.setAttribute('value', item.url);
+                                  radio.id = ("radio-" + variantID + '-' + index);
+                                  if (index === 0)
+                                  {
+                                      radio.checked=true;
+                                  }
+                                  let iElement = document.createElement("i");
+                                  iElement.setAttribute("data-feather", "x");
+                                  iElement.setAttribute("data-url", item.url);
+                                  iElement.setAttribute("data-variant-id", variantID);
+                                  iElement.setAttribute("data-image-index", index);
+                                  iElement.className = "delete-variant-image";
+
+                                  let label = document.createElement('label');
+                                  label.setAttribute('for', ("radio-" + variantID + '-' + index));
 
                                   let img = document.createElement('img')
                                   img.setAttribute('style', 'height: 5rem')
-                                  img.setAttribute('src', item.thumb_url)
-                                  target_preview.appendChild(radio);
-                                  target_preview.appendChild(img);
+                                  img.setAttribute('src', item.thumb_url);
+
+                                  label.appendChild(img);
+                                  container.appendChild(radio);
+                                  container.appendChild(label);
+                                  container.appendChild(iElement);
+
+                                  target_preview.appendChild(container);
+
+                                  feather.replace();
+
                               });
 
                 // trigger change event
@@ -290,6 +344,46 @@ document.addEventListener("DOMContentLoaded", function ()
         if (element.parentElement.classList.contains('btn-add-size'))
         {
             btnAddSizeAction(element.parentElement);
+        }
+
+        if (element.classList.contains("delete-variant-image"))
+        {
+            let variantID = element.getAttribute("data-variant-id");
+            let dataUrl = element.getAttribute("data-url") + ",";
+            let dataImageIndex = element.getAttribute("data-image-index");
+
+            let dataInputFind = document.querySelector("#data-input-" + variantID);
+            let dataInputValue = dataInputFind.value;
+            dataInputValue = dataInputValue.replace(dataUrl, "");
+            dataInputFind.value = dataInputValue;
+
+            let findImageContainer = document.querySelector("#image-container-" + variantID + "-" + dataImageIndex);
+            findImageContainer.remove();
+
+
+            // Update Index
+            let dataPreview = document.querySelector('#data-preview-' + variantID);
+            let imageContainers = dataPreview.querySelectorAll('.image-container');
+
+            imageContainers.forEach((container, index) =>
+                                {
+                                    let variantIndex =  variantID + "-" + index;
+                                    container.id = "image-container-" + variantIndex;
+
+
+                                    container.querySelectorAll('[id^="radio-"]').forEach(element => {
+                                        element.id = "radio-" + variantIndex;
+                                    });
+
+                                    container.querySelectorAll('[for^="radio-"]').forEach(element => {
+                                        element.setAttribute('for', ("radio-" + variantIndex));
+                                    });
+
+                                    container.querySelectorAll('svg').forEach(element => {
+                                        element.setAttribute('data-image-index', index);
+                                    });
+                                });
+
         }
     })
 
@@ -330,6 +424,15 @@ document.addEventListener("DOMContentLoaded", function ()
         else
         {
             productVariantTab.setAttribute('disabled', '');
+        }
+
+        if (element.classList.contains("additional-price-input"))
+        {
+            let variantID = element.getAttribute("data-variant-id");
+            let findFinalPriceElement = document.querySelector("#final_price-" + variantID);
+            let priceValue = document.querySelector('#price').value;
+            let finalPrice =  priceValue - element.value;
+            findFinalPriceElement.value = finalPrice;
         }
 
     });
@@ -431,6 +534,30 @@ document.addEventListener("DOMContentLoaded", function ()
                 element.setAttribute('for', ("size-" + index));
             });
 
+            variant.querySelectorAll('[id^="sizeDiv"]').forEach(element => {
+                element.id = "sizeDiv" + index;
+            });
+
+            variant.querySelectorAll('[id^="sizeStockDeleteGeneral-"]').forEach(element => {
+                let forAttr = element.getAttribute("id");
+                let split = forAttr.split("-");
+                let  stockID = split[2];
+                let oldVariantID = split[1];
+                element.id = "sizeStockDeleteGeneral-" + index + "-" + stockID;
+                element.classList.remove("size-stock-" + oldVariantID);
+                element.classList.add("size-stock-" + index);
+
+                element.querySelectorAll('[for^="size-"]').forEach(element => {
+                    element.setAttribute('for',("size-" + index + "-" + stockID));
+                });
+
+                element.querySelectorAll('[id^="size-"]').forEach(element => {
+                    element.setAttribute('id',("size-" + index + "-" + stockID));
+                    element.setAttribute('name',("variant[" + index + "][size][" + stockID + "]"));
+                });
+
+            });
+
             variant.querySelectorAll('[id^="size-"]').forEach(element => {
                 element.id = "size-" + index;
                 element.setAttribute("name", "variant[" + index + "][size]")
@@ -443,6 +570,26 @@ document.addEventListener("DOMContentLoaded", function ()
             variant.querySelectorAll('[id^="stock-"]').forEach(element => {
                 element.id = "stock-" + index;
                 element.setAttribute("name", "variant[" + index + "][stock]")
+            });
+
+            variant.querySelectorAll('[for^="radio-"]').forEach(element => {
+                let forAttr = element.getAttribute("for");
+                let split = forAttr.split("-");
+                let imageID = split[2];
+                element.setAttribute('for', ("radio-" + index + "-" + imageID));
+            });
+
+            variant.querySelectorAll('[id^="radio-"]').forEach(element => {
+                let forAttr = element.getAttribute("id");
+                let split = forAttr.split("-");
+                let imageID = split[2];
+                element.id = "radio-" + index + "-" + imageID;
+                element.setAttribute("name", "variant[" + index + "][radio]")
+            });
+
+            variant.querySelectorAll('[id^="data-input-"]').forEach(element => {
+                element.id = "data-input-" + index;
+                element.setAttribute("name", "image[" + index + "]")
             });
 
         });
@@ -566,7 +713,7 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         return label;
     }
-    function createInput(className, id, autocomplete, placeholder, nameAttr, setAttribute = null, type = 'text')
+    function createInput(className, id, autocomplete, placeholder, nameAttr, setAttribute = null, type = 'text', value = null)
     {
         let input = document.createElement('input');
         input.type = type;
@@ -580,6 +727,8 @@ document.addEventListener("DOMContentLoaded", function ()
         {
             input.setAttribute(setAttribute[0], setAttribute[1])
         }
+
+        input.value = value;
 
         return input;
     }
@@ -694,5 +843,166 @@ document.addEventListener("DOMContentLoaded", function ()
 
         let sizeStock = --variantSizeStockInfo[variantID]['size_stock'];
         variantSizeStockInfo[variantID]['size_stock'] = sizeStock;
+    }
+
+    function validateForm()
+    {
+        let isValid = true;
+        let message = null;
+
+        let nameInput = document.querySelector('#name');
+        let priceInput = document.querySelector('#price');
+        let typeSelect = document.querySelector('#type_id');
+        let brandSelect = document.querySelector('#brand_id');
+        let categorySelect = document.querySelector('#category_id');
+
+        if (nameInput.value.trim() === '' || nameInput.value.trim() == null)
+        {
+            isValid = false;
+            nameInput.classList.add("is-invalid");
+        }
+        else
+        {
+            nameInput.classList.remove("is-invalid");
+        }
+
+        if (priceInput.value.trim() === '' || priceInput.value.trim() == null || isNaN(priceInput.value) || priceInput.value < 1)
+        {
+            isValid = false;
+            priceInput.classList.add("is-invalid");
+        }
+        else
+        {
+            priceInput.classList.remove("is-invalid");
+        }
+
+        if (typeSelect.value.trim() === '-1')
+        {
+            isValid = false;
+            typeSelect.classList.add("is-invalid");
+        }
+        else
+        {
+            typeSelect.classList.remove("is-invalid");
+        }
+
+        if (brandSelect.value.trim() === '-1')
+        {
+            isValid = false;
+            brandSelect.classList.add("is-invalid");
+        }
+        else
+        {
+            brandSelect.classList.remove("is-invalid");
+        }
+
+        if (categorySelect.value.trim() === '-1')
+        {
+            isValid = false;
+            categorySelect.classList.add("is-invalid");
+        }
+        else
+        {
+            categorySelect.classList.remove("is-invalid");
+        }
+
+
+
+
+        //variant
+        let variants = document.querySelectorAll(".row.variant");
+        if (variants.length < 1)
+        {
+            isValid = false;
+            message = "En az bir varyant eklemelisiniz";
+        }
+        variants = Array.from(variants).reverse();
+
+        variants.forEach((variant, index) => {
+
+            let variantNameInput = variant.querySelector(`#variant_name-${index}`);
+            let slugInput = variant.querySelector(`#slug-${index}`);
+            let finalPriceInput = variant.querySelector(`#final_price-${index}`);
+            let imageDataInput = variant.querySelector(`#data-input-${index}`);
+
+            let sizeInputs = variant.querySelectorAll(`[id^="size-${index}"]`);
+            let stockInputs = variant.querySelectorAll(`[id^="stock-${index}"]`);
+
+            if (variantNameInput.value.trim() === '' || variantNameInput.value.trim() == null)
+            {
+                isValid = false;
+                variantNameInput.classList.add("is-invalid");
+            }
+            else
+            {
+                variantNameInput.classList.remove("is-invalid");
+            }
+
+            if (slugInput.value.trim() === '' || slugInput.value.trim() == null)
+            {
+                isValid = false;
+                slugInput.classList.add("is-invalid");
+            }
+            else
+            {
+                slugInput.classList.remove("is-invalid");
+            }
+
+            if (finalPriceInput.value.trim() === '' || finalPriceInput.value.trim() == null)
+            {
+                isValid = false;
+                finalPriceInput.classList.add("is-invalid");
+            }
+            else
+            {
+                finalPriceInput.classList.remove("is-invalid");
+            }
+
+            if (imageDataInput.value.trim() === '' || imageDataInput.value.trim() == null)
+            {
+                isValid = false;
+                imageDataInput.classList.add("is-invalid");
+                message = "Lütfen varyantlara görsel seçiniz.";
+            }
+            else
+            {
+                imageDataInput.classList.remove("is-invalid");
+            }
+
+            if (sizeInputs.length < 1)
+            {
+                isValid = false;
+                message = "Lütfen varyantlara beden ekleyiniz.";
+            }
+            sizeInputs.forEach(input => {
+
+                if (input.value.trim() === '-1')
+                {
+                    isValid = false;
+                    input.classList.add("is-invalid");
+                }
+                else
+                {
+                    input.classList.remove("is-invalid");
+                }
+
+            });
+            stockInputs.forEach(input => {
+
+                if (input.value.trim() === '' || input.value.trim() == null)
+                {
+                    isValid = false;
+                    input.classList.add("is-invalid");
+                }
+                else
+                {
+                    input.classList.remove("is-invalid");
+                }
+            });
+
+
+        });
+
+        return {isValid, message};
     }
 });
