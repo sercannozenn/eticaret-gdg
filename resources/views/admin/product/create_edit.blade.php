@@ -186,6 +186,10 @@
 
 @push("js")
     <script src="{{ asset('assets/vendors/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('assets/js/axios/dist/axios.min.js') }}"></script>
+    <script>
+        var checkSlugRoute= "{{ route('admin.product.check-slug') }}";
+    </script>
     <script src="{{ asset('assets/js/product/gdg-variant.js') }}"></script>
     <script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 

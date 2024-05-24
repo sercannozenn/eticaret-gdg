@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function ()
     let shoesSize = shoesNumberGenerate();
     let standartSize = ['standart'];
 
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    axios.defaults.headers.common['Content-Type'] = "application/json";
+
     let sizes = {
         1: dressSize,
         2: shoesSize,
@@ -72,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunAdiNameAttr = 'variant[' + variantCount + '][name]';
         let urunAdiDiv = createDiv("col-md-4 mb-4")
         let urunAdiLabel = createLabel("form-label", urunAdiID, "Ürün Adı");
-        let urunAdiInput = createInput("form-control", urunAdiID, "off", "Ürün Adı", urunAdiNameAttr);
+        let urunAdiInput = createInput("form-control variant-product-name", urunAdiID, "off", "Ürün Adı", urunAdiNameAttr);
 
         urunAdiDiv.appendChild(urunAdiLabel);
         urunAdiDiv.appendChild(urunAdiInput);
@@ -81,16 +84,19 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunVariantNameAttr = 'variant[' + variantCount + '][variant_name]';
         let urunVariantNameDiv = createDiv("col-md-4 mb-4")
         let urunVariantNameLabel = createLabel("form-label", urunVariantNameID, "Ürün Varyant Adı");
-        let urunVariantNameInput = createInput("form-control", urunVariantNameID, "off", "Ürün Varyant Adı", urunVariantNameAttr);
+        let urunVariantNameInput = createInput("form-control variant-name", urunVariantNameID, "off", "Ürün Varyant Adı", urunVariantNameAttr);
 
         urunVariantNameDiv.appendChild(urunVariantNameLabel);
         urunVariantNameDiv.appendChild(urunVariantNameInput);
+
+        let inputName = document.querySelector('#name');
+        let nameSLug = generateSlug(inputName.value);
 
         let urunSlugID = 'slug-' + variantCount;
         let urunSlugNameAttr = 'variant[' + variantCount + '][slug]';
         let urunSlugDiv = createDiv("col-md-4 mb-4")
         let urunSlugLabel = createLabel("form-label", urunSlugID, "Slug");
-        let urunSlugInput = createInput("form-control", urunSlugID, "off", "Slug", urunSlugNameAttr);
+        let urunSlugInput = createInput("form-control product-slug", urunSlugID, "off", "Slug", urunSlugNameAttr, null,null, nameSLug);
 
         urunSlugDiv.appendChild(urunSlugLabel);
         urunSlugDiv.appendChild(urunSlugInput);
@@ -435,8 +441,92 @@ document.addEventListener("DOMContentLoaded", function ()
             findFinalPriceElement.value = finalPrice;
         }
 
+        if (element.id == 'name')
+        {
+            let slugInputs = document.querySelectorAll(".product-slug");
+            slugInputs.forEach(function (slugInput)
+                               {
+                                  let slugID = slugInput.id;
+                                  let variantID = slugID.split("-")[1];
+                                  let findVariantProductName = document.querySelector("#name-" + variantID).value;
+                                  let findVariantName = document.querySelector("#variant_name-" + variantID).value;
+                                  let slug = element.value + "-" + findVariantName;
+
+                                  if (findVariantProductName.trim() != "" )
+                                  {
+                                      slug = findVariantProductName + "-" + findVariantName
+                                  }
+                                  slug = generateSlug(slug);
+                                  slugInput.value = slug;
+                               });
+        }
+
+        if (element.classList.contains("variant-product-name"))
+        {
+            let slugID = element.id;
+            let variantID = slugID.split("-")[1];
+            let findVariantName = document.querySelector("#variant_name-" + variantID).value;
+            let slugInput = document.querySelector("#slug-" + variantID);
+            let nameInput = document.querySelector("#name").value;
+            let productNameValue = element.value.trim();
+            let slug = nameInput + "-" + findVariantName;
+            if (productNameValue != '')
+            {
+                slug = productNameValue + "-" + findVariantName;
+            }
+            slug = generateSlug(slug);
+            slugInput.value = slug;
+        }
+
+        if (element.classList.contains("variant-name"))
+        {
+            let slugID = element.id;
+            let variantID = slugID.split("-")[1];
+            let findVariantProductName = document.querySelector("#name-" + variantID).value;
+            let slugInput = document.querySelector("#slug-" + variantID);
+            let nameInput = document.querySelector("#name").value;
+            let variantName = element.value.trim();
+            let slug = nameInput + "-" + variantName;
+
+            if (findVariantProductName.trim() != '')
+            {
+                slug = findVariantProductName + "-" + variantName;
+            }
+            slug = generateSlug(slug);
+            slugInput.value = slug;
+        }
+
     });
 
+    document.body.addEventListener('focusout', function (event){
+        let element = event.target;
+
+        if (element.classList.contains("product-slug"))
+        {
+            slug = generateSlug(element.value);
+            let response = checkSlug(slug);
+            element.classList.remove("is-invalid")
+            if (response != null)
+            {
+                element.classList.add("is-invalid")
+            }
+        }
+        if (element.classList.contains("variant-product-name") || element.classList.contains("variant-name"))
+        {
+            let slugID = element.id;
+            let variantID = slugID.split("-")[1];
+            let slugInput = document.querySelector("#slug-" + variantID);
+
+            slug = generateSlug(slugInput.value);
+            let response = checkSlug(slug);
+
+            slugInput.classList.remove("is-invalid")
+            if (response != null)
+            {
+                slugInput.classList.add("is-invalid")
+            }
+        }
+    });
     function shoesNumberGenerate()
     {
         let numbers = [];
@@ -1004,5 +1094,45 @@ document.addEventListener("DOMContentLoaded", function ()
         });
 
         return {isValid, message};
+    }
+
+    function generateSlug(slug)
+    {
+        const turkishMap = {
+            "ç" : "c",
+            "ğ" : "g",
+            "ş" : "s",
+            "ü" : "u",
+            "ö" : "o",
+            "ı" : "i",
+            "İ" : "i",
+            "Ç" : "c",
+            "Ğ" : "g",
+            "Ş" : "s",
+            "Ü" : "u",
+            "Ö" : "o"
+        };
+
+        slug = slug.toLowerCase();
+
+        slug = slug.replace(/[çşğüöıİÇŞĞÜÖ]/g, function (match)
+        {
+            return turkishMap[match];
+        });
+
+
+        slug = slug.replace(/[\s\W-]+/g, '-');
+
+        slug = slug.replace(/^-+|-+$/g, '');
+
+        return slug;
+    }
+
+    function checkSlug(slug)
+    {
+        let response = axios.post(checkSlugRoute, {
+            slug
+        });
+        return response;
     }
 });
