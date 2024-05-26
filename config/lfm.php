@@ -98,6 +98,8 @@ return [
 
     'rename_file'              => false,
 
+    'slug_filename'             => true,
+
     'rename_duplicates'        => false,
 
     'alphanumeric_filename'    => false,
