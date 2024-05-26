@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", function ()
 {
     let btnSubmit = document.querySelector('#btnSubmit');
@@ -12,23 +10,23 @@ document.addEventListener("DOMContentLoaded", function ()
     let variantSizeStockInfo = [];
     const sizeDivKey = "sizeDiv";
     const requiredFields = {
-        name: {
-          type: "input"
+        name       : {
+            type: "input"
         },
-        price: {
-            type: "input",
+        price      : {
+            type     : "input",
             data_type: "price",
         },
-        type_id:{
+        type_id    : {
             type: "select"
         },
-        brand_id:{
+        brand_id   : {
             type: "select"
         },
-        category_id:{
+        category_id: {
             type: "select"
         },
-            };
+    };
     let dressSize = ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
     let shoesSize = shoesNumberGenerate();
     let standartSize = ['standart'];
@@ -55,9 +53,9 @@ document.addEventListener("DOMContentLoaded", function ()
         {
             message = message != null ? message : 'Lütfen gerekli alanları doldurunuz.';
             Swal.fire({
-                title: 'Uyarı!',
-                text: message,
-                icon: 'warning'
+                          title: 'Uyarı!',
+                          text : message,
+                          icon : 'warning'
                       });
         }
     });
@@ -96,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunSlugNameAttr = 'variant[' + variantCount + '][slug]';
         let urunSlugDiv = createDiv("col-md-4 mb-4")
         let urunSlugLabel = createLabel("form-label", urunSlugID, "Slug");
-        let urunSlugInput = createInput("form-control product-slug", urunSlugID, "off", "Slug", urunSlugNameAttr, null,null, nameSLug);
+        let urunSlugInput = createInput("form-control product-slug", urunSlugID, "off", "Slug", urunSlugNameAttr, null, null, nameSLug);
 
         urunSlugDiv.appendChild(urunSlugLabel);
         urunSlugDiv.appendChild(urunSlugInput);
@@ -156,18 +154,18 @@ document.addEventListener("DOMContentLoaded", function ()
 
         let urunAddSizeIElementImage = createIElement('add-size', ['data-feather', 'image']);
         let urunAddSizeAElementImageSetAttribute = [];
-        urunAddSizeAElementImageSetAttribute.push({'data-variant-id' : variantCount});
+        urunAddSizeAElementImageSetAttribute.push({'data-variant-id': variantCount});
         let dataInputAttr = ("data-input-" + variantCount);
         let dataPreviewAttr = ("data-preview-" + variantCount);
-        urunAddSizeAElementImageSetAttribute.push({'data-input' : dataInputAttr});
-        urunAddSizeAElementImageSetAttribute.push({'data-preview' : dataPreviewAttr});
-        urunAddSizeAElementImageSetAttribute.push({'data-variant-id' : variantCount});
+        urunAddSizeAElementImageSetAttribute.push({'data-input': dataInputAttr});
+        urunAddSizeAElementImageSetAttribute.push({'data-preview': dataPreviewAttr});
+        urunAddSizeAElementImageSetAttribute.push({'data-variant-id': variantCount});
 
         let imageDataInputElementNameAttr = 'image[' + variantCount + '][]';
-        let imageDataInputElement = createInput("form-control", dataInputAttr, 'off', '', imageDataInputElementNameAttr,null, 'hidden')
+        let imageDataInputElement = createInput("form-control", dataInputAttr, 'off', '', imageDataInputElementNameAttr, null, 'hidden')
         let imageDataPreviewElement = createDiv('col-md-12', dataPreviewAttr);
 
-        let urunAddSizeAElementImage = createAElement(null, 'btn btn-info btn-add-image mb-4', 'javascript:void(0)', urunAddSizeAElementImageSetAttribute,  'Görsel Ekle ');
+        let urunAddSizeAElementImage = createAElement(null, 'btn btn-info btn-add-image mb-4', 'javascript:void(0)', urunAddSizeAElementImageSetAttribute, 'Görsel Ekle ');
         let urunAddSizeAElementDiv = createDiv("col-md-12");
         urunAddSizeAElementImage.appendChild(urunAddSizeIElementImage);
         urunAddSizeAElementDiv.appendChild(urunAddSizeAElementImage);
@@ -228,9 +226,9 @@ document.addEventListener("DOMContentLoaded", function ()
 
     typeID.addEventListener('change', function ()
     {
-        for (let i=0; i <=variantCount; i++)
+        for (let i = 0; i <= variantCount; i++)
         {
-            let findDiv = document.querySelector('#' + sizeDivKey + i );
+            let findDiv = document.querySelector('#' + sizeDivKey + i);
             if (findDiv)
             {
                 findDiv.innerHTML = "";
@@ -276,7 +274,7 @@ document.addEventListener("DOMContentLoaded", function ()
                 filebrowserImageUploadUrl: '/admin/gdg-filemanager/upload?type=Images&_token=',
                 filebrowserBrowseUrl     : '/admin/gdg-filemanager?type=Files',
                 filebrowserUploadUrl     : '/admin/gdg-filemanager/upload?type=Files&_token=',
-                type: "file"
+                type                     : "file"
             };
 
             var route_prefix = (options && options.prefix) ? options.prefix : '/admin/gdg-filemanager';
@@ -289,9 +287,9 @@ document.addEventListener("DOMContentLoaded", function ()
             window.SetUrl = function (items)
             {
                 file_path = items.map(function (item)
-                                          {
-                                              return item.url;
-                                          }).join(',');
+                                      {
+                                          return item.url;
+                                      }).join(',');
 
                 // set the value of the desired input to image url
                 target_input.value = file_path;
@@ -301,12 +299,12 @@ document.addEventListener("DOMContentLoaded", function ()
                 target_preview.innerHTML = '';
 
                 // set or change the preview image src
-                items.forEach(function (item,index)
+                items.forEach(function (item, index)
                               {
 
                                   let container = document.createElement('div')
                                   container.className = "image-container";
-                                  container.id= "image-container-" + variantID + "-" + index;
+                                  container.id = "image-container-" + variantID + "-" + index;
 
                                   let radio = document.createElement('input');
                                   radio.type = "radio";
@@ -315,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function ()
                                   radio.id = ("radio-" + variantID + '-' + index);
                                   if (index === 0)
                                   {
-                                      radio.checked=true;
+                                      radio.checked = true;
                                   }
                                   let iElement = document.createElement("i");
                                   iElement.setAttribute("data-feather", "x");
@@ -372,28 +370,32 @@ document.addEventListener("DOMContentLoaded", function ()
             let imageContainers = dataPreview.querySelectorAll('.image-container');
 
             imageContainers.forEach((container, index) =>
-                                {
-                                    let variantIndex =  variantID + "-" + index;
-                                    container.id = "image-container-" + variantIndex;
+                                    {
+                                        let variantIndex = variantID + "-" + index;
+                                        container.id = "image-container-" + variantIndex;
 
 
-                                    container.querySelectorAll('[id^="radio-"]').forEach(element => {
-                                        element.id = "radio-" + variantIndex;
+                                        container.querySelectorAll('[id^="radio-"]').forEach(element =>
+                                                                                             {
+                                                                                                 element.id = "radio-" + variantIndex;
+                                                                                             });
+
+                                        container.querySelectorAll('[for^="radio-"]').forEach(element =>
+                                                                                              {
+                                                                                                  element.setAttribute('for', ("radio-" + variantIndex));
+                                                                                              });
+
+                                        container.querySelectorAll('svg').forEach(element =>
+                                                                                  {
+                                                                                      element.setAttribute('data-image-index', index);
+                                                                                  });
                                     });
-
-                                    container.querySelectorAll('[for^="radio-"]').forEach(element => {
-                                        element.setAttribute('for', ("radio-" + variantIndex));
-                                    });
-
-                                    container.querySelectorAll('svg').forEach(element => {
-                                        element.setAttribute('data-image-index', index);
-                                    });
-                                });
 
         }
     })
 
-    document.body.addEventListener('input', function (event){
+    document.body.addEventListener('input', function (event)
+    {
 
         let element = event.target;
         let elementID = element.id;
@@ -401,25 +403,25 @@ document.addEventListener("DOMContentLoaded", function ()
 
         for (const [key, properties] of Object.entries(requiredFields))
         {
-           let keyElement = document.querySelector('#' + key);
-           let keylementValue = keyElement.value;
+            let keyElement = document.querySelector('#' + key);
+            let keylementValue = keyElement.value;
 
-           if (properties.type === 'input')
-           {
-               if (keylementValue.length < 2)
-               {
-                   requiredFieldStatus = false;
+            if (properties.type === 'input')
+            {
+                if (keylementValue.length < 2)
+                {
+                    requiredFieldStatus = false;
 
-               }
-               else if (properties.hasOwnProperty('data_type') && properties.data_type === 'price' && (isNaN(keylementValue) || keylementValue < 0))
-               {
-                   requiredFieldStatus = false;
-               }
-           }
-           else if (properties.type === 'select' && keylementValue === '-1')
-           {
-               requiredFieldStatus = false;
-           }
+                }
+                else if (properties.hasOwnProperty('data_type') && properties.data_type === 'price' && (isNaN(keylementValue) || keylementValue < 0))
+                {
+                    requiredFieldStatus = false;
+                }
+            }
+            else if (properties.type === 'select' && keylementValue === '-1')
+            {
+                requiredFieldStatus = false;
+            }
         }
 
 
@@ -437,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function ()
             let variantID = element.getAttribute("data-variant-id");
             let findFinalPriceElement = document.querySelector("#final_price-" + variantID);
             let priceValue = document.querySelector('#price').value;
-            let finalPrice =  priceValue - element.value;
+            let finalPrice = priceValue - element.value;
             findFinalPriceElement.value = finalPrice;
         }
 
@@ -446,18 +448,18 @@ document.addEventListener("DOMContentLoaded", function ()
             let slugInputs = document.querySelectorAll(".product-slug");
             slugInputs.forEach(function (slugInput)
                                {
-                                  let slugID = slugInput.id;
-                                  let variantID = slugID.split("-")[1];
-                                  let findVariantProductName = document.querySelector("#name-" + variantID).value;
-                                  let findVariantName = document.querySelector("#variant_name-" + variantID).value;
-                                  let slug = element.value + "-" + findVariantName;
+                                   let slugID = slugInput.id;
+                                   let variantID = slugID.split("-")[1];
+                                   let findVariantProductName = document.querySelector("#name-" + variantID).value;
+                                   let findVariantName = document.querySelector("#variant_name-" + variantID).value;
+                                   let slug = element.value + "-" + findVariantName;
 
-                                  if (findVariantProductName.trim() != "" )
-                                  {
-                                      slug = findVariantProductName + "-" + findVariantName
-                                  }
-                                  slug = generateSlug(slug);
-                                  slugInput.value = slug;
+                                   if (findVariantProductName.trim() != "")
+                                   {
+                                       slug = findVariantProductName + "-" + findVariantName
+                                   }
+                                   slug = generateSlug(slug);
+                                   slugInput.value = slug;
                                });
         }
 
@@ -498,7 +500,8 @@ document.addEventListener("DOMContentLoaded", function ()
 
     });
 
-    document.body.addEventListener('focusout', function (event){
+    document.body.addEventListener('focusout', function (event)
+    {
         let element = event.target;
 
         if (element.classList.contains("product-slug"))
@@ -527,6 +530,7 @@ document.addEventListener("DOMContentLoaded", function ()
             }
         }
     });
+
     function shoesNumberGenerate()
     {
         let numbers = [];
@@ -541,148 +545,177 @@ document.addEventListener("DOMContentLoaded", function ()
     {
         let allVariants = document.querySelectorAll('.row.variant');
         allVariants = Array.from(allVariants).reverse();
-        allVariants.forEach((variant, index) => {
-            variant.id = "row-" + index;
+        allVariants.forEach((variant, index) =>
+                            {
+                                variant.id = "row-" + index;
 
-            variant.querySelectorAll('[data-variant-id]').forEach(element => {
-                element.setAttribute('data-variant-id', index);
-            });
+                                variant.querySelectorAll('[data-variant-id]').forEach(element =>
+                                                                                      {
+                                                                                          element.setAttribute('data-variant-id', index);
+                                                                                      });
 
-            variant.querySelectorAll('[for^="name-"]').forEach(element => {
-                element.setAttribute('for', ("name-" + index));
-            });
+                                variant.querySelectorAll('[for^="name-"]').forEach(element =>
+                                                                                   {
+                                                                                       element.setAttribute('for', ("name-" + index));
+                                                                                   });
 
-            variant.querySelectorAll('[id^="name-"]').forEach(element => {
-                element.id = "name-" + index;
-                element.setAttribute("name", "variant[" + index + "][name]")
-            });
+                                variant.querySelectorAll('[id^="name-"]').forEach(element =>
+                                                                                  {
+                                                                                      element.id = "name-" + index;
+                                                                                      element.setAttribute("name", "variant[" + index + "][name]")
+                                                                                  });
 
-            variant.querySelectorAll('[for^="variant_name-"]').forEach(element => {
-                element.setAttribute('for', ("variant_name-" + index));
-            });
+                                variant.querySelectorAll('[for^="variant_name-"]').forEach(element =>
+                                                                                           {
+                                                                                               element.setAttribute('for', ("variant_name-" + index));
+                                                                                           });
 
-            variant.querySelectorAll('[id^="variant_name-"]').forEach(element => {
-                element.id = "variant_name-" + index;
-                element.setAttribute("name", "variant[" + index + "][variant_name]")
-            });
+                                variant.querySelectorAll('[id^="variant_name-"]').forEach(element =>
+                                                                                          {
+                                                                                              element.id = "variant_name-" + index;
+                                                                                              element.setAttribute("name", "variant[" + index + "][variant_name]")
+                                                                                          });
 
-            variant.querySelectorAll('[for^="slug-"]').forEach(element => {
-                element.setAttribute('for', ("slug-" + index));
-            });
+                                variant.querySelectorAll('[for^="slug-"]').forEach(element =>
+                                                                                   {
+                                                                                       element.setAttribute('for', ("slug-" + index));
+                                                                                   });
 
-            variant.querySelectorAll('[id^="slug-"]').forEach(element => {
-                element.id = "slug-" + index;
-                element.setAttribute("name", "variant[" + index + "][slug]")
-            });
+                                variant.querySelectorAll('[id^="slug-"]').forEach(element =>
+                                                                                  {
+                                                                                      element.id = "slug-" + index;
+                                                                                      element.setAttribute("name", "variant[" + index + "][slug]")
+                                                                                  });
 
-            variant.querySelectorAll('[for^="additional_price-"]').forEach(element => {
-                element.setAttribute('for', ("additional_price-" + index));
-            });
+                                variant.querySelectorAll('[for^="additional_price-"]').forEach(element =>
+                                                                                               {
+                                                                                                   element.setAttribute('for', ("additional_price-" + index));
+                                                                                               });
 
-            variant.querySelectorAll('[id^="additional_price-"]').forEach(element => {
-                element.id = "additional_price-" + index;
-                element.setAttribute("name", "variant[" + index + "][additional_price]")
-            });
+                                variant.querySelectorAll('[id^="additional_price-"]').forEach(element =>
+                                                                                              {
+                                                                                                  element.id = "additional_price-" + index;
+                                                                                                  element.setAttribute("name", "variant[" + index + "][additional_price]")
+                                                                                              });
 
-            variant.querySelectorAll('[for^="final_price-"]').forEach(element => {
-                element.setAttribute('for', ("final_price-" + index));
-            });
+                                variant.querySelectorAll('[for^="final_price-"]').forEach(element =>
+                                                                                          {
+                                                                                              element.setAttribute('for', ("final_price-" + index));
+                                                                                          });
 
-            variant.querySelectorAll('[id^="final_price-"]').forEach(element => {
-                element.id = "final_price-" + index;
-                element.setAttribute("name", "variant[" + index + "][final_price]")
-            });
+                                variant.querySelectorAll('[id^="final_price-"]').forEach(element =>
+                                                                                         {
+                                                                                             element.id = "final_price-" + index;
+                                                                                             element.setAttribute("name", "variant[" + index + "][final_price]")
+                                                                                         });
 
-            variant.querySelectorAll('[for^="extra_description-"]').forEach(element => {
-                element.setAttribute('for', ("extra_description-" + index));
-            });
+                                variant.querySelectorAll('[for^="extra_description-"]').forEach(element =>
+                                                                                                {
+                                                                                                    element.setAttribute('for', ("extra_description-" + index));
+                                                                                                });
 
-            variant.querySelectorAll('[id^="extra_description-"]').forEach(element => {
-                element.id = "extra_description-" + index;
-                element.setAttribute("name", "variant[" + index + "][extra_description]")
-            });
+                                variant.querySelectorAll('[id^="extra_description-"]').forEach(element =>
+                                                                                               {
+                                                                                                   element.id = "extra_description-" + index;
+                                                                                                   element.setAttribute("name", "variant[" + index + "][extra_description]")
+                                                                                               });
 
-            variant.querySelectorAll('[for^="publish_date-"]').forEach(element => {
-                element.setAttribute('for', ("publish_date-" + index));
-            });
+                                variant.querySelectorAll('[for^="publish_date-"]').forEach(element =>
+                                                                                           {
+                                                                                               element.setAttribute('for', ("publish_date-" + index));
+                                                                                           });
 
-            variant.querySelectorAll('[id^="publish_date-"]').forEach(element => {
-                element.id = "publish_date-" + index;
-                element.setAttribute("name", "variant[" + index + "][publish_date]")
-            });
+                                variant.querySelectorAll('[id^="publish_date-"]').forEach(element =>
+                                                                                          {
+                                                                                              element.id = "publish_date-" + index;
+                                                                                              element.setAttribute("name", "variant[" + index + "][publish_date]")
+                                                                                          });
 
-            variant.querySelectorAll('[for^="p_status-"]').forEach(element => {
-                element.setAttribute('for', ("p_status-" + index));
-            });
+                                variant.querySelectorAll('[for^="p_status-"]').forEach(element =>
+                                                                                       {
+                                                                                           element.setAttribute('for', ("p_status-" + index));
+                                                                                       });
 
-            variant.querySelectorAll('[id^="p_status-"]').forEach(element => {
-                element.id = "p_status-" + index;
-                element.setAttribute("name", "variant[" + index + "][p_status]")
-            });
+                                variant.querySelectorAll('[id^="p_status-"]').forEach(element =>
+                                                                                      {
+                                                                                          element.id = "p_status-" + index;
+                                                                                          element.setAttribute("name", "variant[" + index + "][p_status]")
+                                                                                      });
 
-            variant.querySelectorAll('[for^="size-"]').forEach(element => {
-                element.setAttribute('for', ("size-" + index));
-            });
+                                variant.querySelectorAll('[for^="size-"]').forEach(element =>
+                                                                                   {
+                                                                                       element.setAttribute('for', ("size-" + index));
+                                                                                   });
 
-            variant.querySelectorAll('[id^="sizeDiv"]').forEach(element => {
-                element.id = "sizeDiv" + index;
-            });
+                                variant.querySelectorAll('[id^="sizeDiv"]').forEach(element =>
+                                                                                    {
+                                                                                        element.id = "sizeDiv" + index;
+                                                                                    });
 
-            variant.querySelectorAll('[id^="sizeStockDeleteGeneral-"]').forEach(element => {
-                let forAttr = element.getAttribute("id");
-                let split = forAttr.split("-");
-                let  stockID = split[2];
-                let oldVariantID = split[1];
-                element.id = "sizeStockDeleteGeneral-" + index + "-" + stockID;
-                element.classList.remove("size-stock-" + oldVariantID);
-                element.classList.add("size-stock-" + index);
+                                variant.querySelectorAll('[id^="sizeStockDeleteGeneral-"]').forEach(element =>
+                                                                                                    {
+                                                                                                        let forAttr = element.getAttribute("id");
+                                                                                                        let split = forAttr.split("-");
+                                                                                                        let stockID = split[2];
+                                                                                                        let oldVariantID = split[1];
+                                                                                                        element.id = "sizeStockDeleteGeneral-" + index + "-" + stockID;
+                                                                                                        element.classList.remove("size-stock-" + oldVariantID);
+                                                                                                        element.classList.add("size-stock-" + index);
 
-                element.querySelectorAll('[for^="size-"]').forEach(element => {
-                    element.setAttribute('for',("size-" + index + "-" + stockID));
-                });
+                                                                                                        element.querySelectorAll('[for^="size-"]').forEach(element =>
+                                                                                                                                                           {
+                                                                                                                                                               element.setAttribute('for', ("size-" + index + "-" + stockID));
+                                                                                                                                                           });
 
-                element.querySelectorAll('[id^="size-"]').forEach(element => {
-                    element.setAttribute('id',("size-" + index + "-" + stockID));
-                    element.setAttribute('name',("variant[" + index + "][size][" + stockID + "]"));
-                });
+                                                                                                        element.querySelectorAll('[id^="size-"]').forEach(element =>
+                                                                                                                                                          {
+                                                                                                                                                              element.setAttribute('id', ("size-" + index + "-" + stockID));
+                                                                                                                                                              element.setAttribute('name', ("variant[" + index + "][size][" + stockID + "]"));
+                                                                                                                                                          });
 
-            });
+                                                                                                    });
 
-            variant.querySelectorAll('[id^="size-"]').forEach(element => {
-                element.id = "size-" + index;
-                element.setAttribute("name", "variant[" + index + "][size]")
-            });
+                                variant.querySelectorAll('[id^="size-"]').forEach(element =>
+                                                                                  {
+                                                                                      element.id = "size-" + index;
+                                                                                      element.setAttribute("name", "variant[" + index + "][size]")
+                                                                                  });
 
-            variant.querySelectorAll('[for^="stock-"]').forEach(element => {
-                element.setAttribute('for', ("stock-" + index));
-            });
+                                variant.querySelectorAll('[for^="stock-"]').forEach(element =>
+                                                                                    {
+                                                                                        element.setAttribute('for', ("stock-" + index));
+                                                                                    });
 
-            variant.querySelectorAll('[id^="stock-"]').forEach(element => {
-                element.id = "stock-" + index;
-                element.setAttribute("name", "variant[" + index + "][stock]")
-            });
+                                variant.querySelectorAll('[id^="stock-"]').forEach(element =>
+                                                                                   {
+                                                                                       element.id = "stock-" + index;
+                                                                                       element.setAttribute("name", "variant[" + index + "][stock]")
+                                                                                   });
 
-            variant.querySelectorAll('[for^="radio-"]').forEach(element => {
-                let forAttr = element.getAttribute("for");
-                let split = forAttr.split("-");
-                let imageID = split[2];
-                element.setAttribute('for', ("radio-" + index + "-" + imageID));
-            });
+                                variant.querySelectorAll('[for^="radio-"]').forEach(element =>
+                                                                                    {
+                                                                                        let forAttr = element.getAttribute("for");
+                                                                                        let split = forAttr.split("-");
+                                                                                        let imageID = split[2];
+                                                                                        element.setAttribute('for', ("radio-" + index + "-" + imageID));
+                                                                                    });
 
-            variant.querySelectorAll('[id^="radio-"]').forEach(element => {
-                let forAttr = element.getAttribute("id");
-                let split = forAttr.split("-");
-                let imageID = split[2];
-                element.id = "radio-" + index + "-" + imageID;
-                element.setAttribute("name", "variant[" + index + "][radio]")
-            });
+                                variant.querySelectorAll('[id^="radio-"]').forEach(element =>
+                                                                                   {
+                                                                                       let forAttr = element.getAttribute("id");
+                                                                                       let split = forAttr.split("-");
+                                                                                       let imageID = split[2];
+                                                                                       element.id = "radio-" + index + "-" + imageID;
+                                                                                       element.setAttribute("name", "variant[" + index + "][radio]")
+                                                                                   });
 
-            variant.querySelectorAll('[id^="data-input-"]').forEach(element => {
-                element.id = "data-input-" + index;
-                element.setAttribute("name", "image[" + index + "]")
-            });
+                                variant.querySelectorAll('[id^="data-input-"]').forEach(element =>
+                                                                                        {
+                                                                                            element.id = "data-input-" + index;
+                                                                                            element.setAttribute("name", "image[" + index + "]")
+                                                                                        });
 
-        });
+                            });
         variantCount--;
     }
 
@@ -691,7 +724,7 @@ document.addEventListener("DOMContentLoaded", function ()
     {
         let dataVariantID = element.getAttribute("data-variant-id");
 
-        let sizeStock= 0;
+        let sizeStock = 0;
         if (variantSizeStockInfo.hasOwnProperty(dataVariantID))
         {
             sizeStock = variantSizeStockInfo[dataVariantID]['size_stock'];
@@ -709,7 +742,7 @@ document.addEventListener("DOMContentLoaded", function ()
         let urunSizeDiv = createDiv("col-md-5 mb-4 px-3")
         let urunSizeLabel = createLabel("form-label", urunSizeID, "Beden");
 
-        let urunSizeSelect = createSelect("form-control", urunSizeID, urunSizeNameAttr, null,options);
+        let urunSizeSelect = createSelect("form-control", urunSizeID, urunSizeNameAttr, null, options);
 
         urunSizeDiv.appendChild(urunSizeLabel);
         urunSizeDiv.appendChild(urunSizeSelect);
@@ -729,8 +762,8 @@ document.addEventListener("DOMContentLoaded", function ()
 
         let urunSizeStockDeleteDiv = createDiv("col-md-2 mb-4 px-3")
         let aElementID = "sizeStockDelete-" + dataVariantID + "-" + sizeStock;
-        let urunSizeStokDeleteAElement = createAElement(aElementID, 'btn btn-danger w-100 btn-size-stock-delete', 'javascript:void(0)', ['data-size-stock-id', dataVariantID + '-' + sizeStock], 'Beden Sil' );
-        let urunSizeStokDeleteAElementLabel = createLabel("form-label d-block", "", "",'&nbsp;');
+        let urunSizeStokDeleteAElement = createAElement(aElementID, 'btn btn-danger w-100 btn-size-stock-delete', 'javascript:void(0)', ['data-size-stock-id', dataVariantID + '-' + sizeStock], 'Beden Sil');
+        let urunSizeStokDeleteAElementLabel = createLabel("form-label d-block", "", "", '&nbsp;');
 
         urunSizeStockDeleteDiv.appendChild(urunSizeStokDeleteAElementLabel);
         urunSizeStockDeleteDiv.appendChild(urunSizeStokDeleteAElement);
@@ -749,7 +782,7 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         else
         {
-            variantSizeStockInfo[dataVariantID]= {
+            variantSizeStockInfo[dataVariantID] = {
                 'size_stock': 1
             };
         }
@@ -766,6 +799,7 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         return div;
     }
+
     function createLabel(className, forAttr, textContent = null, innerHtml = null)
     {
         let label = document.createElement('label');
@@ -779,6 +813,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
         return label;
     }
+
     function createSpan(className, textContent = null, setAttribute = null)
     {
         let label = document.createElement('span');
@@ -793,6 +828,7 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         return label;
     }
+
     function createIElement(className, setAttribute = null)
     {
         let label = document.createElement('i');
@@ -803,14 +839,15 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         return label;
     }
+
     function createInput(className, id, autocomplete, placeholder, nameAttr, setAttribute = null, type = 'text', value = null)
     {
         let input = document.createElement('input');
         input.type = type;
         input.className = className;
-        input.id=id;
+        input.id = id;
         input.autocomplete = autocomplete
-        input.placeholder= placeholder;
+        input.placeholder = placeholder;
         input.setAttribute('name', nameAttr);
 
         if (setAttribute != null)
@@ -822,13 +859,14 @@ document.addEventListener("DOMContentLoaded", function ()
 
         return input;
     }
-    function createSelect(className = null, id = null, nameAttr = null, setAttribute = null, options = null )
+
+    function createSelect(className = null, id = null, nameAttr = null, setAttribute = null, options = null)
     {
         let select = document.createElement('select');
         select.className = className;
         if (id != null)
         {
-            select.id=id;
+            select.id = id;
         }
         select.setAttribute('name', nameAttr);
 
@@ -843,7 +881,7 @@ document.addEventListener("DOMContentLoaded", function ()
                             {
                                 if (select.options.length < 1)
                                 {
-                                    select.options[select.options.length] = new Option( item, "-1");
+                                    select.options[select.options.length] = new Option(item, "-1");
                                 }
                                 else
                                 {
@@ -855,6 +893,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
         return select;
     }
+
     function createAElement(id = null, className = null, href = null, setAttribute = null, textContent = null)
     {
         let aElement = document.createElement('a');
@@ -899,37 +938,38 @@ document.addEventListener("DOMContentLoaded", function ()
 
         let allSizeStock = document.querySelectorAll('.row.size-stock-' + variantID);
         allSizeStock.forEach((variant, index) =>
-                            {
-                                let id = variantID + "-" + index;
-                                variant.id = "sizeStockDeleteGeneral-" + id;
+                             {
+                                 let id = variantID + "-" + index;
+                                 variant.id = "sizeStockDeleteGeneral-" + id;
 
-                                variant.querySelectorAll('[for^="size-"]').forEach(element => {
-                                    element.setAttribute('for',("size-" + id));
-                                });
-                                variant.querySelectorAll('[id^="size-"]').forEach(element => {
-                                    element.id = "size-" + id;
-                                    element.setAttribute("name", "variant[" + variantID + "][size][" + index +"]")
-                                });
+                                 variant.querySelectorAll('[for^="size-"]').forEach(element =>
+                                                                                    {
+                                                                                        element.setAttribute('for', ("size-" + id));
+                                                                                    });
+                                 variant.querySelectorAll('[id^="size-"]').forEach(element =>
+                                                                                   {
+                                                                                       element.id = "size-" + id;
+                                                                                       element.setAttribute("name", "variant[" + variantID + "][size][" + index + "]")
+                                                                                   });
 
-                                variant.querySelectorAll('[for^="stock-"]').forEach(element => {
-                                    element.setAttribute('for',("stock-" + id));
-                                });
-                                variant.querySelectorAll('[id^="stock-"]').forEach(element => {
-                                    element.id = "stock-" + id;
-                                    element.setAttribute("name", "variant[" + variantID + "][stock][" + index +"]")
-                                });
+                                 variant.querySelectorAll('[for^="stock-"]').forEach(element =>
+                                                                                     {
+                                                                                         element.setAttribute('for', ("stock-" + id));
+                                                                                     });
+                                 variant.querySelectorAll('[id^="stock-"]').forEach(element =>
+                                                                                    {
+                                                                                        element.id = "stock-" + id;
+                                                                                        element.setAttribute("name", "variant[" + variantID + "][stock][" + index + "]")
+                                                                                    });
 
-                                variant.querySelectorAll('[id^="sizeStockDelete-"]').forEach(element => {
-                                    element.id = "sizeStockDelete-" + id;
-                                    element.setAttribute("data-size-stock-id", id);
-                                });
+                                 variant.querySelectorAll('[id^="sizeStockDelete-"]').forEach(element =>
+                                                                                              {
+                                                                                                  element.id = "sizeStockDelete-" + id;
+                                                                                                  element.setAttribute("data-size-stock-id", id);
+                                                                                              });
 
 
-
-
-
-
-                            });
+                             });
 
         let sizeStock = --variantSizeStockInfo[variantID]['size_stock'];
         variantSizeStockInfo[variantID]['size_stock'] = sizeStock;
@@ -997,8 +1037,6 @@ document.addEventListener("DOMContentLoaded", function ()
         }
 
 
-
-
         //variant
         let variants = document.querySelectorAll(".row.variant");
         if (variants.length < 1)
@@ -1008,90 +1046,93 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         variants = Array.from(variants).reverse();
 
-        variants.forEach((variant, index) => {
+        variants.forEach((variant, index) =>
+                         {
 
-            let variantNameInput = variant.querySelector(`#variant_name-${index}`);
-            let slugInput = variant.querySelector(`#slug-${index}`);
-            let finalPriceInput = variant.querySelector(`#final_price-${index}`);
-            let imageDataInput = variant.querySelector(`#data-input-${index}`);
+                             let variantNameInput = variant.querySelector(`#variant_name-${index}`);
+                             let slugInput = variant.querySelector(`#slug-${index}`);
+                             let finalPriceInput = variant.querySelector(`#final_price-${index}`);
+                             let imageDataInput = variant.querySelector(`#data-input-${index}`);
 
-            let sizeInputs = variant.querySelectorAll(`[id^="size-${index}"]`);
-            let stockInputs = variant.querySelectorAll(`[id^="stock-${index}"]`);
+                             let sizeInputs = variant.querySelectorAll(`[id^="size-${index}"]`);
+                             let stockInputs = variant.querySelectorAll(`[id^="stock-${index}"]`);
 
-            if (variantNameInput.value.trim() === '' || variantNameInput.value.trim() == null)
-            {
-                isValid = false;
-                variantNameInput.classList.add("is-invalid");
-            }
-            else
-            {
-                variantNameInput.classList.remove("is-invalid");
-            }
+                             if (variantNameInput.value.trim() === '' || variantNameInput.value.trim() == null)
+                             {
+                                 isValid = false;
+                                 variantNameInput.classList.add("is-invalid");
+                             }
+                             else
+                             {
+                                 variantNameInput.classList.remove("is-invalid");
+                             }
 
-            if (slugInput.value.trim() === '' || slugInput.value.trim() == null)
-            {
-                isValid = false;
-                slugInput.classList.add("is-invalid");
-            }
-            else
-            {
-                slugInput.classList.remove("is-invalid");
-            }
+                             if (slugInput.value.trim() === '' || slugInput.value.trim() == null)
+                             {
+                                 isValid = false;
+                                 slugInput.classList.add("is-invalid");
+                             }
+                             else
+                             {
+                                 slugInput.classList.remove("is-invalid");
+                             }
 
-            if (finalPriceInput.value.trim() === '' || finalPriceInput.value.trim() == null)
-            {
-                isValid = false;
-                finalPriceInput.classList.add("is-invalid");
-            }
-            else
-            {
-                finalPriceInput.classList.remove("is-invalid");
-            }
+                             if (finalPriceInput.value.trim() === '' || finalPriceInput.value.trim() == null)
+                             {
+                                 isValid = false;
+                                 finalPriceInput.classList.add("is-invalid");
+                             }
+                             else
+                             {
+                                 finalPriceInput.classList.remove("is-invalid");
+                             }
 
-            if (imageDataInput.value.trim() === '' || imageDataInput.value.trim() == null)
-            {
-                isValid = false;
-                imageDataInput.classList.add("is-invalid");
-                message = "Lütfen varyantlara görsel seçiniz.";
-            }
-            else
-            {
-                imageDataInput.classList.remove("is-invalid");
-            }
+                             if (imageDataInput.value.trim() === '' || imageDataInput.value.trim() == null)
+                             {
+                                 isValid = false;
+                                 imageDataInput.classList.add("is-invalid");
+                                 message = "Lütfen varyantlara görsel seçiniz.";
+                             }
+                             else
+                             {
+                                 imageDataInput.classList.remove("is-invalid");
+                             }
 
-            if (sizeInputs.length < 1)
-            {
-                isValid = false;
-                message = "Lütfen varyantlara beden ekleyiniz.";
-            }
-            sizeInputs.forEach(input => {
+                             if (sizeInputs.length < 1)
+                             {
+                                 isValid = false;
+                                 message = "Lütfen varyantlara beden ekleyiniz.";
+                             }
+                             sizeInputs.forEach(input =>
+                                                {
 
-                if (input.value.trim() === '-1')
-                {
-                    isValid = false;
-                    input.classList.add("is-invalid");
-                }
-                else
-                {
-                    input.classList.remove("is-invalid");
-                }
+                                                    if (input.value.trim() === '-1')
+                                                    {
+                                                        isValid = false;
+                                                        input.classList.add("is-invalid");
+                                                    }
+                                                    else
+                                                    {
+                                                        input.classList.remove("is-invalid");
+                                                    }
 
-            });
-            stockInputs.forEach(input => {
+                                                });
+                             stockInputs.forEach(input =>
+                                                 {
 
-                if (input.value.trim() === '' || input.value.trim() == null)
-                {
-                    isValid = false;
-                    input.classList.add("is-invalid");
-                }
-                else
-                {
-                    input.classList.remove("is-invalid");
-                }
-            });
+                                                     if (input.value.trim() === '' || input.value.trim() == null)
+                                                     {
+                                                         isValid = false;
+                                                         input.classList.add("is-invalid");
+                                                     }
+                                                     else
+                                                     {
+                                                         input.classList.remove("is-invalid");
+                                                     }
+                                                 });
 
 
-        });
+                         });
 
         return {isValid, message};
     }
@@ -1099,18 +1140,18 @@ document.addEventListener("DOMContentLoaded", function ()
     function generateSlug(slug)
     {
         const turkishMap = {
-            "ç" : "c",
-            "ğ" : "g",
-            "ş" : "s",
-            "ü" : "u",
-            "ö" : "o",
-            "ı" : "i",
-            "İ" : "i",
-            "Ç" : "c",
-            "Ğ" : "g",
-            "Ş" : "s",
-            "Ü" : "u",
-            "Ö" : "o"
+            "ç": "c",
+            "ğ": "g",
+            "ş": "s",
+            "ü": "u",
+            "ö": "o",
+            "ı": "i",
+            "İ": "i",
+            "Ç": "c",
+            "Ğ": "g",
+            "Ş": "s",
+            "Ü": "u",
+            "Ö": "o"
         };
 
         slug = slug.toLowerCase();

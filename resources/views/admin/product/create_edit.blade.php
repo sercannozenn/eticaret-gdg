@@ -190,7 +190,8 @@
     <script>
         var checkSlugRoute= "{{ route('admin.product.check-slug') }}";
     </script>
-    <script src="{{ asset('assets/js/product/gdg-variant.js') }}"></script>
+{{--    <script src="{{ asset('assets/js/product/gdg-variant.js') }}"></script>--}}
+    <script src="{{ asset('assets/js/product/gdg-variant-u.js') }}"></script>
     <script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 
 @endpush
