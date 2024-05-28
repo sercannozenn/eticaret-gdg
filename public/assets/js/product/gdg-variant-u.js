@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     axios.defaults.headers.common['Content-Type'] = "application/json";
 
@@ -11,8 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let productVariantTab = document.querySelector('#productVariantTab');
 
-    let variantCount = 0;
-    let variantSizeStockInfo = [];
+
     const sizeDivKey = "sizeDiv";
     const requiredFields = {
         name: { type: "input" },
@@ -21,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
         brand_id: { type: "select" },
         category_id: { type: "select" }
     };
+    checkRequireFieldsForProductVariantTab();
+
     const sizes = {
         1: ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'],
         2: Array.from({ length: 31 }, (_, i) => i +20),
@@ -55,17 +55,22 @@ document.addEventListener("DOMContentLoaded", function () {
         return select;
     };
 
+    oldVariantImageViewer(oldImages);
+    showErrors();
+
     btnSubmit.addEventListener('click', function () {
         let { isValid, message } = validateForm();
-        if (isValid) {
-            gdgForm.submit();
-        } else {
-            Swal.fire({
-                          title: 'Uyarı!',
-                          text : message || 'Lütfen gerekli alanları doldurunuz.',
-                          icon : 'warning'
-                      });
-        }
+        gdgForm.submit();
+
+        // if (isValid) {
+        //     gdgForm.submit();
+        // } else {
+        //     Swal.fire({
+        //                   title: 'Uyarı!',
+        //                   text : message || 'Lütfen gerekli alanları doldurunuz.',
+        //                   icon : 'warning'
+        //               });
+        // }
     });
 
     addVariant.addEventListener('click', function () {
@@ -127,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         urunAddSizeAElement.appendChild(urunAddSizeSpan);
 
         let urunAddSizeIElementImage = createElement('i', 'add-size', { 'data-feather': 'image'})
-        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `image[${variantCount}][]`, 'hidden');
+        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `image[${variantCount}]`, 'hidden');
         let imageDataPreviewElement = createDiv('col-md-12',`data-preview-${variantCount}` );
 
         let urunAddSizeAElementImage = createElement("a", "btn btn-info btn-add-image mb-4", {href: "javascript:void(0)", 'data-variant-id': variantCount, 'data-input': "data-input-" + variantCount, 'data-preview': "data-preview-" + variantCount });
@@ -413,27 +418,8 @@ document.addEventListener("DOMContentLoaded", function () {
             target_preview.innerHTML = '';
 
             // set or change the preview image src
-            items.forEach(function (item, index)
-                          {
+            selectedVariantImage(items, variantID, target_preview);
 
-
-                              let container = createDiv("image-container", `image-container-${variantID}-${index}`);
-                              let radio = createInput("", `radio-${variantID}-${index}`, '', `variant[${variantID}][image]`, 'radio', item.url);
-                              if (index === 0) radio.checked = true;
-
-                              let iElement = createElement("i", "delete-variant-image", {"data-feather": "x", "data-url": item.url, "data-variant-id": variantID, "data-image-index": index});
-
-                              let label = createLabel("", `radio-${variantID}-${index}`);
-
-                              let img = createElement("img", "", {style: "height: 5rem", 'src': item.thumb_url})
-
-                              label.appendChild(img);
-                              container.appendChild(radio);
-                              container.appendChild(label);
-                              container.appendChild(iElement);
-                              target_preview.appendChild(container);
-                              feather.replace();
-                          });
             target_preview.dispatchEvent(new Event('change'));
         }
     }
@@ -605,7 +591,7 @@ document.addEventListener("DOMContentLoaded", function () {
             categorySelect.classList.remove("is-invalid");
         }
 
-        let variantElements = document.querySelectorAll(".row.variant");
+        let variantElements = Array.from(document.querySelectorAll(".row.variant")).reverse();
         if (variantElements.length < 1) {
             isValid = false;
             message = "En az bir varyant eklemelisiniz";
@@ -677,5 +663,69 @@ document.addEventListener("DOMContentLoaded", function () {
         return axios.post(checkSlugRoute, {
             slug
         });
+    }
+
+    function selectedVariantImage(items, variantID, target_preview)
+    {
+        items.forEach(function (item, index)
+                      {
+
+
+                          let container = createDiv("image-container", `image-container-${variantID}-${index}`);
+                          let radio = createInput("", `radio-${variantID}-${index}`, '', `variant[${variantID}][image]`, 'radio', item.url);
+                          if (index === 0) radio.checked = true;
+
+                          let iElement = createElement("i", "delete-variant-image", {"data-feather": "x", "data-url": item.url, "data-variant-id": variantID, "data-image-index": index});
+
+                          let label = createLabel("", `radio-${variantID}-${index}`);
+
+                          let img = createElement("img", "", {style: "height: 5rem", 'src': item.url})
+
+                          label.appendChild(img);
+                          container.appendChild(radio);
+                          container.appendChild(label);
+                          container.appendChild(iElement);
+                          target_preview.appendChild(container);
+                          feather.replace();
+                      });
+    }
+
+    function oldVariantImageViewer(oldImages)
+    {
+        oldImages.forEach(function (oldImage, index) {
+
+            let finalImages = [];
+            let images = oldImage.images.split(",");
+            images.forEach(function (item, index)
+                           {
+                               finalImages.push({url: item})
+                           });
+            let target_preview = document.querySelector('#data-preview-' + oldImage.index);
+
+            if (oldImage.length) selectedVariantImage(finalImages,oldImage.index , target_preview);
+        });
+    }
+
+    function showErrors()
+    {
+        for (let key in displayErrors){
+            let uKey = key;
+            if (displayErrors.hasOwnProperty(key)) {
+                if (key.includes(".")) {
+                    uKey = key.split('.');
+                    uKey = uKey[(uKey.length - 1)];
+                    uKey = uKey + ']';
+                }
+
+                let element = document.querySelector(`[name$="${uKey}"]`);
+
+                if (element && key.indexOf('image') < 0){
+                    element.classList.add('is-invalid');
+                    let errorDiv = createDiv("invalid-feedback d-block");
+                    errorDiv.textContent = displayErrors[key][0];
+                    element.parentElement.appendChild(errorDiv);
+                }
+            }
+        }
     }
 });

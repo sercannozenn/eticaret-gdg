@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductStoreRequest;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\ProductTypes;
@@ -34,6 +35,11 @@ class ProductController extends Controller
                             'brands',
                             'types'
                     ));
+    }
+
+    public function store(ProductStoreRequest $request)
+    {
+
     }
 
     public function checkSlug(Request $request)

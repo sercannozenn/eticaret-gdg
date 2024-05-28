@@ -50,6 +50,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
     Route::prefix('product')->name('product.')->group(function (){
         Route::get('/', [AdminProductController::class, 'index'])->name('index');
         Route::get('/create', [AdminProductController::class, 'create'])->name('create');
+        Route::post('/create', [AdminProductController::class, 'store']);
         Route::post('/check-slug', [AdminProductController::class, 'checkSlug'])->name('check-slug');
 
     });
