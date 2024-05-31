@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { id: 'final_price', label: 'Son Fiyat', className: 'readonly', colClass: "col-md-6 mb-4", readonly: true, value: document.querySelector('#price').value },
             { id: 'extra_description', label: 'Ekstra Açıklama', className: '', colClass: "col-md-12 mb-4" },
             { id: 'publish_date', label: 'Yayınlanma Tarihi', className: '', colClass: "col-md-12 mb-4", date: true },
-            { id: 'p_status', label: 'Aktif mi?', className: '', colClass: "col-md-6 mb-4", checkbox: true },
+            { id: 'p_status', label: 'Aktif mi?', className: '', colClass: "col-md-6 mb-4", checkbox: true, value: 1 },
         ];
 
         fields.forEach(field => {
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             colDiv.appendChild(createLabel("form-label", `${field.id}-${variantCount}`, field.label));
             let input;
             if (field.checkbox){
-                input = createInput("form-check-input " + field.className, `${field.id}-${variantCount}`, '', `variant[${variantCount}][${field.id}]`, 'checkbox');
+                input = createInput("form-check-input " + field.className, `${field.id}-${variantCount}`, '', `variant[${variantCount}][${field.id}]`, 'checkbox', field.value || '');
                 colDiv.appendChild(input);
             }else if (field.date){
                 input = createInput("form-control " + field.className, `${field.id}-${variantCount}`, field.label, `variant[${variantCount}][${field.id}]`);
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         urunAddSizeAElement.appendChild(urunAddSizeSpan);
 
         let urunAddSizeIElementImage = createElement('i', 'add-size', { 'data-feather': 'image'})
-        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `image[${variantCount}]`, 'hidden');
+        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `variant[${variantCount}][image]`, 'hidden');
         let imageDataPreviewElement = createDiv('col-md-12',`data-preview-${variantCount}` );
 
         let urunAddSizeAElementImage = createElement("a", "btn btn-info btn-add-image mb-4", {href: "javascript:void(0)", 'data-variant-id': variantCount, 'data-input': "data-input-" + variantCount, 'data-preview': "data-preview-" + variantCount });
@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                   {
                                       return item.url;
                                   }).join(',');
+            file_path = file_path + ",";
 
             // set the value of the desired input to image url
             target_input.value = file_path;
@@ -672,7 +673,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                           let container = createDiv("image-container", `image-container-${variantID}-${index}`);
-                          let radio = createInput("", `radio-${variantID}-${index}`, '', `variant[${variantID}][image]`, 'radio', item.url);
+                          let radio = createInput("", `radio-${variantID}-${index}`, '', `variant[${variantID}][featured_image]`, 'radio', item.url);
                           if (index === 0) radio.checked = true;
 
                           let iElement = createElement("i", "delete-variant-image", {"data-feather": "x", "data-url": item.url, "data-variant-id": variantID, "data-image-index": index});
@@ -696,13 +697,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let finalImages = [];
             let images = oldImage.images.split(",");
+            images.pop();
             images.forEach(function (item, index)
                            {
                                finalImages.push({url: item})
                            });
             let target_preview = document.querySelector('#data-preview-' + oldImage.index);
 
-            if (oldImage.length) selectedVariantImage(finalImages,oldImage.index , target_preview);
+            if (finalImages.length) selectedVariantImage(finalImages,oldImage.index , target_preview);
         });
     }
 

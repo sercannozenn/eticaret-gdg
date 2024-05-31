@@ -157,7 +157,7 @@
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <input type="checkbox" class="form-check-input" id="status"
+                                <input type="checkbox" class="form-check-input" id="status" value="1"
                                        name="status" {{ old('status') ? 'checked' : '' }}>
                                 <label class="form-check-label ps-2" for="status">
                                     Aktif mi?
@@ -263,7 +263,7 @@
                                                    placeholder=""
                                                    name="variant[{{ $index }}][p_status]"
                                                    type="checkbox"
-                                                   value=""
+                                                   value="1"
                                                 {{ old('variant.' . $index . '.p_status') !== null ? 'checked' : '' }}
                                             >
                                         </div>
@@ -289,9 +289,9 @@
                                             <input class="form-control"
                                                    id="data-input-{{ $index }}"
                                                    placeholder=""
-                                                   name="image[{{ $index }}]"
+                                                   name="variant[{{ $index }}][image]"
                                                    type="hidden"
-                                                   value="{{ old('image')[$index] }}">
+                                                   value="{{ old('variant.' . $index . '.image') }}">
                                             <div class="col-md-12" id="data-preview-{{ $index }}"></div>
                                             <a class="btn-add-size col-md-12" href="javascript:void(0)"
                                                data-variant-id="{{ $index }}">
@@ -387,11 +387,11 @@
         var variantSizeStockInfo = [];
 
         @if(old('variant') && isset(old('variant')['size']))
-        @foreach(old('variant') as $index => $variant)
-        let index = Number('{{ $index }}');
-        let sizeStock = Number('{{ count(old('variant.' . $index . '.size')) }}');
-        variantSizeStockInfo[index] = { size_stock: sizeStock };
-        @endforeach
+            @foreach(old('variant') as $index => $variant)
+                let index = Number('{{ $index }}');
+                let sizeStock = Number('{{ count(old('variant.' . $index . '.size')) }}');
+                variantSizeStockInfo[index] = { size_stock: sizeStock };
+            @endforeach
         @endif
 
         var oldImages = [];
@@ -402,7 +402,8 @@
             dateFormat: "Y-m-d H:i",
         });
             @foreach(old('variant') as $index => $variant)
-                oldImages.push({images: "{{ old('image')[$index] }}", index: "{{ $index }}"});
+                console.log("GELDİ");
+                oldImages.push({images: "{{ old('variant.' . $index . '.image') }}", index: "{{ $index }}"});
             @endforeach
         @endif
 

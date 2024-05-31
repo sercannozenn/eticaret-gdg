@@ -4,23 +4,33 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStoreRequest;
-use App\Models\Brand;
 use App\Models\Product;
+use App\Models\ProductImages;
+use App\Models\ProductsMain;
 use App\Models\ProductTypes;
+use App\Models\SizeStock;
 use App\Services\BrandService;
 use App\Services\CategoryService;
+use App\Services\ProductService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    public function __construct(public BrandService $brandService, public CategoryService $categoryService)
+    public function __construct(public BrandService    $brandService,
+                                public CategoryService $categoryService,
+                                public ProductService  $productService
+    )
     {
     }
 
     public function index()
     {
-        return view('admin.product.create_edit');
+        $productsMain = ProductsMain::all();
+
+        return view('admin.product.index')->with('products', $productsMain);
     }
 
     public function create()
@@ -39,7 +49,19 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
+        DB::beginTransaction();
+        try {
+            $this->productService->store($request);
+            DB::commit();
+        }catch (\Exception $exception) {
+            DB::rollBack();
 
+            alert()->success('Hata', $exception->getMessage());
+            return redirect()->back()->withInput();
+        }
+
+        alert()->success('Başarılı', 'Ürün kaydedildi');
+        return redirect()->route('admin.product.index');
     }
 
     public function checkSlug(Request $request)

@@ -7,5 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class SizeStock extends Model
 {
-    use HasFactory;
+    protected $table = 'size_stock';
+
+    protected $fillable = [
+        'product_id',
+        'size',
+        'stock',
+        'remaining_stock'
+    ];
+
+
 }

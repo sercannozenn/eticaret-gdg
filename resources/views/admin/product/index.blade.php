@@ -13,49 +13,26 @@
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Logo</th>
-                        <th>Sıra Numarası</th>
-                        <th>Marka Adı</th>
-                        <th>Slug</th>
+                        <th>Ad</th>
+                        <th>Fiyat</th>
+                        <th>Kategori</th>
+                        <th>Marka</th>
+                        <th>Ürün Türü</th>
                         <th>Durum</th>
-                        <th>Öne Çıkarılma Durumu</th>
                         <th>İşlemler</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($brands as $brand)
+                    @foreach($products as $product)
                         <tr>
-                            <td>{{ $brand->id }}</td>
-                            <td><img src="{{  asset($brand->logo) }}" alt="{{ $brand->name }}" width="100"></td>
-                            <td>{{ $brand->order }}</td>
-                            <td>{{ $brand->name }}</td>
-                            <td>{{ $brand->slug }}</td>
-                            <td>
-                                @if($brand->status)
-                                    <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-status"
-                                       data-id="{{ $brand->id }}">Aktif</a>
-                                @else
-                                    <a href="javascript:void(0)" class="btn btn-inverse-danger btn-change-status"
-                                       data-id="{{ $brand->id }}">Pasif</a>
-                                @endif
-                            </td>
-                            <td>
-                                @if($brand->is_featured)
-                                    <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-is-featured"
-                                       data-id="{{ $brand->id }}">Evet</a>
-                                @else
-                                    <a href="javascript:void(0)" class="btn btn-inverse-danger btn-change-is-featured"
-                                       data-id="{{ $brand->id }}">Hayır</a>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.brand.edit', ['brand' => $brand->id]) }}"><i
-                                        class="text-warning" data-feather="edit"></i></a>
-                                <a href="javascript:void(0)">
-                                    <i data-id="{{ $brand->id }}" data-name="{{ $brand->name }}"
-                                       class="text-danger btn-delete-category"
-                                       data-feather="trash"></i></a>
-                            </td>
+                            <td>{{ $product->id }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ number_format($product->price, 2) }}</td>
+                            <td>{{ $product->category->name  }}</td>
+                            <td>{{ $product->brand->name  }}</td>
+                            <td>{{ $product->type->name  }}</td>
+                            <td>{{ $product->status  }}</td>
+                            <td> </td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -65,7 +42,7 @@
                     @method('DELETE')
                 </form>
                 <div class="col-6 mx-auto mt-3">
-                    {{ $brands->links() }}
+{{--                    {{ $brands->links() }}--}}
                 </div>
             </div>
         </div>
