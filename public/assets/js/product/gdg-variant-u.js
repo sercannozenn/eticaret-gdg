@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", function () {
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     axios.defaults.headers.common['Content-Type'] = "application/json";
 
+    var variantCount = 0;
+    var variantSizeStockInfo = [];
+
     let btnSubmit = document.querySelector('#btnSubmit');
     let gdgForm = document.querySelector('#gdgForm');
     let addVariant = document.querySelector('#addVariant');
@@ -9,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let typeID = document.querySelector('#type_id');
 
     let productVariantTab = document.querySelector('#productVariantTab');
-
 
     const sizeDivKey = "sizeDiv";
     const requiredFields = {
@@ -45,18 +47,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return label;
     };
 
-    const createSelect = (className, id, name, options = []) => {
+    const createSelect = (className, id, name, options = [], selectedOption = false) => {
       let select = createElement('select', className, { id, name});
       options.forEach(opt => {
-          let option = createElement('option', '', { value: opt === 'Beden Seçebilirsiniz' ? '-1' : opt});
+          let attrs = {
+           value: opt === 'Beden Seçebilirsiniz' ? '-1' : opt,
+          };
+          if (selectedOption && opt == selectedOption){
+              attrs.selected = ''
+          }
+          let option = createElement('option', '', attrs);
           option.textContent = opt;
           select.appendChild(option);
       })
         return select;
     };
 
-    oldVariantImageViewer(oldImages);
     showErrors();
+    prepareInitializeData();
 
     btnSubmit.addEventListener('click', function () {
         let { isValid, message } = validateForm();
@@ -74,99 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     addVariant.addEventListener('click', function () {
-        let row = createDiv("row variant", `row-${variantCount}`);
-        let row2 = createDiv('row');
-
-        let variantDeleteDiv = createDiv('col-md-12 mb-1');
-        let variantDeleteAElement = createElement("a", "btn-delete-variant btn btn-danger col-3", { href: 'javascript:void(0)', 'data-variant-id': variantCount })
-        variantDeleteAElement.textContent = "Varyant Kaldır";
-        let hr = createElement('hr', 'my-2');
-        variantDeleteDiv.appendChild(variantDeleteAElement);
-        variantDeleteDiv.appendChild(hr);
-
-        let inputName = document.querySelector('#name');
-        let nameSLug = generateSlug(inputName.value);
-
-        let fields = [
-            { id: 'name', label: 'Ürün Adı', className: 'variant-product-name', colClass: "col-md-4 mb-4"},
-            { id: 'variant_name', label: 'Ürün Varyant Adı', className: 'variant-name', colClass: "col-md-4 mb-4"},
-            { id: 'slug', label: 'Slug', className: 'product-slug', colClass: "col-md-4 mb-4", value: nameSLug},
-            { id: 'additional_price', label: 'Fiyat', className: 'additional-price-input', colClass: "col-md-6 mb-4", dataAttr: { 'data-variant-id' : variantCount }, type: "number" },
-            { id: 'final_price', label: 'Son Fiyat', className: 'readonly', colClass: "col-md-6 mb-4", readonly: true, value: document.querySelector('#price').value },
-            { id: 'extra_description', label: 'Ekstra Açıklama', className: '', colClass: "col-md-12 mb-4" },
-            { id: 'publish_date', label: 'Yayınlanma Tarihi', className: '', colClass: "col-md-12 mb-4", date: true },
-            { id: 'p_status', label: 'Aktif mi?', className: '', colClass: "col-md-6 mb-4", checkbox: true, value: 1 },
-        ];
-
-        fields.forEach(field => {
-            let colDiv = createDiv(field.colClass);
-            colDiv.appendChild(createLabel("form-label", `${field.id}-${variantCount}`, field.label));
-            let input;
-            if (field.checkbox){
-                input = createInput("form-check-input " + field.className, `${field.id}-${variantCount}`, '', `variant[${variantCount}][${field.id}]`, 'checkbox', field.value || '');
-                colDiv.appendChild(input);
-            }else if (field.date){
-                input = createInput("form-control " + field.className, `${field.id}-${variantCount}`, field.label, `variant[${variantCount}][${field.id}]`);
-                input.setAttribute('data-input', "");
-                let span = createElement('span', 'input-group-text input-group-addon', {'data-toggle' : ''});
-                span.innerHTML = '<i data-feather="calendar"></i>';
-                let dateDiv = createDiv('input-group flatpickr flatpickr-date');
-                dateDiv.appendChild(input);
-                dateDiv.appendChild(span);
-                colDiv.appendChild(dateDiv);
-            }else{
-                input = createInput("form-control " + field.className, `${field.id}-${variantCount}`, field.label, `variant[${variantCount}][${field.id}]`, field.type || 'text', field.value || '');
-                if (field.dataAttr) Object.entries(field.dataAttr).forEach(([key, value]) => input.setAttribute(key, value));
-                if (field.readonly) { input.readOnly = true; input.classList.add('readonly'); }
-                colDiv.appendChild(input);
-            }
-            row.appendChild(colDiv);
-        });
-
-        let urunAddSizeDiv = createDiv("row");
-        let urunAddSizeSpan   = createElement("span", 'ms-2');
-        urunAddSizeSpan.textContent='Beden Ekle'
-        let urunAddSizeiElement   = createElement("i", 'add-size', { 'data-feather': 'plus-circle'});
-        let urunAddSizeAElement   = createElement("a", 'btn-add-size col-md-12', { href: 'javascript:void(0)', 'data-variant-id': variantCount});
-        urunAddSizeAElement.appendChild(urunAddSizeiElement);
-        urunAddSizeAElement.appendChild(urunAddSizeSpan);
-
-        let urunAddSizeIElementImage = createElement('i', 'add-size', { 'data-feather': 'image'})
-        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `variant[${variantCount}][image]`, 'hidden');
-        let imageDataPreviewElement = createDiv('col-md-12',`data-preview-${variantCount}` );
-
-        let urunAddSizeAElementImage = createElement("a", "btn btn-info btn-add-image mb-4", {href: "javascript:void(0)", 'data-variant-id': variantCount, 'data-input': "data-input-" + variantCount, 'data-preview': "data-preview-" + variantCount });
-        urunAddSizeAElementImage.textContent = "Görsel Ekle";
-        let urunAddSizeAElementDiv = createDiv("col-md-12");
-
-        urunAddSizeAElementImage.appendChild(urunAddSizeIElementImage);
-        urunAddSizeAElementDiv.appendChild(urunAddSizeAElementImage);
-
-        urunAddSizeDiv.appendChild(urunAddSizeAElementDiv);
-        urunAddSizeDiv.appendChild(imageDataInputElement);
-        urunAddSizeDiv.appendChild(imageDataPreviewElement);
-        urunAddSizeDiv.appendChild(urunAddSizeAElement);
-
-        let urunAddSizeGeneralDiv = createDiv("col-md-12 p-0 mb-3", sizeDivKey + variantCount);
-
-
-        row2.appendChild(variantDeleteDiv);
-
-        row.appendChild(row2);
-        row.appendChild(urunAddSizeDiv);
-        row.appendChild(urunAddSizeGeneralDiv);
-
-        let hr2 = createElement('hr', 'my-5');
-        row.appendChild(hr2);
-
-        variants.insertAdjacentElement('afterbegin', row);
-        variantCount++;
-        feather.replace();
-        flatpickr(".flatpickr-date", {
-            wrap      : true,
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-        });
+        createVariant();
     });
 
     typeID.addEventListener('change', function () {
@@ -253,6 +169,137 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    function createVariant(variant = {}, isEdit = false)
+    {
+
+
+        let row = createDiv("row variant", `row-${variantCount}`);
+
+        let variantDeleteDiv = createDiv('col-md-12 mb-1');
+        let variantDeleteAElement = createElement("a", "btn-delete-variant btn btn-danger col-3", { href: 'javascript:void(0)', 'data-variant-id': variantCount })
+        variantDeleteAElement.textContent = "Varyant Kaldır";
+        let hr = createElement('hr', 'my-2');
+        variantDeleteDiv.appendChild(variantDeleteAElement);
+        variantDeleteDiv.appendChild(hr);
+        row.appendChild(variantDeleteDiv);
+
+        let inputName = document.querySelector('#name');
+        let nameSLug = generateSlug(inputName.value);
+
+        let fields = [
+            { id: 'name', label: 'Ürün Adı', className: 'variant-product-name', colClass: "col-md-4 mb-4", value: variant.name || ''},
+            { id: 'variant_name', label: 'Ürün Varyant Adı', className: 'variant-name', colClass: "col-md-4 mb-4", value: variant.variant_name || ''},
+            { id: 'slug', label: 'Slug', className: 'product-slug', colClass: "col-md-4 mb-4", value: variant.slug || nameSLug},
+            { id: 'additional_price', label: 'Fiyat', className: 'additional-price-input', colClass: "col-md-6 mb-4", dataAttr: { 'data-variant-id' : variantCount }, type: "number", value: variant.additional_price || ''},
+            { id: 'final_price', label: 'Son Fiyat', className: 'readonly', colClass: "col-md-6 mb-4", readonly: true, value: variant.final_price || document.querySelector('#price').value },
+            { id: 'extra_description', label: 'Ekstra Açıklama', className: '', colClass: "col-md-12 mb-4", value: variant.extra_description || ''},
+            { id: 'publish_date', label: 'Yayınlanma Tarihi', className: '', colClass: "col-md-12 mb-4", date: true,  value: variant.publish_date || ''},
+            { id: 'p_status', label: 'Aktif mi?', className: '', colClass: "col-md-6 mb-4", checkbox: true, value: 1, checked: variant.status || variant.p_status || false },
+        ];
+
+        fields.forEach(field => {
+            let colDiv = createDiv(field.colClass);
+            colDiv.appendChild(createLabel("form-label", `${field.id}-${variantCount}`, field.label));
+            let input;
+            if (field.checkbox){
+                input = createInput("form-check-input " + field.className, `${field.id}-${variantCount}`, '', `variant[${variantCount}][${field.id}]`, 'checkbox', field.value || '');
+                if (field.checked) input.checked = true;
+                colDiv.appendChild(input);
+            }else if (field.date){
+                input = createInput("form-control " + field.className, `${field.id}-${variantCount}`, field.label, `variant[${variantCount}][${field.id}]`, 'text', field.value || '');
+                input.setAttribute('data-input', "");
+                let span = createElement('span', 'input-group-text input-group-addon', {'data-toggle' : ''});
+                span.innerHTML = '<i data-feather="calendar"></i>';
+                let dateDiv = createDiv('input-group flatpickr flatpickr-date');
+                dateDiv.appendChild(input);
+                dateDiv.appendChild(span);
+                colDiv.appendChild(dateDiv);
+            }else{
+                input = createInput("form-control " + field.className, `${field.id}-${variantCount}`, field.label, `variant[${variantCount}][${field.id}]`, field.type || 'text', field.value || '');
+                if (field.dataAttr) Object.entries(field.dataAttr).forEach(([key, value]) => input.setAttribute(key, value));
+                if (field.readonly) { input.readOnly = true; input.classList.add('readonly'); }
+                colDiv.appendChild(input);
+            }
+            row.appendChild(colDiv);
+        });
+        if (isEdit){
+            console.log("variant");
+            console.log(variant);
+            var variantIDElement = createInput('', '', '', `variant[${variantCount}][variant_index]`, 'hidden', variant.id);
+            row.appendChild(variantIDElement);
+        }else{
+            console.log(variant, "isEdit");
+        }
+
+        let urunAddSizeDiv = createDiv("row");
+        let urunAddSizeSpan   = createElement("span", 'ms-2');
+        urunAddSizeSpan.textContent='Beden Ekle'
+        let urunAddSizeiElement   = createElement("i", 'add-size', { 'data-feather': 'plus-circle'});
+        let urunAddSizeAElement   = createElement("a", 'btn-add-size col-md-12', { href: 'javascript:void(0)', 'data-variant-id': variantCount});
+        urunAddSizeAElement.appendChild(urunAddSizeiElement);
+        urunAddSizeAElement.appendChild(urunAddSizeSpan);
+
+        let urunAddSizeIElementImage = createElement('i', 'add-size', { 'data-feather': 'image'})
+        let images = variant.image || variant.variant_images || '';
+        if (isEdit && variant.variant_images) {
+            images = '';
+            variant.variant_images.forEach(function (item) {
+                                               images = images + item.path + ',';
+            });
+        }
+
+        console.log(images);
+        let imageDataInputElement = createInput("form-control", `data-input-${variantCount}`, '', `variant[${variantCount}][image]`, 'hidden', images );
+        let imageDataPreviewElement = createDiv('col-md-12',`data-preview-${variantCount}` );
+
+        let urunAddSizeAElementImage = createElement("a", "btn btn-info btn-add-image mb-4", {href: "javascript:void(0)", 'data-variant-id': variantCount, 'data-input': "data-input-" + variantCount, 'data-preview': "data-preview-" + variantCount });
+        urunAddSizeAElementImage.textContent = "Görsel Ekle";
+        let urunAddSizeAElementDiv = createDiv("col-md-12");
+
+        urunAddSizeAElementImage.appendChild(urunAddSizeIElementImage);
+        urunAddSizeAElementDiv.appendChild(urunAddSizeAElementImage);
+
+        urunAddSizeDiv.appendChild(urunAddSizeAElementDiv);
+        urunAddSizeDiv.appendChild(imageDataInputElement);
+        urunAddSizeDiv.appendChild(imageDataPreviewElement);
+        urunAddSizeDiv.appendChild(urunAddSizeAElement);
+
+        let urunAddSizeGeneralDiv = createDiv("col-md-12 p-0 mb-3", sizeDivKey + variantCount);
+
+        row.appendChild(urunAddSizeDiv);
+        row.appendChild(urunAddSizeGeneralDiv);
+
+        let hr2 = createElement('hr', 'my-5');
+        row.appendChild(hr2);
+
+        variants.insertAdjacentElement('afterbegin', row);
+
+        try{
+            if (!isObjectEmpty(variant) && variant.hasOwnProperty('size') && variant.size && variant.hasOwnProperty('stock') && variant.stock){
+                setSizeStock(variant);
+            } else if (!isObjectEmpty(variant) && variant.hasOwnProperty('size_stock') && variant.size_stock) {
+                setSizeStock(variant, true);
+            }
+
+            if (!isObjectEmpty(variant) && variant.hasOwnProperty('image') && variant.image && variant.image.length) {
+                oldVariantImageViewer(variant.image, variant.featured_image, variantCount, false);
+            }else if (!isObjectEmpty(variant) && variant.hasOwnProperty('variant_images') && variant.variant_images){
+                console.log("oldVariantImageViewer gönderme", variant);
+                oldVariantImageViewer(variant.variant_images, '', variantCount, true);
+            }
+        }catch (exception) {
+            console.log(variant);
+            console.log(exception);
+        }
+
+        variantCount++;
+        feather.replace();
+        flatpickr(".flatpickr-date", {
+            wrap      : true,
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+        });
+    }
     function updateVariantIndexes()
     {
         let allVariants = Array.from(document.querySelectorAll('.row.variant')).reverse();
@@ -339,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                                                          });
         });
     }
-    function btnAddSizeAction(element)
+    function btnAddSizeAction(element, sizeValue = null, stockValue = null)
     {
         let dataVariantID = element.getAttribute("data-variant-id");
         let sizeStock = variantSizeStockInfo[dataVariantID]?.size_stock || 0;
@@ -352,14 +399,14 @@ document.addEventListener("DOMContentLoaded", function () {
         let urunSizeDiv = createDiv("col-md-5 mb-4 px-3")
         let urunSizeLabel = createLabel("form-label", urunSizeID, "Beden");
 
-        let urunSizeSelect = createSelect("form-control", urunSizeID, `variant[${dataVariantID}][size][${sizeStock}]`, options);
+        let urunSizeSelect = createSelect("form-control", urunSizeID, `variant[${dataVariantID}][size][${sizeStock}]`, options, sizeValue || null);
         urunSizeDiv.appendChild(urunSizeLabel);
         urunSizeDiv.appendChild(urunSizeSelect);
 
         let urunStockID = 'stock-' + dataVariantID + '-' + sizeStock;
         let urunStockDiv = createDiv("col-md-5 mb-4 px-3")
         let urunStockLabel = createLabel("form-label", urunStockID, "Stok Sayısı");
-        let urunStockInput = createInput("form-control", urunStockID, 'Stok Sayısı', `variant[${dataVariantID}][stock][${sizeStock}]`, 'number');
+        let urunStockInput = createInput("form-control", urunStockID, 'Stok Sayısı', `variant[${dataVariantID}][stock][${sizeStock}]`, 'number', stockValue || null);
 
         urunStockDiv.appendChild(urunStockLabel);
         urunStockDiv.appendChild(urunStockInput);
@@ -670,11 +717,9 @@ document.addEventListener("DOMContentLoaded", function () {
     {
         items.forEach(function (item, index)
                       {
-
-
                           let container = createDiv("image-container", `image-container-${variantID}-${index}`);
                           let radio = createInput("", `radio-${variantID}-${index}`, '', `variant[${variantID}][featured_image]`, 'radio', item.url);
-                          if (index === 0) radio.checked = true;
+                          if (item.is_featured || index === 0) radio.checked = true;
 
                           let iElement = createElement("i", "delete-variant-image", {"data-feather": "x", "data-url": item.url, "data-variant-id": variantID, "data-image-index": index});
 
@@ -691,21 +736,31 @@ document.addEventListener("DOMContentLoaded", function () {
                       });
     }
 
-    function oldVariantImageViewer(oldImages)
+    function oldVariantImageViewer(oldImages = '', featuredImagePath = '', index, isEdit = false)
     {
-        oldImages.forEach(function (oldImage, index) {
+        console.log("oldVariantImageViewer");
+        let finalImages = [];
+        let target_preview = document.querySelector('#data-preview-' + index);
 
-            let finalImages = [];
-            let images = oldImage.images.split(",");
+        if (oldImages.length && oldImages !== '' && !isEdit) {
+            let images = oldImages.split(",");
             images.pop();
-            images.forEach(function (item, index)
-                           {
-                               finalImages.push({url: item})
+            images.forEach(function (item, index) {
+                               finalImages.push({url: item, is_featured: item === featuredImagePath })
                            });
-            let target_preview = document.querySelector('#data-preview-' + oldImage.index);
+        } else if (isEdit) {
+            console.log(oldImages);
+            oldImages.forEach(function (item, index) {
+                finalImages.push({url: item.path, is_featured: Boolean(item.is_featured) })
+            });
+        }
+        else{
+            console.log("oldVariantImageViewer --- Else");
+        }
 
-            if (finalImages.length) selectedVariantImage(finalImages,oldImage.index , target_preview);
-        });
+        if (finalImages.length) selectedVariantImage(finalImages, index, target_preview);
+
+
     }
 
     function showErrors()
@@ -728,6 +783,73 @@ document.addEventListener("DOMContentLoaded", function () {
                     element.parentElement.appendChild(errorDiv);
                 }
             }
+        }
+    }
+
+    function initializeValue(isEdit = false)
+    {
+        if (typeof initializeData !== 'undefined' && initializeData !== null) {
+            initializeData = Object.entries(initializeData);
+            console.log("Veri", initializeData);
+            initializeData.forEach(function ([index, variant]) {
+                if (isEdit) {
+                    if (productData['variants'].hasOwnProperty(index) && productData['variants'][index].hasOwnProperty("id")) {
+                        variant.id = productData['variants'][index]['id'];
+                        createVariant(variant, true);
+                    }else{
+                        createVariant(variant, false);
+                    }
+                }else{
+                    createVariant(variant, false);
+                }
+            });
+        }
+
+    }
+
+    function isObjectEmpty(object)
+    {
+        return  Object.entries(object).length === 0;
+    }
+
+    function setSizeStock(variant, isEdit = false)
+    {
+        let btnAddSizeElement = document.querySelector('[data-variant-id="' + variantCount + '"]');
+
+        if (!isEdit) {
+            variant.size.forEach(function (size, index) {
+                let stock = variant.stock[index];
+                btnAddSizeAction(btnAddSizeElement, size, stock);
+            });
+        }else{
+            variant.size_stock.forEach(function (item, index) {
+                let stock = item.stock;
+                let size = item.size;
+                btnAddSizeAction(btnAddSizeElement, size, stock);
+            });
+        }
+    }
+
+    function setVariantImage(variant, isEdit = false)
+    {
+        if (!isEdit){
+            oldVariantImageViewer(variant.image, variantCount);
+        }else{
+
+        }
+    }
+
+    function prepareInitializeData()
+    {
+        if (initializeData && typeof productData !== 'undefined'){
+            initializeValue(true);
+        } else if (initializeData){
+            initializeValue();
+        } else if (typeof productData !== 'undefined'){
+            let variants = productData.variants;
+            variants.forEach(function (variant, index) {
+                createVariant(variant, true)
+            });
         }
     }
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductImages;
 use App\Models\ProductsMain;
@@ -62,6 +63,27 @@ class ProductController extends Controller
 
         alert()->success('Başarılı', 'Ürün kaydedildi');
         return redirect()->route('admin.product.index');
+    }
+
+    public function edit(Request $request, ProductsMain $productsMain)
+    {
+        $categories = $this->categoryService->getAllCategories();
+        $brands     = $this->brandService->getAll();
+        $types = ProductTypes::all();
+
+        $product = $productsMain->load([
+                                           'variants',
+                                           'variants.variantImages',
+                                           'variants.sizeStock',
+
+                                       ])->toArray();
+
+        return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types'));
+    }
+
+    public function update(ProductUpdateRequest $request)
+    {
+        dd($request->all());
     }
 
     public function checkSlug(Request $request)

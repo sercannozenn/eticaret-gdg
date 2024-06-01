@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ProductsMain extends Model
@@ -36,4 +38,14 @@ class ProductsMain extends Model
     {
         return $this->belongsTo(ProductTypes::class);
     }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(Product::class, 'main_product_id', 'id');
+    }
+
+//    public function variants(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Product::class);
+//    }
 }

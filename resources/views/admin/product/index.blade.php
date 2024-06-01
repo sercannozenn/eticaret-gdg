@@ -31,8 +31,23 @@
                             <td>{{ $product->category->name  }}</td>
                             <td>{{ $product->brand->name  }}</td>
                             <td>{{ $product->type->name  }}</td>
-                            <td>{{ $product->status  }}</td>
-                            <td> </td>
+                            <td>
+                                @if($product->status)
+                                    <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-status"
+                                       data-id="{{ $product->id }}">Aktif</a>
+                                @else
+                                    <a href="javascript:void(0)" class="btn btn-inverse-danger btn-change-status"
+                                       data-id="{{ $product->id }}">Pasif</a>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.product.edit', ['products_main' => $product->id]) }}"><i
+                                        class="text-warning" data-feather="edit"></i></a>
+                                <a href="javascript:void(0)">
+                                    <i data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                       class="text-danger btn-delete-product"
+                                       data-feather="trash"></i></a>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
