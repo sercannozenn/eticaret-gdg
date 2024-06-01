@@ -50,16 +50,16 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
-        DB::beginTransaction();
-        try {
+//        DB::beginTransaction();
+//        try {
             $this->productService->store($request);
-            DB::commit();
-        }catch (\Exception $exception) {
-            DB::rollBack();
-
-            alert()->success('Hata', $exception->getMessage());
-            return redirect()->back()->withInput();
-        }
+//            DB::commit();
+//        }catch (\Exception $exception) {
+//            DB::rollBack();
+//            dd($exception->getMessage());
+//            alert()->success('Hata', $exception->getMessage());
+//            return redirect()->back()->withInput();
+//        }
 
         alert()->success('Başarılı', 'Ürün kaydedildi');
         return redirect()->route('admin.product.index');
@@ -81,9 +81,10 @@ class ProductController extends Controller
         return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types'));
     }
 
-    public function update(ProductUpdateRequest $request)
+    public function update(ProductUpdateRequest $request,ProductsMain $productsMain)
     {
-        dd($request->all());
+        $this->productService->update($request, $productsMain);
+        dd("işlem tamamlandı");
     }
 
     public function checkSlug(Request $request)

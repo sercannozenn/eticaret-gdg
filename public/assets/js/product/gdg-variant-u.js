@@ -63,8 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return select;
     };
 
-    showErrors();
     prepareInitializeData();
+    showErrors();
 
     btnSubmit.addEventListener('click', function () {
         let { isValid, message } = validateForm();
@@ -86,6 +86,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     typeID.addEventListener('change', function () {
+        if (typeof productData !== 'undefined'){
+            Swal.fire({
+                          title: 'Uyarı!',
+                          text : 'Ürün türü değişikliği sonrası varyantlarınızın beden bilgilerini güncellemeniz gerekmektedir.',
+                          icon : 'warning'
+                      });
+        }
+
        document.querySelectorAll(`[id^=${sizeDivKey}]`).forEach(div => div.innerHTML = "");
     });
 
@@ -766,21 +774,37 @@ document.addEventListener("DOMContentLoaded", function () {
     function showErrors()
     {
         for (let key in displayErrors){
-            let uKey = key;
+            let nameAttribute = key;
             if (displayErrors.hasOwnProperty(key)) {
-                if (key.includes(".")) {
-                    uKey = key.split('.');
-                    uKey = uKey[(uKey.length - 1)];
-                    uKey = uKey + ']';
+                let explode = nameAttribute.split('.');
+                // variant[0][variant_name]
+                // variant.0.variant_name
+                for (let i = 0; i < explode.length; i++){
+                    if (i !== 0) explode[i] = `[${explode[i]}]`;
                 }
+                nameAttribute = explode.join('');
 
-                let element = document.querySelector(`[name$="${uKey}"]`);
+                let element = document.querySelector(`[name="${nameAttribute}"]`);
 
                 if (element && key.indexOf('image') < 0){
                     element.classList.add('is-invalid');
                     let errorDiv = createDiv("invalid-feedback d-block");
                     errorDiv.textContent = displayErrors[key][0];
                     element.parentElement.appendChild(errorDiv);
+                }else if (element && key.indexOf('[image]')){
+                        Swal.fire({
+                                      title: 'Uyarı!',
+                                      text : 'Varyantlarınıza en az bir görsel seçmelisiniz.',
+                                      icon : 'warning'
+                                  });
+                        element.parentElement.parentElement.classList.add("border");
+                        element.parentElement.parentElement.classList.add("border-danger");
+                        let  divElement = createDiv('text-danger', '');
+                        divElement.textContent = "Lütfen varyanta görsel seçin";
+                        let [_, __, elementVariantID] = element.id.split("-");
+                        let findBtnAddImageElement = document.querySelector(`.btn-add-image[data-input="data-input-${elementVariantID}"]`);
+                        findBtnAddImageElement.insertAdjacentElement('afterend', divElement);
+
                 }
             }
         }

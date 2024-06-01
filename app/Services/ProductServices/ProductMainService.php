@@ -31,4 +31,16 @@ class ProductMainService
 
         return $this;
     }
+
+    public function setProductMain(ProductsMain $productsMain): self
+    {
+        $this->productsMain = $productsMain;
+
+        return $this;
+    }
+
+    public function update(): bool
+    {
+        return $this->productsMain->update($this->preparedData);
+    }
 }

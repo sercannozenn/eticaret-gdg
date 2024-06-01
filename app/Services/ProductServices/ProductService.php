@@ -5,6 +5,7 @@ namespace App\Services\ProductServices;
 use App\Models\Product;
 use App\Models\ProductsMain;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 
 class ProductService
@@ -19,6 +20,21 @@ class ProductService
         return $this->product::create($this->preparedData);
     }
 
+    public function update(): bool
+    {
+        return $this->product->update($this->preparedData);
+    }
+
+    public function setProduct(Product $product): self
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+    public function getById(int $productID): Product | ModelNotFoundException
+    {
+        return $this->product::query()->findOrFail($productID);
+    }
     public function prepareData(array $variant, ProductsMain $productsMain):self
     {
         $slug = $this->generateSlug($variant['slug']);

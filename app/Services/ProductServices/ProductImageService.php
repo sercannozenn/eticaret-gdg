@@ -26,4 +26,16 @@ class ProductImageService
         ];
         return $this;
     }
+
+    public function setProductImage(ProductImages $productImages): self
+    {
+        $this->productImages = $productImages;
+
+        return $this;
+    }
+
+    public function delete(): bool
+    {
+        return $this->productImages->delete();
+    }
 }
