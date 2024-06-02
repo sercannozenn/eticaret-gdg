@@ -54,6 +54,8 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::get('/edit/{products_main}', [AdminProductController::class, 'edit'])->name('edit');
         Route::post('/edit/{products_main}', [AdminProductController::class, 'update']);
         Route::post('/check-slug', [AdminProductController::class, 'checkSlug'])->name('check-slug');
+        Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('change-status');
+        Route::delete('/delete/{products_main}', [AdminProductController::class, 'delete'])->name('destroy');
 
     });
 

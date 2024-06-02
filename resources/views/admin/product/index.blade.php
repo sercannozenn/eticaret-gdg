@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Marka Listesi')
+@section('title', 'Ürün Listesi')
 
 @push("css")
 @endpush
@@ -7,7 +7,7 @@
 @section('body')
     <div class="card">
         <div class="card-body">
-            <h6 class="card-title">Marka Listesi</h6>
+            <h6 class="card-title">Ürün LİSTESİ</h6>
             <div class="table-responsive pt-3">
                 <table class="table table-bordered">
                     <thead>
@@ -74,11 +74,11 @@
             {
                 let element = event.target;
 
-                if (element.classList.contains('btn-delete-category'))
+                if (element.classList.contains('btn-delete-product'))
                 {
                     let catName = element.getAttribute('data-name');
                     Swal.fire({
-                                  title            : catName + " Kategorisini silmek istediğinize emin misiniz?",
+                                  title            : catName + " ürününü silmek istediğinize emin misiniz?",
                                   showCancelButton : true,
                                   cancelButtonText : "Hayır",
                                   confirmButtonText: "Evet",
@@ -87,7 +87,7 @@
                                           if (result.isConfirmed)
                                           {
                                               let dataID = element.getAttribute('data-id');
-                                              let route = '{{ route('admin.brand.destroy', ['brand' => 'gdg_cat']) }}';
+                                              let route = '{{ route('admin.product.destroy', ['products_main' => 'gdg_cat']) }}';
                                               route = route.replace('gdg_cat', dataID);
                                               deleteForm.action = route;
 
@@ -95,7 +95,7 @@
                                           }
                                           else if (result.isDenied)
                                           {
-                                              Swal.fire("Kategori silinmedi.", "", "info");
+                                              Swal.fire("Ürün silinmedi.", "", "info");
                                           }
                                       });
 
@@ -109,7 +109,7 @@
                         id: dataID
                     };
 
-                    fetch('{{ route('admin.brand.change-status') }}', {
+                    fetch('{{ route('admin.product.change-status') }}', {
                         method : 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -120,70 +120,25 @@
                             {
                                 if (!response.ok)
                                 {
-                                    Swal.fire("Marka durumu güncellenemedi.", "Hata alındı.", "info");
+                                    Swal.fire("Ürünün durumu güncellenemedi.", "Hata alındı.", "info");
                                 }
                                 return response.json();
                             })
                       .then(data =>
                          {
                              element.textContent = data.status ? "Aktif" : "Pasif";
-                             if(data.status)
-                             {
+                             if(data.status) {
                                  element.classList.add("btn-inverse-success");
                                  element.classList.remove('btn-inverse-danger')
                              }
-                             else
-                             {
+                             else {
                                  element.classList.remove("btn-inverse-success");
                                  element.classList.add('btn-inverse-danger')
                              }
                              Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
-
-
                          })
                 }
 
-                if (element.classList.contains('btn-change-is-featured'))
-                {
-                    let dataID = element.getAttribute('data-id');
-
-                    let data = {
-                        id: dataID
-                    };
-
-                    fetch('{{ route('admin.brand.change-is-featured') }}', {
-                        method : 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body   : JSON.stringify(data)
-                    }).then(response =>
-                            {
-                                if (!response.ok)
-                                {
-                                    Swal.fire("Marka öne çıkarılma durumu güncellenemedi.", "Hata alındı.", "info");
-                                }
-                                return response.json();
-                            })
-                      .then(data =>
-                            {
-                                element.textContent = data.is_featured ? "Evet" : "Hayır";
-                                if(data.is_featured)
-                                {
-                                    element.classList.add("btn-inverse-success");
-                                    element.classList.remove('btn-inverse-danger')
-                                }
-                                else
-                                {
-                                    element.classList.remove("btn-inverse-success");
-                                    element.classList.add('btn-inverse-danger')
-                                }
-                                Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
-
-
-                            })
-                }
             });
 
 

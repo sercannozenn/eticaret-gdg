@@ -16,6 +16,16 @@ class ProductMainService
         return $this->productsMain::create($this->preparedData);
     }
 
+    public function update(): bool
+    {
+        return $this->productsMain->update($this->preparedData);
+    }
+
+    public function delete(): bool
+    {
+        return $this->productsMain->delete();
+    }
+
     public function prepareData(array $data, int|null $status = null): self
     {
         $this->preparedData = [
@@ -32,6 +42,13 @@ class ProductMainService
         return $this;
     }
 
+    public function setPrepareData(array $data): self
+    {
+        $this->preparedData = $data;
+
+        return $this;
+    }
+
     public function setProductMain(ProductsMain $productsMain): self
     {
         $this->productsMain = $productsMain;
@@ -39,8 +56,8 @@ class ProductMainService
         return $this;
     }
 
-    public function update(): bool
+    public function getById(int $productMainID): ProductsMain | null
     {
-        return $this->productsMain->update($this->preparedData);
+        return $this->productsMain::query()->find($productMainID);
     }
 }
