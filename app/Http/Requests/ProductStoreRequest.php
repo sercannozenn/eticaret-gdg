@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Gender;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProductStoreRequest extends FormRequest
 {
@@ -29,6 +31,7 @@ class ProductStoreRequest extends FormRequest
             "type_id"                     => ['required', 'exists:product_types,id'],
             "brand_id"                    => ['required', 'exists:brands,id'],
             "category_id"                 => ['required', 'exists:categories,id'],
+            "gender"                      => ['required', Rule::in(array_column(Gender::cases(), 'value'))],
             "short_description"           => ['nullable', 'sometimes', 'string', 'max:255'],
             "description"                 => ['nullable', 'sometimes', 'string'],
             "variant"                     => ['required', 'array', 'min:1'],

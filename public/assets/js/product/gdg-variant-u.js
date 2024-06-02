@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let addVariant = document.querySelector('#addVariant');
     let variants = document.querySelector('#variants');
     let typeID = document.querySelector('#type_id');
+    let gender = document.querySelector('#gender');
 
     let productVariantTab = document.querySelector('#productVariantTab');
 
@@ -23,11 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     checkRequireFieldsForProductVariantTab();
 
-    const sizes = {
-        1: ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'],
-        2: Array.from({ length: 31 }, (_, i) => i +20),
-        3: ['standart']
-    };
+
+    // const sizes = {
+    //     1: ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'],
+    //     2: Array.from({ length: 31 }, (_, i) => i +20),
+    //     3: ['standart'],
+    //     4: Array.from({ length: 22 }, (_, i) => 56 + i * 6)
+    // };
 
     const createElement = (tag, className = '', attrs = {}) => {
       let el =   document.createElement(tag);
@@ -85,6 +88,19 @@ document.addEventListener("DOMContentLoaded", function () {
         createVariant();
     });
 
+    gender.addEventListener('change', function () {
+        let childrenTypes = document.querySelectorAll('[is-child]');
+        if (this.value == 3 || this.value ==4)
+        {
+            childrenTypes.forEach(function (element) {
+                element.disabled=false;
+                                  });
+        }else{
+            childrenTypes.forEach(function (element) {
+                element.disabled=true;
+            });
+        }
+    });
     typeID.addEventListener('change', function () {
         if (typeof productData !== 'undefined'){
             Swal.fire({
@@ -612,6 +628,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let typeSelect = document.querySelector('#type_id');
         let brandSelect = document.querySelector('#brand_id');
         let categorySelect = document.querySelector('#category_id');
+        let genderSelect = document.querySelector('#gender');
 
         if (!nameInput.value.trim()) {
             isValid = false;
@@ -645,6 +662,13 @@ document.addEventListener("DOMContentLoaded", function () {
             categorySelect.classList.add("is-invalid");
         } else {
             categorySelect.classList.remove("is-invalid");
+        }
+
+        if (genderSelect.value.trim() === '-1') {
+            isValid = false;
+            genderSelect.classList.add("is-invalid");
+        } else {
+            genderSelect.classList.remove("is-invalid");
         }
 
         let variantElements = Array.from(document.querySelectorAll(".row.variant")).reverse();

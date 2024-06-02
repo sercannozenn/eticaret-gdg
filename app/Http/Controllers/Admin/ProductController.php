@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Gender;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
@@ -41,13 +42,14 @@ class ProductController extends Controller
     {
         $categories = $this->categoryService->getAllCategories();
         $brands     = $this->brandService->getAll();
-
         $types = ProductTypes::all();
+        $genders = Gender::cases();
 
         return view('admin.product.create_edit',
                     compact('categories',
                             'brands',
-                            'types'
+                            'types',
+                    'genders'
                     ));
     }
 
@@ -57,8 +59,7 @@ class ProductController extends Controller
         try {
             $this->productService->store($request);
             DB::commit();
-        }
-        catch (\Exception $exception) {
+        }catch (\Exception $exception) {
             DB::rollBack();
             dd($exception->getMessage());
             alert()->success('Hata', $exception->getMessage());
@@ -74,6 +75,7 @@ class ProductController extends Controller
         $categories = $this->categoryService->getAllCategories();
         $brands     = $this->brandService->getAll();
         $types      = ProductTypes::all();
+        $genders = Gender::cases();
 
         $product = $productsMain->load([
                                            'variants',
@@ -82,7 +84,7 @@ class ProductController extends Controller
 
                                        ])->toArray();
 
-        return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types'));
+        return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types', 'genders'));
     }
 
     public function update(ProductUpdateRequest $request, ProductsMain $productsMain)

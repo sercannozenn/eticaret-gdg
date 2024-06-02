@@ -114,19 +114,35 @@
                                        value="{{ isset($product) ? $product->price : old('price')}}" required>
                             </div>
 
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-6 mb-4">
+                                <label for="gender" class="form-label">Cinsiyet <span
+                                        class="text-danger"> * </span></label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option selected="selected" value="-1">Cinsiyet Seçin</option>
+                                    @php($genderFinal = [])
+                                    @foreach($genders as $gender)
+                                        @php($genderFinal[$gender->value] = $gender->name)
+                                        <option
+                                            value="{{ $gender->value }}" {{ (int)($gender->value) === (isset($product) ? $product->gender : old('gender')) ? 'selected' : '' }}>{{ getGender($gender) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
                                 <label for="type_id" class="form-label">Ürün Türü <span
                                         class="text-danger"> * </span></label>
                                 <select class="form-select" id="type_id" name="type_id" required>
                                     <option selected="selected" value="-1">Ürün Türü Seçin</option>
+                                    @php($productTypeSizeRange = [])
                                     @foreach($types as $type)
-                                        <option
+                                        @php($productTypeSizeRange[$type->id] = explode(',', $type->size_range))
+                                        <option {{ $type->id == 4  ? "is-child disabled" : '' }}
                                             value="{{ $type->id }}" {{ $type->id == (isset($product) ? $product->type_id : old('type_id')) ? 'selected' : '' }}>{{ $type->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-6 mb-4">
                                 <label for="brand_id" class="form-label">Marka <span
                                         class="text-danger"> * </span></label>
                                 <select class="form-select" id="brand_id" name="brand_id" required>
@@ -138,7 +154,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-6 mb-4">
                                 <label for="category_id" class="form-label">Kategori <span
                                         class="text-danger"> * </span></label>
                                 <select class="form-select" id="category_id" name="category_id" required>
@@ -160,6 +176,7 @@
                                 <textarea class="form-control" id="description" placeholder="Açıklama"
                                           name="description">{{ isset($product) ? $product->description : old('description')}}</textarea>
                             </div>
+
 
                             <div class="col-md-6 mb-4">
                                 <input type="checkbox" class="form-check-input" id="status" value="1"
@@ -195,6 +212,9 @@
     <script src="{{ asset('assets/js/axios/dist/axios.min.js') }}"></script>
     <script>
         var checkSlugRoute = "{{ route('admin.product.check-slug') }}";
+        var genderFinal = @json($genderFinal);
+        const sizes = @json($productTypeSizeRange);
+
 
         @if(isset($product))
             var productData = @json($product);

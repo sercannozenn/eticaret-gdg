@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Brand\BrandSeeder;
 use Database\Seeders\Category\CategorySeeder;
+use Database\Seeders\Products\ProductTypesSeeder;
 use Database\Seeders\RolePermissions\GeneralRolePermissionSeeder;
 use Database\Seeders\User\UserInitializeUserSeeder;
 use Illuminate\Database\Seeder;
@@ -19,8 +21,11 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            GeneralRolePermissionSeeder::class,
-            UserInitializeUserSeeder::class
+                        ProductTypesSeeder::class,
+                        BrandSeeder::class,
+                        CategorySeeder::class,
+                        GeneralRolePermissionSeeder::class,
+                        UserInitializeUserSeeder::class
                     ]);
     }
 }
