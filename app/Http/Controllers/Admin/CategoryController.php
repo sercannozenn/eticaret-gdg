@@ -100,6 +100,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        dd($category);
         try
         {
             $this->categoryService->setCategory($category)->delete();

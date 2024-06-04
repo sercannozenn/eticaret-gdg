@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SlidersController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -56,6 +57,17 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::post('/check-slug', [AdminProductController::class, 'checkSlug'])->name('check-slug');
         Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('change-status');
         Route::delete('/delete/{products_main}', [AdminProductController::class, 'delete'])->name('destroy');
+    });
+
+    Route::prefix('slider')->name('slider.')->group(function (){
+
+        Route::get('/', [SlidersController::class, 'index'])->name('index');
+        Route::get('/create', [SlidersController::class, 'create'])->name('create');
+        Route::post('/create', [SlidersController::class, 'store']);
+        Route::get('/edit/{slider}', [SlidersController::class, 'edit'])->name('edit');
+        Route::post('/edit/{slider}', [SlidersController::class, 'update']);
+        Route::post('/change-status', [SlidersController::class, 'changeStatus'])->name('change-status');
+        Route::delete('/delete/{slider}', [SlidersController::class, 'delete'])->name('destroy');
 
     });
 
