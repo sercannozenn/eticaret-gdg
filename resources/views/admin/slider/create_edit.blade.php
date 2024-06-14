@@ -405,6 +405,7 @@
             let btnSubmit = document.querySelector("#btnSubmit");
             let gdgForm = document.querySelector("#gdgForm");
             let path = document.querySelector("#path");
+            let name = document.querySelector("#name");
 
             btnSubmit.addEventListener('click', function ()
             {
@@ -414,8 +415,14 @@
 
 
                 let images = path.files;
-                console.log(images);
-                if (!images.length)
+                if(!name.value.length){
+                    Swal.fire({
+                                  title: 'Uyarı!',
+                                  text : 'Slider için ad vermelisiniz',
+                                  icon : 'warning'
+                              });
+                }
+                else if (!images.length && !gdgForm.getAttribute('action').includes('edit'))
                 {
                     Swal.fire({
                                   title: 'Uyarı!',
@@ -423,7 +430,7 @@
                                   icon : 'warning'
                               });
                 }
-                else
+                else if(images.length)
                 {
                     let image = images[0];
                     let validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -448,6 +455,9 @@
                     {
                         gdgForm.submit();
                     }
+                }
+                else{
+                    gdgForm.submit();
                 }
             });
         });

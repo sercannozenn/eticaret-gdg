@@ -8,14 +8,36 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title">Kategori Listesi</h6>
+            <x-filter-form :filters="$filters" action="{{ route('admin.category.index') }}"/>
+
             <div class="table-responsive pt-3">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Kategori Adı</th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> (request('order_by') == 'id')]) data-order="id">
+                            #
+                            {!!   (request('order_by') == 'id' && request('order_direction') == 'asc') || request('order_by') == null ? '<i data-feather="chevron-down"></i>' :
+                                  (request('order_by') == 'id' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+
+                        </th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> (request('order_by') == 'name')]) data-order="name">
+                            Kategori Adı
+                            {!!   request('order_by') == 'name' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                 (request('order_by') == 'name' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+
+                        </th>
                         <th>Slug</th>
-                        <th>Durum</th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> (request('order_by') == 'parent_id')]) data-order="parent_id">
+                            Üst Kategori
+                            {!!   request('order_by') == 'parent_id' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                 (request('order_by') == 'parent_id' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> (request('order_by') == 'status')]) data-order="status">
+                            Durum
+                            {!!   request('order_by') == 'status' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                 (request('order_by') == 'status' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+
+                        </th>
                         <th>İşlemler</th>
                     </tr>
                     </thead>
@@ -25,6 +47,7 @@
                             <td>{{ $category->id }}</td>
                             <td>{{ $category->name }}</td>
                             <td>{{ $category->slug }}</td>
+                            <td>{{ $category->parentCategory?->name }}</td>
                             <td>
                                 @if($category->status)
                                     <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-status"
@@ -63,6 +86,10 @@
         document.addEventListener('DOMContentLoaded', function ()
         {
             let deleteForm = document.querySelector("#deleteForm");
+
+            let defaultOrderDirection = "{{ request('order_direction') }}";
+
+            feather.replace();
 
             document.querySelector('.table').addEventListener('click', function (event)
             {
@@ -119,22 +146,69 @@
                                 return response.json();
                             })
                       .then(data =>
-                         {
-                             element.textContent = data.status ? "Aktif" : "Pasif";
-                             if(data.status)
-                             {
-                                 element.classList.add("btn-inverse-success");
-                                 element.classList.remove('btn-inverse-danger')
-                             }
-                             else
-                             {
-                                 element.classList.remove("btn-inverse-success");
-                                 element.classList.add('btn-inverse-danger')
-                             }
-                             Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
+                            {
+                                element.textContent = data.status ? "Aktif" : "Pasif";
+                                if (data.status)
+                                {
+                                    element.classList.add("btn-inverse-success");
+                                    element.classList.remove('btn-inverse-danger')
+                                }
+                                else
+                                {
+                                    element.classList.remove("btn-inverse-success");
+                                    element.classList.add('btn-inverse-danger')
+                                }
+                                Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
 
 
-                         })
+                            })
+                }
+
+                if (element.classList.contains('order-by'))
+                {
+                    let dataOrder = element.getAttribute('data-order');
+                    let orderByElement = document.querySelector('#order_by');
+                    let orderDirectionElement = document.querySelector('#order_direction');
+                    let filterForm = document.querySelector('#filter-form');
+
+                    orderByElement.value = dataOrder;
+                    removeIElements();
+
+                    if (defaultOrderDirection === '' || defaultOrderDirection === null || defaultOrderDirection === undefined)
+                    {
+                        defaultOrderDirection = 'desc';
+
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-up');
+                        element.appendChild(iElement);
+
+                    }
+                    else if (defaultOrderDirection === 'asc')
+                    {
+                        defaultOrderDirection = 'desc'
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-up');
+                        element.appendChild(iElement);
+                    }
+                    else
+                    {
+                        defaultOrderDirection = 'asc';
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-down');
+                        element.appendChild(iElement);
+                    }
+                    orderDirectionElement.value = defaultOrderDirection;
+                    feather.replace();
+                    filterForm.submit();
+                }
+
+                function removeIElements()
+                {
+                    let findIElements = document.querySelectorAll('th svg');
+                    findIElements.forEach(i =>
+                                          {
+                                              i.remove();
+                                          })
                 }
             });
 

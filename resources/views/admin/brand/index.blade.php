@@ -8,17 +8,40 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title">Marka Listesi</h6>
+
+            <x-filter-form :filters="$filters" action="{{ route('admin.brand.index') }}" />
+
             <div class="table-responsive pt-3">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> (request('order_by') == 'id' || is_null(request('order_by')))])
+                            data-order="id">#
+                            {!!   (request('order_by') == 'id' && request('order_direction') == 'asc') || request('order_by') == null ? '<i data-feather="chevron-down"></i>' :
+                            (request('order_by') == 'id' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
                         <th>Logo</th>
-                        <th>Sıra Numarası</th>
-                        <th>Marka Adı</th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> request('order_by') == 'order']) data-order="order">
+                            Sıra Numarası
+                            {!!   request('order_by') == 'order' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                (request('order_by') == 'order' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> request('order_by') == 'name']) data-order="name">
+                            Marka Adı
+                            {!!   request('order_by') == 'name' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                (request('order_by') == 'name' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
                         <th>Slug</th>
-                        <th>Durum</th>
-                        <th>Öne Çıkarılma Durumu</th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> request('order_by') == 'status']) data-order="status">
+                            Durum
+                            {!!   request('order_by') == 'status' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                (request('order_by') == 'status' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
+                        <th @class(['order-by', 'text-primary fw-bolder'=> request('order_by') == 'is_featured']) data-order="is_featured">
+                            Öne Çıkarılma Durumu
+                            {!!   request('order_by') == 'is_featured' && request('order_direction') == 'asc' ? '<i data-feather="chevron-down"></i>' :
+                                    (request('order_by') == 'is_featured' &&  request('order_direction') == 'desc' ? '<i data-feather="chevron-up"></i>' : '') !!}
+                        </th>
                         <th>İşlemler</th>
                     </tr>
                     </thead>
@@ -65,7 +88,7 @@
                     @method('DELETE')
                 </form>
                 <div class="col-6 mx-auto mt-3">
-                    {{ $brands->links() }}
+                    {{ $brands->withQueryString()->links() }}
                 </div>
             </div>
         </div>
@@ -77,6 +100,9 @@
         document.addEventListener('DOMContentLoaded', function ()
         {
             let deleteForm = document.querySelector("#deleteForm");
+            let defaultOrderDirection = "{{ request('order_direction') }}";
+
+            feather.replace();
 
             document.querySelector('.table').addEventListener('click', function (event)
             {
@@ -192,9 +218,47 @@
 
                             })
                 }
+
+                if(element.classList.contains('order-by')){
+                    let dataOrder = element.getAttribute('data-order');
+                    let orderByElement = document.querySelector('#order_by');
+                    let orderDirectionElement = document.querySelector('#order_direction');
+                    let filterForm = document.querySelector('#filter-form');
+
+                    orderByElement.value = dataOrder;
+                    removeIElements();
+
+                    if(defaultOrderDirection === '' || defaultOrderDirection === null || defaultOrderDirection === undefined){
+                        defaultOrderDirection = 'desc';
+
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-up');
+                        element.appendChild(iElement);
+
+                    }else if(defaultOrderDirection === 'asc'){
+                        defaultOrderDirection = 'desc'
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-up');
+                        element.appendChild(iElement);
+                    }else{
+                        defaultOrderDirection = 'asc';
+                        let iElement = document.createElement('i');
+                        iElement.setAttribute('data-feather', 'chevron-down');
+                        element.appendChild(iElement);
+                    }
+                    orderDirectionElement.value =defaultOrderDirection;
+                    feather.replace();
+                    filterForm.submit();
+                }
             });
 
-
+            function removeIElements()
+            {
+                let findIElements = document.querySelectorAll('th svg');
+                findIElements.forEach(i => {
+                    i.remove();
+                })
+            }
         });
 
 

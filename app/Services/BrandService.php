@@ -13,7 +13,10 @@ class BrandService
 
     private array $prepareData = [];
 
-    public function __construct(public Brand $brand, public ImageService $imageService)
+    public function __construct(public Brand         $brand,
+                                public ImageService  $imageService,
+                                public FilterService $filterService
+    )
     {
     }
 
@@ -31,9 +34,82 @@ class BrandService
     {
         return $this->brand::orderBy($orderBy[0], $orderBy[1])->paginate($page);
     }
+
     public function getAll($orderBy = ['order', 'DESC'])
     {
         return $this->brand::orderBy($orderBy[0], $orderBy[1])->get();
+    }
+
+    public function getBrands(int $perPage = 0)
+    {
+        $query   = $this->brand::query();
+        $filters = $this->getFilters();
+        $query   = $this->filterService->applyFilters($query, $filters);
+        if ($perPage) {
+            return $this->filterService->paginate($query, $perPage);
+        }
+        return $query->get();
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            'order'           => [
+                'label'    => 'Sıra Numarası',
+                'type'     => 'number',
+                'column'   => 'order',
+                'operator' => '='
+            ],
+            'name'            => [
+                'label'    => 'Marka Adı',
+                'type'     => 'text',
+                'column'   => 'name',
+                'operator' => 'like'
+            ],
+            'slug'            => [
+                'label'    => 'Slug',
+                'type'     => 'text',
+                'column'   => 'slug',
+                'operator' => 'like'
+            ],
+            'status'          => [
+                'label'    => 'Durum',
+                'type'     => 'select',
+                'column'   => 'status',
+                'operator' => '=',
+                'options'  => ['all' => 'Tümü', 'pasif', 'aktif'],
+            ],
+            'is_featured'     => [
+                'label'    => 'Öne Çıkarılma Durumu',
+                'type'     => 'select',
+                'column'   => 'is_featured',
+                'operator' => '=',
+                'options'  => ['all' => 'Tümü', 'Hayır', 'Evet'],
+            ],
+            'order_by'        => [
+                'label'    => 'Sıralama Türü',
+                'type'     => 'select',
+                'column'   => 'order_by',
+                'operator' => '',
+                'options'  => [
+                    'id'          => 'ID',
+                    'order'       => 'Sıra Numarası',
+                    'name'        => 'Marka Adı',
+                    'status'      => 'Durum',
+                    'is_featured' => 'Öne Çıkarılma Durumu'
+                ],
+            ],
+            'order_direction' => [
+                'label'    => 'Sıralama Yönü',
+                'type'     => 'select',
+                'column'   => 'order_direction',
+                'operator' => '',
+                'options'  => [
+                    'asc'  => 'A-Z',
+                    'desc' => 'Z-A',
+                ],
+            ],
+        ];
     }
 
     public function create(array $data = null): Brand
@@ -54,6 +130,7 @@ class BrandService
 
         $logoPath = $this->uploadLogo($data['name']);
         if (!is_null($logoPath) || (is_null($logoPath) && is_null($this->brand->logo))) {
+            $this->deleteLogo();
             $data['logo'] = $logoPath;
         }
 
@@ -141,23 +218,14 @@ class BrandService
         return $this->brand->delete();
     }
 
-    public function deleteLogo()
+    public function deleteLogo(): void
     {
         $logo = $this->brand->logo;
-        $path = is_null($logo) ? '' : $this->pathEditor($this->brand->logo);
+        $path = is_null($logo) ? '' : pathEditor($this->brand->logo);
 
-        if (file_exists(storage_path("app/" . $path)))
-        {
+        if (file_exists(storage_path("app/" . $path))) {
             $this->imageService->deleteImage($path);
         }
-    }
-
-    public function pathEditor(string $path): string
-    {
-        $path = str_replace('storage', '', $path);
-
-        return "public" . $path;
-
     }
 
 }

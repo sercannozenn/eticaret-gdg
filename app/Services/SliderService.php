@@ -26,6 +26,8 @@ class SliderService
 
     public function delete(): bool
     {
+        $this->deleteSliderImage();
+
         return $this->sliders->delete();
     }
 
@@ -42,7 +44,12 @@ class SliderService
 
     public function prepareData(array $data): self
     {
-        $path = $this->imageUpload($data['path'], $data['name']);
+        $path = $this->sliders->path;
+
+        if (isset($data['path'])){
+            $this->deleteSliderImage();
+            $path = $this->imageUpload($data['path'], $data['name']);
+        }
 
         $this->preparedData = [
             'name'           => $data['name'],
@@ -84,5 +91,15 @@ class SliderService
         $path = 'uploads/sliders/original';
 //        $fileName =
         return $this->imageService->singleUpload($image, $fileName, $path);
+    }
+
+    public function deleteSliderImage(): void
+    {
+        $sliderImage = $this->sliders->path;
+        $path = is_null($sliderImage) ? '' : pathEditor($this->sliders->path);
+
+        if (file_exists(storage_path("app/" . $path))){
+            $this->imageService->deleteImage($path);
+        }
     }
 }

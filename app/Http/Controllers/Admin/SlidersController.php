@@ -36,15 +36,15 @@ class SlidersController extends Controller
 
     public function update(Request $request, Sliders $slider)
     {
-        $request->validate(['path'  => ['required', 'image', 'max:2024', 'mimes:jpeg,jpg,webp,png'],
+        $request->validate(['path'  => ['nullable', 'sometimes',  'image', 'max:2024', 'mimes:jpeg,jpg,webp,png'],
                             'name'  => ['required', 'string', 'max:255'],
                             'order' => ['sometimes', 'nullable', 'integer']
                            ]);
 
         try {
             $this->sliderService
-                ->prepareData($request->all())
                 ->setSlider($slider)
+                ->prepareData($request->all())
                 ->update();
 
             alert()->success('Başarılı', 'Slider güncellendi.');

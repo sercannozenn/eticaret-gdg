@@ -23,9 +23,10 @@ class BrandController extends Controller
 
     public function index()
     {
-        $brands = $this->brandService->getAllPaginate();
+        $brands = $this->brandService->getBrands(1);
+        $filters = $this->brandService->getFilters();
 
-        return view('admin.brand.index', compact('brands'));
+        return view('admin.brand.index', compact('brands', 'filters'));
     }
 
     public function create()

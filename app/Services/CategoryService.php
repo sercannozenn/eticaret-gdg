@@ -16,7 +16,8 @@ class CategoryService
     /**
      * @param Category $category
      */
-    public function __construct(public Category $category)
+    public function __construct(public Category $category,
+                                public FilterService $filterService)
     {
     }
 
@@ -49,6 +50,81 @@ class CategoryService
     {
         return $this->category::orderBy($orderBy[0], $orderBy[1])->paginate($page);
     }
+
+    public function getCategories(int $perPage = 0)
+    {
+        $query   = $this->category::query()->with('parentCategory');
+        $filters = $this->getFilters();
+        $query   = $this->filterService->applyFilters($query, $filters);
+        if ($perPage) {
+            return $this->filterService->paginate($query, $perPage);
+        }
+        return $query->get();
+    }
+
+    public function getFilters(): array
+    {
+        $categories  = Category::all()->pluck('name', 'id')->toArray();
+        $categories = ['all' => 'Tümü'] + $categories;
+
+        return [
+            'name'            => [
+                'label'    => 'Kategori Adı',
+                'type'     => 'text',
+                'column'   => 'name',
+                'operator' => 'like'
+            ],
+            'short_description'            => [
+                'label'    => 'Kısa Açıklama',
+                'type'     => 'text',
+                'column'   => 'short_description',
+                'operator' => 'like'
+            ],
+            'description'            => [
+                'label'    => 'Açıklama',
+                'type'     => 'text',
+                'column'   => 'description',
+                'operator' => 'like'
+            ],
+            'parent_id'          => [
+                'label'    => 'Üst Kategori',
+                'type'     => 'select',
+                'column'   => 'parent_id',
+                'operator' => '=',
+                'options'  => $categories,
+            ],
+            'status'          => [
+                'label'    => 'Durum',
+                'type'     => 'select',
+                'column'   => 'status',
+                'operator' => '=',
+                'options'  => ['all' => 'Tümü', 'pasif', 'aktif'],
+            ],
+            'order_by'        => [
+                'label'    => 'Sıralama Türü',
+                'type'     => 'select',
+                'column'   => 'order_by',
+                'operator' => '',
+                'options'  => [
+                    'id'          => 'ID',
+                    'name'        => 'Marka Adı',
+                    'status'      => 'Durum',
+                    'parent_id'      => 'Üst Kategori',
+                ],
+            ],
+            'order_direction' => [
+                'label'    => 'Sıralama Yönü',
+                'type'     => 'select',
+                'column'   => 'order_direction',
+                'operator' => '',
+                'options'  => [
+                    'asc'  => 'A-Z',
+                    'desc' => 'Z-A',
+                ],
+            ],
+        ];
+    }
+
 
     /**
      * @return $this

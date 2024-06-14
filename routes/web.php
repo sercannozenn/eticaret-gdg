@@ -65,7 +65,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::get('/create', [SlidersController::class, 'create'])->name('create');
         Route::post('/create', [SlidersController::class, 'store']);
         Route::get('/edit/{slider}', [SlidersController::class, 'edit'])->name('edit');
-        Route::post('/edit/{slider}', [SlidersController::class, 'update']);
+        Route::put('/edit/{slider}', [SlidersController::class, 'update']);
         Route::post('/change-status', [SlidersController::class, 'changeStatus'])->name('change-status');
         Route::delete('/delete/{slider}', [SlidersController::class, 'delete'])->name('destroy');
 

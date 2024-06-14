@@ -24,9 +24,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = $this->categoryService->getAllCategoriesPaginate();
+        $categories = $this->categoryService->getCategories(10);
+        $filters = $this->categoryService->getFilters();
 
-        return view('admin.category.index', compact('categories'));
+        return view('admin.category.index', compact('categories', 'filters'));
     }
 
     /**
@@ -100,7 +101,6 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        dd($category);
         try
         {
             $this->categoryService->setCategory($category)->delete();
@@ -122,6 +122,7 @@ class CategoryController extends Controller
                               ->whereHas('children')
                               ->whereNull('parent_id')
                               ->get();
+        dd($categories);
         return view('categories', compact('categories'));
     }
 
