@@ -55,3 +55,16 @@
         @endif
     </div>
 </form>
+@push("css")
+    <link rel="stylesheet" href="{{ asset('assets/vendors/flatpickr/flatpickr.min.css') }}">
+@endpush
+@push('js')
+    <script src="{{ asset('assets/vendors/flatpickr/flatpickr.min.js') }}"></script>
+    <script>
+        flatpickr("#flatpickr-date", {
+            wrap      : true,
+            enableTime: true,
+            dateFormat: "Y-m-d",
+        });
+    </script>
+@endpush

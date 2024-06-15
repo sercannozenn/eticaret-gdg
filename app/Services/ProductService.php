@@ -164,7 +164,7 @@ class ProductService
                 'column'      => 'publish_date',
                 'column_live' => 'publish_date',
                 'table'       => 'products',
-                'operator'    => '='
+                'operator'    => 'like'
             ],
             'order_by'          => [
                 'label'    => 'Sıralama Türü',

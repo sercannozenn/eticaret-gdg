@@ -94,8 +94,25 @@ document.addEventListener('DOMContentLoaded', function ()
             element.appendChild(prevLi);
         }
 
+        let maxPagesToShow = 5;
+        let startPage = Math.max(1, data.current_page - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(data.last_page, startPage + maxPagesToShow - 1);
+
+        if (startPage > 1){
+            let firstPageLi = document.createElement('li');
+            firstPageLi.classList.add('page-item');
+            firstPageLi.innerHTML = `<a class="page-link" href="javascript:void(0)" data-page="1">1</a>`;
+            element.appendChild(firstPageLi);
+
+            if (startPage > 2){
+                let dotsLi = document.createElement('li');
+                dotsLi.classList.add('page-item', 'disabled');
+                dotsLi.innerHTML= '<span class="page-link">...</span>';
+                element.appendChild(dotsLi);
+            }
+        }
         if (data.data.length){
-            for (let i=1; i<= data.last_page; i++){
+            for (let i=startPage; i<= endPage; i++){
                 let pageLi = document.createElement('li');
                 pageLi.classList.add('page-item');
                 if (data.current_page === i){
@@ -106,6 +123,20 @@ document.addEventListener('DOMContentLoaded', function ()
                 }
                 element.appendChild(pageLi);
             }
+        }
+
+        if (endPage < data.last_page){
+            if (endPage < (data.last_page-1)){
+                let dotsLi = document.createElement('li');
+                dotsLi.classList.add('page-item', 'disabled');
+                dotsLi.innerHTML= '<span class="page-link">...</span>';
+                element.appendChild(dotsLi);
+            }
+
+            let lastPageLi = document.createElement('li');
+            lastPageLi.classList.add('page-item');
+            lastPageLi.innerHTML = `<a class="page-link" href="javascript:void(0)" data-page="${data.last_page}">${data.last_page}</a>`;
+            element.appendChild(lastPageLi);
         }
 
 
