@@ -12,19 +12,24 @@ class FilterService
 
     public function applyFilters($query, array $filters)
     {
-        foreach ($filters as $filterKey => $filterValue){
+        foreach ($filters as $filterKey => $filterValue) {
             if ($this->request->filled($filterKey) &&
                 !($filterValue['type'] == 'select' && $this->request->$filterKey == 'all') &&
                 $filterKey != 'order_by' &&
                 $filterKey != 'order_direction'
-            ){
-                $requestValue = $filterValue['operator'] == 'like' ? '%'. $this->request->$filterKey . '%' : $this->request->$filterKey;
-                $query = $query->where($filterValue['column'], $filterValue['operator'],  $requestValue);
+            ) {
+                $requestValue = $filterValue['operator'] == 'like' ? '%' . $this->request->$filterKey . '%' : $this->request->$filterKey;
+                if (isset($filterValue['table'])) {
+                    $query = $query->where($filterValue['table'] . '.' . $filterValue['column_live'], $filterValue['operator'], $requestValue);
+                }
+                else {
+                    $query = $query->where($filterValue['column'], $filterValue['operator'], $requestValue);
+                }
             }
 
-            if ($this->request->filled('order_by') && $this->request->filled('order_direction')){
-                $query->orderBy($this->request->order_by, $this->request->order_direction);
-            }
+        }
+        if ($this->request->filled('order_by') && $this->request->filled('order_direction')) {
+            $query->orderBy($this->request->order_by, $this->request->order_direction);
         }
         return $query;
     }

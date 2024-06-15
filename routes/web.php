@@ -57,6 +57,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::post('/check-slug', [AdminProductController::class, 'checkSlug'])->name('check-slug');
         Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('change-status');
         Route::delete('/delete/{products_main}', [AdminProductController::class, 'delete'])->name('destroy');
+        Route::get('/search', [AdminProductController::class, 'search'])->name('search');
     });
 
     Route::prefix('slider')->name('slider.')->group(function (){

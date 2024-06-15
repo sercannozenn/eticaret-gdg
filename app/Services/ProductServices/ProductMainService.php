@@ -12,6 +12,14 @@ class ProductMainService
     {
     }
 
+    public function getProductsQuery()
+    {
+        return $this->productsMain::query()
+            ->with(['category', 'type', 'brand'])
+            ->join('products', 'products.main_product_id', '=', 'products_main.id')
+            ->select('products_main.*');
+    }
+
     public function store(): ProductsMain
     {
         return $this->productsMain::create($this->preparedData);

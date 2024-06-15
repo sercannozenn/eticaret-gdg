@@ -1,7 +1,7 @@
 <form method="GET" action="{{ $action }}" id="filter-form">
     <div class="row">
         @foreach($filters as $filter)
-            <div class="col mb-3">
+            <div class="{{ isset($customClass) ? $customClass : 'col' }} mb-3">
                 <label for="{{ $filter['column'] }}" class="form-label">{{ $filter['label'] }}</label>
                 @if($filter['type'] == 'text')
                     <input type="text"
@@ -9,7 +9,7 @@
                            id="{{ $filter['column'] }}"
                            autocomplete="off"
                            placeholder="{{ $filter['label'] }}"
-                           name="{{ $filter['column'] }}"
+                           name="{{$filter['column']}}"
                            value="{{ request($filter['column']) }}">
                 @elseif($filter['type'] == 'number')
                     <input type="number"
@@ -17,12 +17,12 @@
                            id="{{ $filter['column'] }}"
                            autocomplete="off"
                            placeholder="{{ $filter['label'] }}"
-                           name="{{ $filter['column'] }}"
+                           name="{{ $filter['column']}}"
                            value="{{ request($filter['column']) }}">
                 @elseif($filter['type'] == 'select')
                     <select
                         class="form-select"
-                        name="{{ $filter['column'] }}"
+                        name="{{ $filter['column']}}"
                         id="{{ $filter['column'] }}">
                         @foreach($filter['options'] as $optionKey => $optionValue)
                             <option value="{{ $optionKey }}"
@@ -37,7 +37,7 @@
                                class="form-control"
                                placeholder="{{ $filter['label'] }}"
                                data-input
-                               name="{{ $filter['column'] }}"
+                               name="{{$filter['column']}}"
                                value="{{ request($filter['column']) }}">
                         <span class="input-group-text input-group-addon" data-toggle><i data-feather="calendar"></i></span>
                     </div>

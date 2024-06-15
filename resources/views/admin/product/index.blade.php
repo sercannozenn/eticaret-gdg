@@ -8,6 +8,9 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title">Ürün LİSTESİ</h6>
+
+            <x-filter-form :filters="$filters" action="" customClass="col-md-3"/>
+
             <div class="table-responsive pt-3">
                 <table class="table table-bordered">
                     <thead>
@@ -22,7 +25,7 @@
                         <th>İşlemler</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="list-body">
                     @foreach($products as $product)
                         <tr>
                             <td>{{ $product->id }}</td>
@@ -144,6 +147,10 @@
 
         });
 
+        var searchRoute = '{{ route('admin.product.search') }}';
+        var editRoute = "{{ route('admin.product.edit', ['products_main' => 'main_id_val']) }}";
 
     </script>
+    <script src="{{ asset('assets/js/product/search.js') }}"></script>
+
 @endpush

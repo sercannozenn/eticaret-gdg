@@ -20,10 +20,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
+use function Laravel\Prompts\search;
 
 class ProductController extends Controller
 {
     use GdgException;
+
     public function __construct(public BrandService    $brandService,
                                 public CategoryService $categoryService,
                                 public ProductService  $productService
@@ -33,23 +35,32 @@ class ProductController extends Controller
 
     public function index()
     {
-        $productsMain = ProductsMain::all();
+        $products = $this->productService->getProducts(10);
+        $filters  = $this->productService->getFilters();
 
-        return view('admin.product.index')->with('products', $productsMain);
+        return view('admin.product.index')->with('products', $products)->with('filters', $filters);
+    }
+
+    public function search(Request $request)
+    {
+        $products = $this->productService->getProducts(10);
+        return $products;
+
+        dd($request->all());
     }
 
     public function create()
     {
         $categories = $this->categoryService->getAllCategories();
         $brands     = $this->brandService->getAll();
-        $types = ProductTypes::all();
-        $genders = Gender::cases();
+        $types      = ProductTypes::all();
+        $genders    = Gender::cases();
 
         return view('admin.product.create_edit',
                     compact('categories',
                             'brands',
                             'types',
-                    'genders'
+                            'genders'
                     ));
     }
 
@@ -59,7 +70,8 @@ class ProductController extends Controller
         try {
             $this->productService->store($request);
             DB::commit();
-        }catch (\Exception $exception) {
+        }
+        catch (\Exception $exception) {
             DB::rollBack();
             dd($exception->getMessage());
             alert()->success('Hata', $exception->getMessage());
@@ -75,7 +87,7 @@ class ProductController extends Controller
         $categories = $this->categoryService->getAllCategories();
         $brands     = $this->brandService->getAll();
         $types      = ProductTypes::all();
-        $genders = Gender::cases();
+        $genders    = Gender::cases();
 
         $product = $productsMain->load([
                                            'variants',
