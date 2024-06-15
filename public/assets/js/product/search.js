@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function ()
 {
-    let currentPage = 1;
     let defaultOrderDirection = document.querySelector('#order_direction').value;
     let oldSortColumn = 'products_main.id';
-    let currentSortDirection = 'asc';
 
     let inputs = document.querySelectorAll('#filter-form input, #filter-form select');
 
@@ -18,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function ()
         inputs.forEach(input => {
             formData[input.getAttribute('name')] = input.value;
         });
+        formData.page = currentPage;
 
         let queryString = new URLSearchParams(formData).toString();
         let newRoute = searchRoute + '/?' + queryString;
@@ -25,7 +24,8 @@ document.addEventListener('DOMContentLoaded', function ()
             .then(response => response.json())
             .then(data => {
                 intializeTable(data.data);
-            })
+                updatePagination(data);
+            });
     }
 
     function intializeTable(data){
@@ -61,6 +61,76 @@ document.addEventListener('DOMContentLoaded', function ()
         });
     }
 
+    function updatePagination(data){
+        let paginationElement = document.querySelector('.d-sm-none .pagination');
+        let desktopPaginationElement = document.querySelector('.d-none.d-sm-flex .pagination');
+
+        if (data){
+            currentPage = data.current_page;
+        }
+
+        if (data.data.length > 0){
+            console.log("girdi", data.data.length)
+            desktopPagination(data, desktopPaginationElement);
+        }else{
+            desktopPaginationElement.innerHTML = '';
+        }
+
+        console.log(data);
+    }
+
+    function desktopPagination(data , element){
+        element.innerHTML  = '';
+
+        if (data.data.length && data.prev_page_url){
+            let prevLi = document.createElement('li');
+            prevLi.classList.add('page-item');
+            prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)" data-page="${data.current_page - 1}" rel="prev" aria-label="« Previous">‹</a>`
+            element.appendChild(prevLi);
+        }else {
+            let prevLi = document.createElement('li');
+            prevLi.classList.add('page-item', 'disabled');
+            prevLi.innerHTML= `<span class="page-link" aria-hidden="true">‹</span>`;
+            element.appendChild(prevLi);
+        }
+
+        if (data.data.length){
+            for (let i=1; i<= data.last_page; i++){
+                let pageLi = document.createElement('li');
+                pageLi.classList.add('page-item');
+                if (data.current_page === i){
+                    pageLi.classList.add('active');
+                    pageLi.innerHTML = `<span class="page-link">${i}</span>`;
+                }else{
+                    pageLi.innerHTML = `<a class="page-link" href="javascript:void(0)" data-page="${i}">${i}</a>`;
+                }
+                element.appendChild(pageLi);
+            }
+        }
+
+
+        if (data.data.length && data.next_page_url){
+            let nextLi = document.createElement('li');
+            nextLi.classList.add('page-item');
+            nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)" rel="next" data-page="${data.current_page + 1}" aria-label="Next »">›</a>`;
+            element.appendChild(nextLi);
+        }else{
+            let nextLi = document.createElement('li');
+            nextLi.classList.add('page-item', 'disabled');
+            nextLi.innerHTML= `<span class="page-link" aria-hidden="true">›</span>`;
+            element.appendChild(nextLi);
+        }
+
+        element.querySelectorAll('a.page-link').forEach(link => {
+           link.addEventListener('click', function ()
+           {
+               currentPage = parseInt(this.getAttribute('data-page'));
+               inputChange();
+           }) ;
+        });
+
+    }
+
     document.querySelector('.table').addEventListener('click', function (event)
     {
         let element = event.target;
@@ -88,33 +158,6 @@ document.addEventListener('DOMContentLoaded', function ()
                 iElement.setAttribute('data-feather', 'chevron-down');
                 element.appendChild(iElement);
             }
-
-
-
-
-            // if (defaultOrderDirection === '' || defaultOrderDirection === null || defaultOrderDirection === undefined)
-            // {
-            //     defaultOrderDirection = 'desc';
-            //
-            //     let iElement = document.createElement('i');
-            //     iElement.setAttribute('data-feather', 'chevron-up');
-            //     element.appendChild(iElement);
-            //
-            // }
-            // else if (defaultOrderDirection === 'asc')
-            // {
-            //     defaultOrderDirection = 'desc'
-            //     let iElement = document.createElement('i');
-            //     iElement.setAttribute('data-feather', 'chevron-up');
-            //     element.appendChild(iElement);
-            // }
-            // else
-            // {
-            //     defaultOrderDirection = 'asc';
-            //     let iElement = document.createElement('i');
-            //     iElement.setAttribute('data-feather', 'chevron-down');
-            //     element.appendChild(iElement);
-            // }
             orderDirectionElement.value = defaultOrderDirection;
             feather.replace();
             console.log("defaultOrderDirection2:" + defaultOrderDirection);
@@ -131,6 +174,8 @@ document.addEventListener('DOMContentLoaded', function ()
                                   i.remove();
                               })
     }
+
+    inputChange();
 });
 
 

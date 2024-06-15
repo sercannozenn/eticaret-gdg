@@ -39,16 +39,19 @@
                                data-input
                                name="{{$filter['column']}}"
                                value="{{ request($filter['column']) }}">
-                        <span class="input-group-text input-group-addon" data-toggle><i data-feather="calendar"></i></span>
+                        <span class="input-group-text input-group-addon" data-toggle><i
+                                data-feather="calendar"></i></span>
                     </div>
                 @endif
 
             </div>
         @endforeach
-        <div class="col-md-12">
-            <hr>
-            <button type="submit" class="btn btn-success w-100">Filtrele</button>
-            <hr>
-        </div>
+        @if(!isset($disableButton))
+            <div class="col-md-12">
+                <hr>
+                <button type="submit" class="btn btn-success w-100">Filtrele</button>
+                <hr>
+            </div>
+        @endif
     </div>
 </form>

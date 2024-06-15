@@ -35,15 +35,14 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = $this->productService->getProducts(10);
         $filters  = $this->productService->getFilters();
 
-        return view('admin.product.index')->with('products', $products)->with('filters', $filters);
+        return view('admin.product.index')->with('filters', $filters);
     }
 
     public function search(Request $request)
     {
-        $products = $this->productService->getProducts(10);
+        $products = $this->productService->getProducts(1);
         return $products;
     }
 

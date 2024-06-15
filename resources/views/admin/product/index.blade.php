@@ -3,7 +3,7 @@
 
 @push("css")
     <style>
-        #filter-form{
+        #filter-form {
             min-height: 80px;
             max-height: max-content;
             height: 80px;
@@ -19,10 +19,11 @@
         <div class="card-body">
             <h6 class="card-title">Ürün LİSTESİ</h6>
 
-            <x-filter-form :filters="$filters" action="" customClass="col-md-3"/>
+            <x-filter-form :filters="$filters" action="" customClass="col-md-3" :disableButton="true"/>
             <div class="row justify-content-end mt-4">
                 <div class="col-md-4">
-                    <a href="javascript:void(0)" id="showFilter" class="btn btn-info float-end" title="Filterleri Gör"><i data-feather="eye"></i></a>
+                    <a href="javascript:void(0)" id="showFilter" class="btn btn-info float-end"
+                       title="Filterleri Gör"><i data-feather="eye"></i></a>
                 </div>
             </div>
             <div class="table-responsive pt-3">
@@ -40,33 +41,6 @@
                     </tr>
                     </thead>
                     <tbody id="list-body">
-                    @foreach($products as $product)
-                        <tr>
-                            <td>{{ $product->id }}</td>
-                            <td>{{ $product->name }}</td>
-                            <td>{{ number_format($product->price, 2) }}</td>
-                            <td>{{ $product->cname  }}</td>
-                            <td>{{ $product->bname  }}</td>
-                            <td>{{ $product->typename  }}</td>
-                            <td>
-                                @if($product->status)
-                                    <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-status"
-                                       data-id="{{ $product->id }}">Aktif</a>
-                                @else
-                                    <a href="javascript:void(0)" class="btn btn-inverse-danger btn-change-status"
-                                       data-id="{{ $product->id }}">Pasif</a>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.product.edit', ['products_main' => $product->id]) }}"><i
-                                        class="text-warning" data-feather="edit"></i></a>
-                                <a href="javascript:void(0)">
-                                    <i data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                       class="text-danger btn-delete-product"
-                                       data-feather="trash"></i></a>
-                            </td>
-                        </tr>
-                    @endforeach
                     </tbody>
                 </table>
                 <form action="" method="POST" id="deleteForm">
@@ -74,7 +48,18 @@
                     @method('DELETE')
                 </form>
                 <div class="col-6 mx-auto mt-3">
-{{--                    {{ $brands->links() }}--}}
+                    <nav class="d-flex justify-items-center justify-content-between">
+                        <div class="d-flex justify-content-between flex-fill d-sm-none">
+                            <ul class="pagination">
+                            </ul>
+                        </div>
+                        <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
+                            <div>
+                                <ul class="pagination">
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -142,29 +127,35 @@
                                 return response.json();
                             })
                       .then(data =>
-                         {
-                             element.textContent = data.status ? "Aktif" : "Pasif";
-                             if(data.status) {
-                                 element.classList.add("btn-inverse-success");
-                                 element.classList.remove('btn-inverse-danger')
-                             }
-                             else {
-                                 element.classList.remove("btn-inverse-success");
-                                 element.classList.add('btn-inverse-danger')
-                             }
-                             Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
-                         })
+                            {
+                                element.textContent = data.status ? "Aktif" : "Pasif";
+                                if (data.status)
+                                {
+                                    element.classList.add("btn-inverse-success");
+                                    element.classList.remove('btn-inverse-danger')
+                                }
+                                else
+                                {
+                                    element.classList.remove("btn-inverse-success");
+                                    element.classList.add('btn-inverse-danger')
+                                }
+                                Swal.fire("Başarılı.", element.textContent + " olarak güncellendi.", "success");
+                            })
                 }
 
 
             });
 
             let showFilter = document.querySelector('#showFilter');
-            showFilter.addEventListener('click', function () {
+            showFilter.addEventListener('click', function ()
+            {
                 let filterForm = document.querySelector('#filter-form');
-                if(filterForm.offsetHeight < filterForm.scrollHeight){
+                if (filterForm.offsetHeight < filterForm.scrollHeight)
+                {
                     filterForm.style.height = filterForm.scrollHeight + 'px';
-                }else{
+                }
+                else
+                {
                     filterForm.style.height = '80px';
                 }
 
@@ -174,6 +165,7 @@
 
         var searchRoute = '{{ route('admin.product.search') }}';
         var editRoute = "{{ route('admin.product.edit', ['products_main' => 'main_id_val']) }}";
+        var currentPage = "{{ request()->input('page', 1) }}";
 
     </script>
     <script src="{{ asset('assets/js/product/search.js') }}"></script>
