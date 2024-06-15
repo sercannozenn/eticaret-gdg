@@ -27,6 +27,7 @@ class FilterService
                 }
             }
 
+
         }
         if ($this->request->filled('order_by') && $this->request->filled('order_direction')) {
             $query->orderBy($this->request->order_by, $this->request->order_direction);

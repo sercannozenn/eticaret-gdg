@@ -15,9 +15,12 @@ class ProductMainService
     public function getProductsQuery()
     {
         return $this->productsMain::query()
-            ->with(['category', 'type', 'brand'])
+//            ->with(['category', 'type', 'brand'])
             ->join('products', 'products.main_product_id', '=', 'products_main.id')
-            ->select('products_main.*');
+            ->join('categories', 'categories.id', '=', 'products_main.category_id')
+            ->join('brands', 'brands.id', '=', 'products_main.brand_id')
+            ->join('product_types', 'product_types.id', '=', 'products_main.type_id')
+            ->select('products_main.*', 'categories.name as cname', 'brands.name as bname', 'product_types.name as typename');
     }
 
     public function store(): ProductsMain

@@ -45,8 +45,6 @@ class ProductController extends Controller
     {
         $products = $this->productService->getProducts(10);
         return $products;
-
-        dd($request->all());
     }
 
     public function create()

@@ -2,6 +2,16 @@
 @section('title', 'Ürün Listesi')
 
 @push("css")
+    <style>
+        #filter-form{
+            min-height: 80px;
+            max-height: max-content;
+            height: 80px;
+            overflow: hidden;
+            transition: all 1s ease;
+            resize: vertical;
+        }
+    </style>
 @endpush
 
 @section('body')
@@ -10,18 +20,22 @@
             <h6 class="card-title">Ürün LİSTESİ</h6>
 
             <x-filter-form :filters="$filters" action="" customClass="col-md-3"/>
-
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-4">
+                    <a href="javascript:void(0)" id="showFilter" class="btn btn-info float-end" title="Filterleri Gör"><i data-feather="eye"></i></a>
+                </div>
+            </div>
             <div class="table-responsive pt-3">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Ad</th>
+                        <th class="order-by" data-order="products_main.id">#</th>
+                        <th class="order-by" data-order="products_main.name">Ad</th>
                         <th>Fiyat</th>
-                        <th>Kategori</th>
-                        <th>Marka</th>
-                        <th>Ürün Türü</th>
-                        <th>Durum</th>
+                        <th class="order-by" data-order="categories.name">Kategori</th>
+                        <th class="order-by" data-order="brands.name">Marka</th>
+                        <th class="order-by" data-order="products_main.type_id">Ürün Türü</th>
+                        <th class="order-by" data-order="products_main.status">Durum</th>
                         <th>İşlemler</th>
                     </tr>
                     </thead>
@@ -31,9 +45,9 @@
                             <td>{{ $product->id }}</td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 2) }}</td>
-                            <td>{{ $product->category->name  }}</td>
-                            <td>{{ $product->brand->name  }}</td>
-                            <td>{{ $product->type->name  }}</td>
+                            <td>{{ $product->cname  }}</td>
+                            <td>{{ $product->bname  }}</td>
+                            <td>{{ $product->typename  }}</td>
                             <td>
                                 @if($product->status)
                                     <a href="javascript:void(0)" class="btn btn-inverse-success btn-change-status"
@@ -142,8 +156,19 @@
                          })
                 }
 
+
             });
 
+            let showFilter = document.querySelector('#showFilter');
+            showFilter.addEventListener('click', function () {
+                let filterForm = document.querySelector('#filter-form');
+                if(filterForm.offsetHeight < filterForm.scrollHeight){
+                    filterForm.style.height = filterForm.scrollHeight + 'px';
+                }else{
+                    filterForm.style.height = '80px';
+                }
+
+            });
 
         });
 

@@ -29,7 +29,7 @@ class ProductService
         $filters = $this->getFilters();
         $query   = $this->productMainService->getProductsQuery();
         $query   = $this->filterService->applyFilters($query, $filters);
-//        dd($query->toSql());
+//                dd($query->toSql());
         if ($perPage) {
             return $this->filterService->paginate($query, $perPage);
         }
@@ -50,7 +50,7 @@ class ProductService
 
         return [
             'name'              => [
-                'label'       => 'Marka Adı',
+                'label'       => 'Ürün Adı',
                 'type'        => 'text',
                 'column'      => 'name',
                 'column_live' => 'name',
@@ -58,7 +58,7 @@ class ProductService
                 'operator'    => 'like'
             ],
             'type_id'           => [
-                'label'       => 'ÜrünTürü',
+                'label'       => 'Ürün Türü',
                 'type'        => 'select',
                 'column'      => 'type_id',
                 'column_live' => 'type_id',
@@ -172,8 +172,12 @@ class ProductService
                 'column'   => 'order_by',
                 'operator' => '',
                 'options'  => [
-                    'products_main.id'          => 'ID',
-                    'products_main.name'        => 'Marka Adı',
+                    'products_main.id'      => 'ID',
+                    'products_main.name'    => 'Ürün Adı',
+                    'categories.name'         => 'Kategori',
+                    'brands.name'            => 'Marka',
+                    'products_main.type_id' => 'Ürün Türü',
+                    'products_main.status'  => 'Durum',
                 ],
             ],
             'order_direction'   => [
