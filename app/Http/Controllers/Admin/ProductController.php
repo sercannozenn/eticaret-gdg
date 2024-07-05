@@ -42,7 +42,7 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-        $products = $this->productService->getProducts(1);
+        $products = $this->productService->getProducts(10);
         return $products;
     }
 
@@ -86,6 +86,8 @@ class ProductController extends Controller
         $types      = ProductTypes::all();
         $genders    = Gender::cases();
 
+        $isGenderDisabled = in_array($productsMain->gender, [Gender::ChildBoy->value, Gender::ChildGirl->value]);
+
         $product = $productsMain->load([
                                            'variants',
                                            'variants.variantImages',
@@ -93,13 +95,12 @@ class ProductController extends Controller
 
                                        ])->toArray();
 
-        return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types', 'genders'));
+        return view('admin.product.create_edit', compact('product', 'categories', 'brands', 'types', 'genders', 'isGenderDisabled'));
     }
 
     public function update(ProductUpdateRequest $request, ProductsMain $productsMain)
     {
         try {
-
             $this->productService->update($request, $productsMain);
             alert()->success('Başarılı', 'Ürün düzenlendi');
             return redirect()->route('admin.product.index');

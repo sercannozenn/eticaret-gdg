@@ -25,6 +25,11 @@ class ProductService
         return $this->product->update($this->preparedData);
     }
 
+    public function destroy(array $ids): int
+    {
+        return $this->product::destroy($ids);
+    }
+
     public function setProduct(Product $product): self
     {
         $this->product = $product;

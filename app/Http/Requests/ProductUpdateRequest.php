@@ -68,7 +68,6 @@ class ProductUpdateRequest extends FormRequest
     public function prepareForValidation()
     {
         $variants = $this->input('variant', []);
-
         foreach ($variants as $key => &$variant) {
             $variant['slug'] = Str::slug($variant['slug']);
         }

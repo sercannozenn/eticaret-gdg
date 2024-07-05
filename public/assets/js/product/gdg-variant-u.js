@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let findDeleteVariantElement = document.querySelector('#row-' + variantID);
             if (findDeleteVariantElement) {
                 findDeleteVariantElement.remove();
+                variantSizeStockInfo.splice(variantID, 1);
                 updateVariantIndexes();
             }
         }
@@ -249,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isEdit){
             console.log("variant");
             console.log(variant);
-            var variantIDElement = createInput('', '', '', `variant[${variantCount}][variant_index]`, 'hidden', variant.id);
+            var variantIDElement = createInput('', `variant-index-${variantCount}`, '', `variant[${variantCount}][variant_index]`, 'hidden', variant.id);
             row.appendChild(variantIDElement);
         }else{
             console.log(variant, "isEdit");
@@ -349,12 +350,14 @@ document.addEventListener("DOMContentLoaded", function () {
             { selector: '[for^="size-"]',  attr: 'for', prefix: 'size-' },
             { selector: '[id^="size-"]',  attr: 'id', prefix: 'size-', name: true },
             { selector: '[id^="sizeDiv"]',  attr: 'id', prefix: 'sizeDiv' },
-            { selector: '[id^="sizeStockDeleteGeneral-"]',  attr: 'id', prefix: 'sizeStockDeleteGeneral-', special: true },
             { selector: '[for^="stock-"]',  attr: 'for', prefix: 'stock-' },
             { selector: '[id^="stock-"]',  attr: 'id', prefix: 'stock-', name: true },
+            { selector: '[id^="sizeStockDeleteGeneral-"]',  attr: 'id', prefix: 'sizeStockDeleteGeneral-', special: true },
             { selector: '[for^="radio-"]',  attr: 'for', prefix: 'radio-', special: true },
             { selector: '[id^="radio-"]',  attr: 'id', prefix: 'radio-', name: true, special: true },
-            { selector: '[id^="data-input-"]',  attr: 'id', prefix: 'data-input-', name: "image" },
+            { selector: '[id^="data-input-"]',  attr: 'id', prefix: 'data-input-', special: true },
+            { selector: '[id^="sizeStockDelete-"]',  attr: 'data-size-stock-id', prefix: 'sizeStockDelete-', special: true },
+            { selector: '[id^="variant-index-"]',  attr: 'name', prefix: 'variant-index-', name: 'variant_index', special: true },
 
         ];
         allVariants.forEach((variant, index) => {
@@ -369,14 +372,31 @@ document.addEventListener("DOMContentLoaded", function () {
                       element.querySelectorAll('[id^="size-"]').forEach(e => {
                           e.id = `size-${index}-${stockID}`;
                           e.setAttribute('name', `variant[${index}][size][${stockID}]`);
+                      });
+
+                      element.querySelectorAll('[for^="stock-"]').forEach(e => e.setAttribute('for', `stock-${index}-${stockID}`));
+                      element.querySelectorAll('[id^="stock-"]').forEach(e => {
+                          e.id = `stock-${index}-${stockID}`;
+                          e.setAttribute('name', `variant[${index}][stock][${stockID}]`);
                       })
                   }else if(special && selector === '[for^="radio-"]'){
                       let [_, __, imageID] = element.getAttribute(attr).split("-");
                       element.setAttribute(attr, `${prefix}${index}-${imageID}`);
-                  }else if (special && selector === '[id^="radio-"]'){
+                  }else if (special && selector === '[id^="radio-"]') {
                       let [_, __, imageID] = element.getAttribute(attr).split("-");
                       element.id = `${prefix}${index}-${imageID}`;
-                      element.setAttribute("name", `variant[${index}][radio]`);
+                      element.setAttribute("name", `variant[${index}][featured_image]`);
+                  }
+                  else if (special && selector === '[id^="sizeStockDelete-"]') {
+                      let [_, size] = element.getAttribute(attr).split('-');
+                      element.id = `${prefix}${index}-${size}`;
+                      element.setAttribute(attr, `${index}-${size}`);
+                  }else if(special && selector === '[id^="data-input-"]') {
+                      element.id = `${prefix}${index}`;
+                      element.name = `variant[${index}][image]`;
+                  } else if(special && selector === '[id^="variant-index-"]'){
+                      element.id = `${prefix}${index}`;
+                      element.setAttribute(attr, `variant[${index}][${name}]`);
                   }else{
                       element.setAttribute(attr, `${prefix}${index}`);
                       if (name) element.setAttribute('name', `${name === true ? `variant[${index}][${prefix.slice(0,-1)}]` : `${name}[${index}]` }`);
@@ -389,6 +409,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateSizeStockIndexes(dataSizeStockID)
     {
         let [variantID, sizeStockID] = dataSizeStockID.split("-");
+        variantSizeStockInfo[variantID].size_stock -=1;
+
         let allSizeStock = document.querySelectorAll('.row.size-stock-' + variantID);
         allSizeStock.forEach((variant, index) => {
             let id = variantID + "-" + index;

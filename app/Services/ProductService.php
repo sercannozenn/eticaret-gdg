@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductsMain;
 use App\Models\ProductTypes;
 use App\Services\ProductServices\ProductImageService;
@@ -290,6 +291,8 @@ class ProductService
      */
     public function updateVariants(Request $request, ProductsMain $productsMain): void
     {
+        $this->diffVariantUpdateIds($request, $productsMain);
+
         $data = $request->all();
         foreach ($data['variant'] as $variant) {
             //            dd($variant);
@@ -307,6 +310,15 @@ class ProductService
                 $this->storeSizeStock($variant, $product->id);
             }
         }
+    }
+
+    public function diffVariantUpdateIds(Request $request, ProductsMain $productsMain): void
+    {
+        $requestVariantIds = array_column($request->variant, 'variant_index');
+        $dbVariantIds = $productsMain->variants->pluck('id')->toArray();
+        $diffVariantIds = array_diff($dbVariantIds, $requestVariantIds);
+
+        $this->productService->destroy($diffVariantIds);
     }
 
 }
