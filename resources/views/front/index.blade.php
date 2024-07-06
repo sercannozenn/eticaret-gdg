@@ -8,23 +8,31 @@
     <section class="slider position-relative bg-orange mt-2">
         <div class="home-swiper swiper-container">
             <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="slide">
-                        <img src="{{ asset('assets/images/slide-bg-2-2.jpg') }}" alt="">
-                    </div>
-                    <div class="slider-title">
-                        <div class="title-wrapper">
-                            <h3 class="font-playfair fw-bold-600">SEPETTE %30 İNDİRİM</h3>
-                            <h2 class="fw-bold-600 text-white">KAÇIRMA</h2>
-                            <a href="" class="btn btn-outline-dark text-center mt-3">SATIN AL</a>
+                @foreach($sliders  as $slider)
+                    <div class="swiper-slide">
+                        <div class="slide">
+                            <img src="{{ asset($slider->path) }}" alt="{{ $slider->name }}">
+                        </div>
+                        <div class="slider-title">
+                            <div class="title-wrapper">
+                                <h3 class="font-playfair fw-bold-600"
+                                    style="color:{{ $slider->row_1_color }}, {{ $slider->row_1_css }}">
+                                    {!! $slider->row_1_text !!}
+                                </h3>
+                                <h2 class="fw-bold-600 text-white"
+                                    style="color:{{ $slider->row_2_color }}, {{ $slider->row_2_css }}">
+                                    {!! $slider->row_2_text !!}
+                                </h2>
+                                <a href="{{ $slider->button_url }}"
+                                   target="{{ $slider->button_target }}"
+                                   class="btn btn-outline-dark text-center mt-3"
+                                   style="color:{{ $slider->button_color }}, {{ $slider->button_css }}">
+                                    {!! $slider->button_text !!}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="slide">
-                        <img src="{{ asset('assets/images/slider3.webp') }}" alt="">
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <!-- If we need navigation buttons -->
@@ -45,76 +53,16 @@
                 <div class="col-12">
                     <div class="brand-swiper mt-4">
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/brand1.webp') }}" alt="">
-                                    </a>
+                            @foreach($featuredBrands as $brand)
+                                <div class="swiper-slide text-center">
+                                    <div class="brand-slider">
+                                        <a href="">
+                                            <img src="{{ asset($brand->logo) }}" alt="{{ $brand->name }}">
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand2.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand3.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand7.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand5.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand6.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand6.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand6.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand6.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide text-center">
-                                <div class="brand-slider">
-                                    <a href="javascript:void(0)">
-                                        <img src="{{ asset('assets/images/brand6.webp') }}" alt="">
-                                    </a>
-                                </div>
-                            </div>
+
+                            @endforeach
                         </div>
                     </div>
                 </div>

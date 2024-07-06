@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\UserRegisterEvent;
 use App\Listeners\UserRegisterListener;
+use App\Services\BrandService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
-
+        $brandService = $this->app->make(BrandService::class);
+        $brandsColumns = $brandService->getAllActive();
+        view()->composer('front.*', function ($view) use ($brandsColumns){
+            $view->with("brandsColumns", $brandsColumns);
+        });
     }
 }

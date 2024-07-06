@@ -70,6 +70,24 @@
                     </ul>
                 </div>
             </li>
+            <li class="nav-item {{ Route::is('admin.category.index') || Route::is('admin.category.create') ? 'active' : '' }}">
+                <a class="nav-link" data-bs-toggle="collapse" href="#sliders" role="button" aria-expanded="false" aria-controls="categories">
+                    <i class="link-icon" data-feather="list"></i>
+                    <span class="link-title">Slider Yönetimi</span>
+                    <i class="link-arrow" data-feather="chevron-down"></i>
+                </a>
+                <div class="collapse {{ Route::is('admin.slider.index') || Route::is('admin.slider.create') ? 'show' : '' }}" id="sliders">
+                    <ul class="nav sub-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.slider.index') }}" class="nav-link {{ Route::is('admin.slider.index') ? 'active' : '' }}">Slider Listesi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.slider.create') }}" class="nav-link {{ Route::is('admin.slider.create') ? 'active' : '' }}">Slider Ekleme</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="nav-item">
                 <a href="../../pages/apps/chat.html" class="nav-link">
                     <i class="link-icon" data-feather="message-square"></i>

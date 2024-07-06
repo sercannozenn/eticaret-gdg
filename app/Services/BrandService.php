@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Brand;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -223,9 +224,24 @@ class BrandService
         $logo = $this->brand->logo;
         $path = is_null($logo) ? '' : pathEditor($this->brand->logo);
 
-        if (file_exists(storage_path("app/" . $path))) {
+        if (file_exists(storage_path("app/".$path))) {
             $this->imageService->deleteImage($path);
         }
+    }
+
+    public function getFeaturedBrands(): Collection
+    {
+        return $this->brand::query()
+                           ->where('status', 1)
+                           ->where('is_featured', 1)
+                           ->get();
+    }
+
+    public function getAllActive(): Collection
+    {
+        return $this->brand::query()
+            ->where('status', 1)
+            ->get();
     }
 
 }

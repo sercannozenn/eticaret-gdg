@@ -321,4 +321,9 @@ class ProductService
         $this->productService->destroy($diffVariantIds);
     }
 
+    public function getAllProductsActive(): Collection
+    {
+        return $this->productService->getAllActive();
+    }
+
 }

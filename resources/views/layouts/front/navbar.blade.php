@@ -20,50 +20,13 @@
                                 <div class="col-md-9 nav-brands">
                                     <h4 class="mb-4">Tüm Markalar</h4>
                                     <div class="row">
-                                        <div class="col navbar-column">
-                                            <a href="product-list.html" class="dropdown-link">Adidas</a>
-                                            <a href="#" class="dropdown-link">Nike</a>
-                                            <a href="#" class="dropdown-link">Puma</a>
-                                            <a href="#" class="dropdown-link">Skechers</a>
-                                            <a href="#" class="dropdown-link">Lotto</a>
-                                            <a href="#" class="dropdown-link">Huf</a>
-                                            <a href="#" class="dropdown-link">Reebok</a>
-                                            <a href="#" class="dropdown-link">Parafina</a>
-                                            <a href="#" class="dropdown-link">Salomon</a>
-                                        </div>
-                                        <div class="col navbar-column">
-                                            <a href="#" class="dropdown-link">Rains</a>
-                                            <a href="#" class="dropdown-link">United 4</a>
-                                            <a href="#" class="dropdown-link">Vans</a>
-                                            <a href="#" class="dropdown-link">Veja</a>
-                                            <a href="#" class="dropdown-link">Market</a>
-                                            <a href="#" class="dropdown-link">Nautica</a>
-                                            <a href="#" class="dropdown-link">Element</a>
-                                            <a href="#" class="dropdown-link">Etnies</a>
-                                            <a href="#" class="dropdown-link">Funko</a>
-                                        </div>
-                                        <div class="col navbar-column">
-                                            <a href="#" class="dropdown-link">Columbia</a>
-                                            <a href="#" class="dropdown-link">Brekenstock</a>
-                                            <a href="#" class="dropdown-link">Casio</a>
-                                            <a href="#" class="dropdown-link">Converse</a>
-                                            <a href="#" class="dropdown-link">Crocs</a>
-                                            <a href="#" class="dropdown-link">Jordan</a>
-                                            <a href="#" class="dropdown-link">Primitive</a>
-                                            <a href="#" class="dropdown-link">Timberland</a>
-                                            <a href="#" class="dropdown-link">XD Design</a>
-                                        </div>
-                                        <div class="col navbar-column">
-                                            <a href="#" class="dropdown-link">Columbia</a>
-                                            <a href="#" class="dropdown-link">Brekenstock</a>
-                                            <a href="#" class="dropdown-link">Casio</a>
-                                            <a href="#" class="dropdown-link">Converse</a>
-                                            <a href="#" class="dropdown-link">Crocs</a>
-                                            <a href="#" class="dropdown-link">Jordan</a>
-                                            <a href="#" class="dropdown-link">Primitive</a>
-                                            <a href="#" class="dropdown-link">Timberland</a>
-                                            <a href="#" class="dropdown-link">Tüm Markalar</a>
-                                        </div>
+                                        @foreach($brandsColumns->chunk(9) as $brands)
+                                            <div class="col navbar-column">
+                                            @foreach($brands as $brand)
+                                                <a href="product-list.html" class="dropdown-link">{{ $brand->name }}</a>
+                                            @endforeach
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                                 <div class="col-md-3">

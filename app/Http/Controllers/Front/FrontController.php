@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Services\BrandService;
+use App\Services\SliderService;
 
 class FrontController extends Controller
 {
-    public function index()
+    public function index(SliderService $sliderService, BrandService $brandService)
     {
-        return view("front.index");
-    }
+        $sliders = $sliderService->getAllActive();
+        $featuredBrands = $brandService->getFeaturedBrands();
 
-    public function sercan()
-    {
-        return view("front.sercan");
+        return view("front.index", compact('sliders', 'featuredBrands'));
     }
 }

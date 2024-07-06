@@ -240,4 +240,11 @@ class CategoryService
     {
         return $this->category::query()->where('id', $id)->first();
     }
+
+    public function getAllCategoriesActive(): Collection
+    {
+        return $this->category::query()
+            ->where('status', 1)
+            ->get();
+    }
 }

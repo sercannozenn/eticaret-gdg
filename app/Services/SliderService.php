@@ -41,6 +41,11 @@ class SliderService
         return $this->sliders::orderBy($orderBy[0], $orderBy[1])->paginate($page);
     }
 
+    public function getAllActive()
+    {
+        return $this->sliders::query()->where('status', 1)->get();
+    }
+
 
     public function prepareData(array $data): self
     {

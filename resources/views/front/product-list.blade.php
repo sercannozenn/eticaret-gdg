@@ -16,109 +16,36 @@
                                 <div class="filter-item-wrapper mt-2">
                                     <h3 class="filter-title">Kategoriler</h3>
                                     <div class="filter-detail">
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
+                                        @foreach($categories as $category)
+                                            <div class="form-check filter-item">
+                                                <input type="checkbox" name="categories[]" class="form-check-input" value="{{ $category->slug }}" id="cat-{{ $category->id }}">
+                                                <label for="cat-{{ $category->id }}">{{ ucfirst($category->name) }}</label>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                                 <div class="filter-item-wrapper mt-2">
                                     <h3 class="filter-title">Markalar</h3>
                                     <div class="filter-detail">
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Bot</label>
-                                        </div>
+                                        @foreach($brandsColumns as $brand)
+                                            <div class="form-check filter-item">
+                                                <input type="checkbox" class="form-check-input" name="brands[]" value="{{ $brand->slug }}" id="brand-{{ $brand->id }}">
+                                                <label for="brand-{{ $brand->id }}">{{ ucfirst($brand->name) }}</label>
+                                            </div>
+                                        @endforeach
+
+
                                     </div>
                                 </div>
                                 <div class="filter-item-wrapper mt-2">
                                     <h3 class="filter-title">Cinsiyet</h3>
                                     <div class="filter-detail">
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Kadın</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Erkek</label>
-                                        </div>
-                                        <div class="form-check filter-item">
-                                            <input type="checkbox" class="form-check-input" value="" id="f1">
-                                            <label for="f1">Çocuk</label>
-                                        </div>
-
+                                        @foreach($genders as $gender)
+                                            <div class="form-check filter-item">
+                                                <input type="checkbox" name="genders[]" class="form-check-input" value="{{ $gender->value }}" id="gender-{{ $gender->value }}">
+                                                <label for="gender-{{ $gender->value }}">{{ getGender($gender) }}</label>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                                 <div class="filter-item-wrapper mt-2">
@@ -164,246 +91,32 @@
                         </div>
 
                         <div class="row products mt-4 p-4">
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
+                            @foreach($products as $product)
+                                <div class="col-md-3 wrapper-product position-relative mb-5">
+                                    <div class="product-image position-relative">
+                                        <a href="">
+                                            <img src="{{ $product->featuredImage->path }}" class="img-fluid" alt="Adidas">
+                                        </a>
+                                        <div class="product-overlay">
+                                            <span class="product-tag text-orange fw-bold-600">Yeni</span>
+                                            <span class="favorite"><i class="bi bi-heart"></i></span>
+                                            <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
+                                            <a href="" class="product-brand text-orange fw-bold-600">
+                                                {{ $product->activeProductsMain->brand->name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="product-info text-center pt-3">
+                                        <h4 class="product-title">{{ $product->name }}</h4>
+                                        <div class="text-muted product-description">
+                                            {{ $product->activeProductsMain->category->name }}
+                                        </div>
+                                        <a href="" class="product-price text-orange">
+                                            {{ number_format($product->final_price, 2) }} TL
                                         </a>
                                     </div>
                                 </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-3 wrapper-product position-relative mb-5">
-                                <div class="product-image position-relative">
-                                    <a href="">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}" class="img-fluid" alt="Adidas">
-                                    </a>
-                                    <div class="product-overlay">
-                                        <span class="product-tag text-orange fw-bold-600">Yeni</span>
-                                        <span class="favorite"><i class="bi bi-heart"></i></span>
-                                        <span class="un-favorite"><i class="bi bi-heart-fill"></i></span>
-                                        <a href="" class="product-brand text-orange fw-bold-600">
-                                            Adidas
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info text-center pt-3">
-                                    <h4 class="product-title">Niteball</h4>
-                                    <div class="text-muted product-description">
-                                        Unisex Sneaker
-                                    </div>
-                                    <a href="" class="product-price text-orange">
-                                        1.299,00 TL
-                                    </a>
-                                </div>
-                            </div>
+                            @endforeach
 
 
                             <div class="col-md-12 d-flex justify-content-center">
