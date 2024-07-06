@@ -41,4 +41,9 @@ class Product extends Model
     {
         return $this->belongsTo(ProductsMain::class, 'main_product_id', 'id')->where('status', 1);
     }
+
+    public function productsMain(): BelongsTo
+    {
+        return $this->belongsTo(ProductsMain::class, 'main_product_id', 'id');
+    }
 }

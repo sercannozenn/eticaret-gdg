@@ -326,4 +326,9 @@ class ProductService
         return $this->productService->getAllActive();
     }
 
+    public function getSearchProducts(Request $request, array $filterValues): Collection
+    {
+        return $this->productService->getSearchProduct($request, $filterValues);
+    }
+
 }
