@@ -12,6 +12,7 @@ use App\Services\ProductServices\ProductMainService;
 use \App\Services\ProductServices\ProductService as PService;
 use App\Services\ProductServices\SizeStockService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class ProductService
@@ -326,7 +327,7 @@ class ProductService
         return $this->productService->getAllActive();
     }
 
-    public function getSearchProducts(Request $request, array $filterValues): Collection
+    public function getSearchProducts(Request $request, array $filterValues)
     {
         return $this->productService->getSearchProduct($request, $filterValues);
     }

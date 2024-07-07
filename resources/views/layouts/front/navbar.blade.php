@@ -1,8 +1,8 @@
 <header>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="assets/images/logo.png" alt="Logo" class="logo">
+            <a class="navbar-brand" href="{{ route('index') }}">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -23,14 +23,14 @@
                                         @foreach($brandsColumns->chunk(9) as $brands)
                                             <div class="col navbar-column">
                                             @foreach($brands as $brand)
-                                                <a href="product-list.html" class="dropdown-link">{{ $brand->name }}</a>
+                                                <a href="{{ route('product.list', ['brands' => $brand->slug]) }}" class="dropdown-link">{{ $brand->name }}</a>
                                             @endforeach
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <h4 class="mb-4">Tredler</h4>
+                                    <h4 class="mb-4">Trendler</h4>
                                     <div class="row">
                                         <div class="col">
                                             <div class="nav-brand-swiper swiper-container">
@@ -100,8 +100,8 @@
                     <div class="search-overlay"></div>
                     <div class="position-center-center">
                         <div class="search animate__animated animate__backInUp">
-                            <form action="">
-                                <input type="search" placeholder="Arama">
+                            <form action="{{ route('product.list') }}">
+                                <input type="search" name="q" placeholder="Arama" value="{{ request()->q }}">
                                 <button type="submit"><i class="bi bi-check-circle"></i></button>
                             </form>
                         </div>

@@ -1,6 +1,6 @@
 @extends("layouts.front")
 
-@section("title", "Ürün Detay Sayfası")
+@section("title", ucfirst($product->name))
 
 @push("css")
 @endpush
@@ -13,36 +13,14 @@
                     <div class="product-image-wrapper position-relative">
                         <div class="swiper-container big-slider">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product1.jpeg') }}"/>
+                                @foreach($product->variantImages as $image)
+                                    <div class="swiper-slide big-image">
+                                        <div class="swiper-zoom-container">
+                                            <img src="{{ asset($image->path) }}"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product2.webp') }}"/>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product3.jpeg') }}"/>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product4.jpeg') }}"/>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product5.jpeg') }}"/>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide big-image">
-                                    <div class="swiper-zoom-container">
-                                        <img src="{{ asset('assets/images/product6.jpeg') }}"/>
-                                    </div>
-                                </div>
+
+                                @endforeach
                             </div>
 
                             <!-- If we need navigation buttons -->
@@ -51,24 +29,12 @@
                         </div>
                         <div thumbsSlider="" class="swiper-container thumb-sliders swiper-thumbs">
                             <div class="swiper-wrapper">
+                                @foreach($product->variantImages as $image)
+
                                 <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product1.jpeg') }}"/>
+                                    <img class="thumb-image" src="{{ asset($image->path) }}"/>
                                 </div>
-                                <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product2.webp') }}"/>
-                                </div>
-                                <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product3.jpeg') }}"/>
-                                </div>
-                                <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product4.jpeg') }}"/>
-                                </div>
-                                <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product5.jpeg') }}"/>
-                                </div>
-                                <div class="swiper-slide ">
-                                    <img class="thumb-image" src="{{ asset('assets/images/product6.jpeg') }}"/>
-                                </div>
+                                @endforeach
                             </div>
                             <div class="thumb-sliders-buttons text-center">
                             <span class="thumb-prev me-4">
@@ -83,17 +49,15 @@
                     </div>
                 </div>
                 <div class="col-md-7 product-detail position-relative">
-                    <h4 class="fw-bold-600">Niteball</h4>
-                    <div class="price text-orange fw-bold-600">199,90 TL</div>
+                    <h4 class="fw-bold-600">{{ $product->name }}</h4>
+                    <div class="price text-orange fw-bold-600">{{ number_format($product->final_price, 2) }} TL</div>
                     <hr class="mt-5">
-                    <h6>Unisex Sneaker</h6>
+                    <h6>{{ $product->productsMain->category->name }}</h6>
                     <hr>
-                    <h6>Adidas</h6>
+                    <h6>{{ $product->productsMain->brand->name }}</h6>
                     <hr>
                     <p class="product-short-description font-playfair">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci eius excepturi in odio possimus
-                        quisquam repellendus tempora. Consectetur debitis deserunt dolorum eveniet hic incidunt inventore nemo,
-                        non nulla quaerat voluptas.
+                        {{ $product->productsMain->short_description }}
                     </p>
                     <div class="shopping">
                         <div class="row">
@@ -114,17 +78,9 @@
                                 <div class="input-group">
                                     <select id="footSize" class="form-control text-center">
                                         <option disabled selected>Beden</option>
-                                        <option value="36">36</option>
-                                        <option value="37">37</option>
-                                        <option value="38">38</option>
-                                        <option value="39">39</option>
-                                        <option value="40">40</option>
-                                        <option value="41">41</option>
-                                        <option value="42">42</option>
-                                        <option value="43">43</option>
-                                        <option value="44">44</option>
-                                        <option value="45">45</option>
-                                        <option value="46">46</option>
+                                        @foreach($product->sizeStock as $size)
+                                            <option value="{{ $size->id }}">{{ $size->size }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -153,76 +109,7 @@
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <h6>Lorem ipsum dolor sit.</h6>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci beatae nam sit.
-                                        Accusamus
-                                        ipsum minima minus repudiandae. Earum et ipsum maiores reiciendis repudiandae
-                                        tempora, vel!
-                                        Adipisci architecto commodi dolores error est fugiat minima numquam odit,
-                                        repudiandae saepe
-                                        tenetur, voluptate. Ab accusamus commodi consectetur culpa dicta ex fugiat, laborum
-                                        minima
-                                        pariatur quia rerum similique. A aliquam, assumenda aut corporis distinctio
-                                        doloremque ea et
-                                        expedita in incidunt ipsum iure laboriosam, minus nostrum quis reiciendis sunt ut
-                                        veniam
-                                        veritatis voluptas? Expedita harum inventore laborum praesentium. Ab delectus,
-                                        dignissimos ex
-                                        excepturi expedita laudantium minima omnis repudiandae rerum sed. Adipisci eos
-                                        laborum molestiae
-                                        neque voluptates.</p>
-                                    <hr>
-                                    <strong>Lorem ipsum.</strong>
-                                    <hr>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut corporis debitis
-                                        dignissimos
-                                        exercitationem illo iste modi necessitatibus officia, officiis quia ratione velit.
-                                        Adipisci at
-                                        dolor explicabo quasi, sit tempora voluptatibus. Ab animi at consequuntur earum
-                                        inventore iste
-                                        temporibus ut velit. Enim facere iste laboriosam maiores minima natus nobis placeat
-                                        quae quas
-                                        quidem rem repellat repudiandae similique sit, totam ut voluptatibus. Cupiditate
-                                        debitis
-                                        delectus distinctio doloribus ducimus ea earum expedita ipsa omnis repellat.
-                                        Blanditiis dolorum
-                                        earum exercitationem incidunt voluptas? Aliquid delectus deleniti doloribus earum
-                                        est, facilis
-                                        fuga in inventore, ipsum maxime minima minus nesciunt optio perspiciatis quo quod
-                                        soluta veniam
-                                        voluptatum. Accusamus, animi aspernatur beatae commodi cupiditate doloremque eaque
-                                        enim esse
-                                        eveniet hic impedit iste iure modi mollitia neque non pariatur perspiciatis sint
-                                        tempore, veniam
-                                        veritatis vero vitae voluptas voluptates voluptatibus. Deserunt facere numquam
-                                        obcaecati omnis
-                                        quaerat quasi tenetur. Adipisci autem dolor doloremque exercitationem id natus quae
-                                        quis
-                                        repellendus sapiente. A ad adipisci atque aut consectetur consequatur culpa
-                                        cupiditate dolore
-                                        dolorem doloremque dolores eligendi et exercitationem explicabo facilis fugit illo
-                                        in, ipsa
-                                        libero nisi non nostrum obcaecati perferendis porro possimus provident quas
-                                        quisquam, rem sequi
-                                        voluptates! Deleniti dolor eaque esse, excepturi explicabo odio tempora tempore.
-                                        Blanditiis
-                                        cumque, deleniti deserunt, dolore dolorum facilis labore officia perferendis, rem
-                                        sunt vitae
-                                        voluptatem voluptatibus! Adipisci atque debitis distinctio dolorem eum eveniet nemo
-                                        officiis
-                                        pariatur placeat, quidem quisquam, tempore voluptas voluptates! Alias aliquam
-                                        consequatur cum
-                                        explicabo fuga iure, molestiae mollitia, nihil nulla numquam obcaecati rem saepe
-                                        sapiente
-                                        similique, veritatis. Aliquam animi culpa dolore earum harum illum ipsam ipsum modi,
-                                        mollitia
-                                        nisi nobis perspiciatis quasi sed sunt ut! Commodi eum harum modi non odit, officia
-                                        optio quidem
-                                        repudiandae similique suscipit. Alias amet, animi delectus dicta et excepturi fugit
-                                        inventore
-                                        laboriosam perspiciatis ratione saepe sequi tempore voluptate voluptatem voluptates.
-                                        Amet
-                                        consequuntur error exercitationem id, illum mollitia nobis voluptas?</p>
+                                    {!! $product->productsMain->description !!}
                                 </div>
                             </div>
                         </div>

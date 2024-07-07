@@ -544,6 +544,14 @@ main {
     position: sticky;
     top: 0;
 }
+.product-filter .search-text.form-control:focus{
+    border-color: #f38509;
+    box-shadow: unset;
+}
+.product-filter .search-text{
+    height: 30px;
+    font-size: 14px;
+}
 
 .product-filter .filter-item-wrapper {
     position: relative;
@@ -617,6 +625,12 @@ main {
 .pagination li a:hover {
     background: #ffe115;
     color: #2d3a4b;
+}
+.pagination li a.previous:hover,
+.pagination li a.next:hover
+{
+    background: #2d3a4b;
+    color: #fff;
 }
 
 .pagination li a {

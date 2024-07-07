@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +22,10 @@ class Product extends Model
       'status',
       'publish_date'
     ];
-
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
     public function variantImages(): HasMany
     {
         return $this->hasMany(ProductImages::class);
@@ -45,5 +49,17 @@ class Product extends Model
     public function productsMain(): BelongsTo
     {
         return $this->belongsTo(ProductsMain::class, 'main_product_id', 'id');
+    }
+
+    public function scopeWithRelations($query)
+    {
+        return $query->with(['productsMain', 'productsMain.category', 'productsMain.brand', 'variantImages']);
+    }
+
+    protected static function booted()
+    {
+//        static::addGlobalScope('activeProductsMain', function (Builder $builder){
+//            $builder->with(['productsMain', 'productsMain.category', 'productsMain.brand', 'variantImages']);
+//        });
     }
 }

@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, "index"])->name('index');
 
-Route::get('/urun-listesi', [ProductController::class, "list"])->name('product.list');
-Route::get('/urun-detay', [ProductController::class, "detail"]);
 
 Route::get("/sepet", [CardController::class, 'card']);
 Route::get("/odeme", [CheckoutController::class, 'index']);
@@ -77,7 +75,8 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
     });
 });
 
-
+Route::get('/urun-listesi', [ProductController::class, "list"])->name('product.list');
+Route::get('/{product:slug}', [ProductController::class, "detail"])->name('product.detail');
 
 /** Auth */
 Route::prefix("kayit-ol")->middleware(['throttle:registration', 'guest'])->group(function()
