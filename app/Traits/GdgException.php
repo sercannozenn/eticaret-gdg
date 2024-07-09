@@ -22,4 +22,16 @@ trait GdgException
         Log::error($exception->getMessage(), [$exception->getTraceAsString()]);
         return redirect()->route($route);
     }
+
+    public function jsonException(Throwable $exception, array $data = [], int $statusCode = 500)
+    {
+        Log::error($exception->getMessage(), [$exception->getTraceAsString()]);
+
+        return response()
+            ->json()
+            ->setData($data)
+            ->setStatusCode($statusCode)
+            ->setCharset('utf-8')
+            ->header('Content-Type', 'application/json')
+            ->setEncodingOptions(JSON_UNESCAPED_UNICODE);    }
 }

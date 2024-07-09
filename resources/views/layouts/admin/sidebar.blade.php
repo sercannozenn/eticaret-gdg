@@ -70,7 +70,24 @@
                     </ul>
                 </div>
             </li>
-            <li class="nav-item {{ Route::is('admin.category.index') || Route::is('admin.category.create') ? 'active' : '' }}">
+            <li class="nav-item {{ Route::is('admin.discount.index') || Route::is('admin.discount.create') ? 'active' : '' }}">
+                <a class="nav-link" data-bs-toggle="collapse" href="#discounts" role="button" aria-expanded="false" aria-controls="discounts">
+                    <i class="link-icon" data-feather="list"></i>
+                    <span class="link-title">İndirim Yönetimi</span>
+                    <i class="link-arrow" data-feather="chevron-down"></i>
+                </a>
+                <div class="collapse {{ Route::is('admin.discount.index') || Route::is('admin.discount.create') ? 'show' : '' }}" id="discounts">
+                    <ul class="nav sub-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.discount.index') }}" class="nav-link {{ Route::is('admin.discount.index') ? 'active' : '' }}">İndirim Listesi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.discount.create') }}" class="nav-link {{ Route::is('admin.discount.create') ? 'active' : '' }}">İndirim Ekleme</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item {{ Route::is('admin.slider.index') || Route::is('admin.slider.create') ? 'active' : '' }}">
                 <a class="nav-link" data-bs-toggle="collapse" href="#sliders" role="button" aria-expanded="false" aria-controls="categories">
                     <i class="link-icon" data-feather="list"></i>
                     <span class="link-title">Slider Yönetimi</span>

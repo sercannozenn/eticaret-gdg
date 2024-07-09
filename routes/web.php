@@ -10,9 +10,32 @@ use App\Http\Controllers\Front\DashboardController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
-use \App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\DiscountController;
 use Illuminate\Support\Facades\Route;
+
+
+/** Auth */
+Route::prefix("kayit-ol")->middleware(['throttle:registration', 'guest'])->group(function()
+{
+    Route::get("/", [RegisterController::class, 'showForm'])->name("register");
+    Route::post("/", [RegisterController::class, 'register']);
+});
+Route::prefix('giris')->middleware(['throttle:100,60', 'guest'])->group(function ()
+{
+    Route::get("/", [LoginController::class, 'showForm'])->name('login');
+    Route::post("/", [LoginController::class, 'login']);
+});
+Route::post('logout', [LoginController::class, 'logout'])->name("logout");
+
+Route::get('auth/{driver}/callback', [LoginController::class, 'socialiteVerify'])->name('login.socialite-verify');
+Route::get('auth/{driver}', [LoginController::class, 'socialite'])->name('login.socialite');
+
+Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
+Route::get('/dogrula-mail', [RegisterController::class, 'sendVerifyMailShowForm'])->name('send-verify-mail');
+Route::post('/dogrula-mail', [RegisterController::class, 'sendVerifyMail']);
+
 
 Route::get('/', [FrontController::class, "index"])->name('index');
 
@@ -70,6 +93,18 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
     });
 
+    Route::resource('discount', DiscountController::class);
+    Route::prefix('discount')->name('discount.')->group(function (){
+        Route::post('/change-status', [DiscountController::class, 'changeStatus'])->name('change-status');
+        Route::get('/{discount}/assign-products', [DiscountController::class, 'showAssignProductsForm'])->name('assign-products');
+        Route::post('/{discount}/assign-products', [DiscountController::class, 'assignProducts']);
+        Route::get('/{discount}/assign-categories', [DiscountController::class, 'showAssignCategoriesForm'])->name('assign-categories');
+        Route::post('/{discount}/assign-categories', [DiscountController::class, 'assignCategories']);
+        Route::get('/{discount}/assign-brands', [DiscountController::class, 'showAssignBrandsForm'])->name('assign-brands');
+        Route::post('/{discount}/assign-brands', [DiscountController::class, 'assignBrands']);
+    });
+
+
     Route::group(['prefix' => 'gdg-filemanager', 'middleware' => ['web', 'auth']], function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();
     });
@@ -78,22 +113,4 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 Route::get('/urun-listesi', [ProductController::class, "list"])->name('product.list');
 Route::get('/{product:slug}', [ProductController::class, "detail"])->name('product.detail');
 
-/** Auth */
-Route::prefix("kayit-ol")->middleware(['throttle:registration', 'guest'])->group(function()
-{
-    Route::get("/", [RegisterController::class, 'showForm'])->name("register");
-    Route::post("/", [RegisterController::class, 'register']);
-});
-Route::prefix('giris')->middleware(['throttle:100,60', 'guest'])->group(function ()
-{
-    Route::get("/", [LoginController::class, 'showForm'])->name('login');
-    Route::post("/", [LoginController::class, 'login']);
-});
-Route::post('logout', [LoginController::class, 'logout'])->name("logout");
 
-Route::get('auth/{driver}/callback', [LoginController::class, 'socialiteVerify'])->name('login.socialite-verify');
-Route::get('auth/{driver}', [LoginController::class, 'socialite'])->name('login.socialite');
-
-Route::get('/dogrula/{token}', [RegisterController::class, 'verify'])->name("verify");
-Route::get('/dogrula-mail', [RegisterController::class, 'sendVerifyMailShowForm'])->name('send-verify-mail');
-Route::post('/dogrula-mail', [RegisterController::class, 'sendVerifyMail']);

@@ -9,6 +9,15 @@ if (!function_exists('getGender')){
     }
 }
 
+if (!function_exists('getDiscountType')){
+    function getDiscountType(\App\Enums\DiscountType $discountType):string
+    {
+        $configTexts = config('discount_types');
+
+        return $configTexts[$discountType->value] ?? 'Bulunamadı';
+    }
+}
+
 if (!function_exists('pathEditor')){
     function pathEditor(string $path): string
     {
