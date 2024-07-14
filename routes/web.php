@@ -13,6 +13,7 @@ use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\DiscountCouponsController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -117,6 +118,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::put('/{discount}/brands/{brand}', [DiscountController::class, 'restoreBrand'])->name('restore-brand');
 
     });
+    Route::resource('discount-coupons', DiscountCouponsController::class);
 
 
     Route::group(['prefix' => 'gdg-filemanager', 'middleware' => ['web', 'auth']], function () {
