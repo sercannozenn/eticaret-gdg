@@ -14,4 +14,6 @@ class DiscountBrands extends Model
         'discount_id',
         'brand_id',
     ];
+
+    public $timestamps= false;
 }

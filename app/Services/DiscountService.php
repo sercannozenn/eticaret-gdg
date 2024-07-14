@@ -5,9 +5,13 @@ namespace App\Services;
 use App\Enums\DiscountType;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\DiscountBrands;
+use App\Models\DiscountCategories;
+use App\Models\DiscountProducts;
 use App\Models\Discounts;
 use App\Models\ProductTypes;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class DiscountService
@@ -55,6 +59,15 @@ class DiscountService
                 'column'   => 'status',
                 'operator' => '=',
                 'options'  => ['all' => 'Tümü', 'pasif', 'aktif'],
+            ],
+            'with_trashed'    => [
+                'label'       => 'Silinmiş Veriler Getirilsin mi?',
+                'type'        => 'select',
+                'column'      => 'with_trashed',
+                'column_live' => 'deleted_at',
+                'table'       => 'discounts',
+                'operator'    => '=',
+                'options'     => ['Hayır', 'Evet'],
             ],
             'order_by'        => [
                 'label'    => 'Sıralama Türü',
@@ -142,6 +155,15 @@ class DiscountService
                 'operator'    => '=',
                 'options'     => ['all' => 'Tümü', 'pasif', 'aktif'],
             ],
+            'with_trashed'    => [
+                'label'       => 'Silinmiş Veriler Getirilsin mi?',
+                'type'        => 'select',
+                'column'      => 'with_trashed',
+                'column_live' => 'deleted_at',
+                'table'       => 'discount_products',
+                'operator'    => '=',
+                'options'     => ['Hayır', 'Evet'],
+            ],
             'product_name'    => [
                 'label'       => 'Ürün Adı(Varyant)',
                 'type'        => 'text',
@@ -201,30 +223,39 @@ class DiscountService
 
         return [
             'name'            => [
-                'label'    => 'Kategori Adı',
-                'type'     => 'text',
-                'column'   => 'name',
+                'label'       => 'Kategori Adı',
+                'type'        => 'text',
+                'column'      => 'name',
                 'column_live' => 'name',
                 'table'       => 'categories',
-                'operator' => 'like'
+                'operator'    => 'like'
             ],
             'parent_id'       => [
-                'label'    => 'Üst Kategori',
-                'type'     => 'select',
-                'column'   => 'parent_id',
+                'label'       => 'Üst Kategori',
+                'type'        => 'select',
+                'column'      => 'parent_id',
                 'column_live' => 'parent_id',
                 'table'       => 'categories',
-                'operator' => '=',
-                'options'  => $categories,
+                'operator'    => '=',
+                'options'     => $categories,
             ],
             'status'          => [
-                'label'    => 'Durum',
-                'type'     => 'select',
-                'column'   => 'status',
+                'label'       => 'Durum',
+                'type'        => 'select',
+                'column'      => 'status',
                 'column_live' => 'status',
                 'table'       => 'categories',
-                'operator' => '=',
-                'options'  => ['all' => 'Tümü', 'pasif', 'aktif'],
+                'operator'    => '=',
+                'options'     => ['all' => 'Tümü', 'pasif', 'aktif'],
+            ],
+            'with_trashed'    => [
+                'label'       => 'Silinmiş Veriler Getirilsin mi?',
+                'type'        => 'select',
+                'column'      => 'with_trashed',
+                'column_live' => 'deleted_at',
+                'table'       => 'discount_categories',
+                'operator'    => '=',
+                'options'     => ['Hayır', 'Evet'],
             ],
             'order_by'        => [
                 'label'    => 'Sıralama Türü',
@@ -279,6 +310,15 @@ class DiscountService
                 'operator'    => '=',
                 'options'     => ['all' => 'Tümü', 'Hayır', 'Evet'],
             ],
+            'with_trashed'    => [
+                'label'       => 'Silinmiş Veriler Getirilsin mi?',
+                'type'        => 'select',
+                'column'      => 'with_trashed',
+                'column_live' => 'deleted_at',
+                'table'       => 'discount_brands',
+                'operator'    => '=',
+                'options'     => ['Hayır', 'Evet'],
+            ],
             'order_by'        => [
                 'label'    => 'Sıralama Türü',
                 'type'     => 'select',
@@ -325,7 +365,7 @@ class DiscountService
         return $this->discount::create($this->prepareData);
     }
 
-    public function getDiscounts(int $perPage = 0)
+    public function getDiscounts(int $perPage = 0): LengthAwarePaginator|Collection
     {
         $query   = $this->discount::query();
         $filters = $this->getFilters();
@@ -334,6 +374,10 @@ class DiscountService
             return $this->filterService->paginate($query, $perPage);
         }
         return $query->get();
+    }
+    public function getDiscountWT(int $id): ?Discounts
+    {
+        return  $this->discount::query()->withTrashed()->find($id);
     }
 
     public function getById(int $id): Discounts|ModelNotFoundException
@@ -359,6 +403,11 @@ class DiscountService
     public function delete(): bool
     {
         return $this->discount->delete();
+    }
+
+    public function restore(): bool
+    {
+        return $this->discount->restore();
     }
 
     public function assignProductsProcess(array $productIds): bool
@@ -440,7 +489,7 @@ class DiscountService
         return $this;
     }
 
-    public function getDiscountForProductList()
+    public function getDiscountForProductList(): LengthAwarePaginator
     {
         $query = Discounts::query()
                           ->join('discount_products', 'discount_products.discount_id', '=', 'discounts.id')
@@ -450,6 +499,8 @@ class DiscountService
                           ->join('brands', 'brands.id', '=', 'products_main.brand_id')
                           ->join('product_types', 'product_types.id', '=', 'products_main.type_id')
                           ->select('discounts.*',
+                                   'discount_products.deleted_at',
+                                   'discount_products.id as dpId',
                                    'products.id as pId',
                                    'products.name as pName',
                                    'products.final_price',
@@ -461,40 +512,73 @@ class DiscountService
                           )
                           ->where('discounts.id', request()->discount->id);
 
+        if (empty(request()->all())) {
+            $query = $query->whereNull('discount_products.deleted_at');
+        }
+
         $filters = $this->getFiltersForProduct();
         $query   = $this->filterService->applyFilters($query, $filters);
 
         return $this->filterService->paginate($query, 10);
     }
 
-    public function getDiscountForCategoryList()
+    public function getDiscountForCategoryList(): LengthAwarePaginator
     {
         $query = Discounts::query()
                           ->join('discount_categories', 'discount_categories.discount_id', '=', 'discounts.id')
                           ->join('categories', 'categories.id', '=', 'discount_categories.category_id')
                           ->leftJoin('categories as parentCategory', 'parentCategory.id', '=', 'categories.parent_id')
                           ->select('discounts.*',
+                                   'discount_categories.deleted_at',
+                                   'discount_categories.id as dcId',
                                    'categories.id as cId',
                                    'categories.name as cName',
                                    'categories.parent_id',
                                    'parentCategory.name as parentCategoryName')
                           ->where('discounts.id', request()->discount->id);
+        if (empty(request()->all())) {
+            $query = $query->whereNull('discount_categories.deleted_at');
+        }
 
         $filters = $this->getFiltersForCategories();
         $query   = $this->filterService->applyFilters($query, $filters);
         return $this->filterService->paginate($query, 10);
     }
 
-    public function getDiscountForBrandList()
+    public function getDiscountCategoryWT(int $discountCategoryId): ?DiscountCategories
+    {
+        return DiscountCategories::query()
+                                 ->withTrashed()
+                                 ->find($discountCategoryId);
+    }
+    public function getDiscountProductWT(int $discountProductId): ?DiscountProducts
+    {
+        return DiscountProducts::query()
+                                 ->withTrashed()
+                                 ->find($discountProductId);
+    }
+    public function getDiscountBrandWT(int $discountBrandId): ?DiscountBrands
+    {
+        return DiscountBrands::query()
+                               ->withTrashed()
+                               ->find($discountBrandId);
+    }
+
+    public function getDiscountForBrandList(): LengthAwarePaginator
     {
         $query = Discounts::query()
                           ->join('discount_brands', 'discount_brands.discount_id', '=', 'discounts.id')
                           ->join('brands', 'brands.id', '=', 'discount_brands.brand_id')
                           ->select('discounts.*',
+                                   'discount_brands.deleted_at',
+                                   'discount_brands.id as dbId',
                                    'brands.id as bId',
                                    'brands.name as bName',
                                    'brands.logo')
                           ->where('discounts.id', request()->discount->id);
+        if (empty(request()->all())) {
+            $query = $query->whereNull('discount_brands.deleted_at');
+        }
 
         $filters = $this->getFiltersForBrands();
         $query   = $this->filterService->applyFilters($query, $filters);

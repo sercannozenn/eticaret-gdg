@@ -6,6 +6,8 @@ use App\Enums\DiscountType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DiscountAssignProductsRequest;
 use App\Http\Requests\DiscountStoreRequest;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\DiscountProducts;
 use App\Models\Discounts;
 use App\Models\Product;
@@ -101,11 +103,9 @@ class DiscountController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Discounts $discount)
     {
         try {
-            $discount = $this->discountService->getById($id);
-
             $this->discountService->setDiscount($discount)->delete();
             alert()->success('Başarılı', 'İndirim silindi');
 
@@ -114,6 +114,26 @@ class DiscountController extends Controller
         catch (Throwable $exception) {
             return $this->exception($exception, "admin.discount.index", 'İndirim Silinemedi');
         }
+    }
+
+    public function restore(Request $request)
+    {
+        try {
+            $discountID = $request->discount_restore;
+            $discount   = $this->discountService->getDiscountWT($discountID);
+            if ($discount)
+            {
+                $this->discountService->setDiscount($discount)->restore();
+                alert()->success('Başarılı', 'İndirim tanımlaması geri getirildi.');
+                return redirect()->back();
+            }
+            alert()->error('Başarısız', 'İndirim tanımlaması bulunamadı ve geri getirilemedi.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "İndirim tanımlaması geri getirilemedi.");
+        }
+
     }
 
     public function changeStatus(Request $request)
@@ -161,6 +181,7 @@ class DiscountController extends Controller
         ];
         return view('admin.discount.assign-product.assign', compact('data', 'discount'));
     }
+
     public function assignProducts(DiscountAssignProductsRequest $request, Discounts $discount)
     {
         try {
@@ -182,19 +203,53 @@ class DiscountController extends Controller
 
     public function showProductsList(Request $request, Discounts $discount)
     {
-        $filters = $this->discountService->getFiltersForProduct();
+        $filters   = $this->discountService->getFiltersForProduct();
         $discounts = $this->discountService->getDiscountForProductList();
 
-        return view('admin.discount.assign-product.product-list', compact('discount','discounts', 'filters'));
+        return view('admin.discount.assign-product.product-list', compact('discount', 'discounts', 'filters'));
     }
 
-    public function removeProduct(Discounts $discount, Product $product)
+    public function removeProduct(Discounts $discount)
     {
-        $productID = \request()->product_remove;
-        $discount->products()->updateExistingPivot($productID, ['deleted_at' => now()]);
-        alert()->success('Başarılı', 'Ürün indirimden kaldırıldı.');
-        return redirect()->back();
+        try {
+            $productID = request()->product_remove;
+            $discount->products()->updateExistingPivot($productID, ['deleted_at' => now()]);
+            alert()->success('Başarılı', 'Ürün indirimden kaldırıldı.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Ürün indirimden kaldırılamadı.");
+        }
     }
+
+    public function restoreProduct(Request $request)
+    {
+        try {
+            $discountProductId = $request->discount_product_id;
+            $discountProduct   = $this->discountService->getDiscountProductWT($discountProductId);
+            if ($discountProduct) {
+                $discountProduct->restore();
+                alert()->success('Başarılı', 'Ürün indirimi geri getirildi.');
+                return redirect()->back();
+            }
+            alert()->error('Başarısız', 'Ürüne tanımlanmış indirim bulunamadı ve geri getirilemedi.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Ürün indirimi geri getirilemedi.");
+        }
+
+    }
+
+    public function showCategoriesList(Request $request, Discounts $discount)
+    {
+        $filters   = $this->discountService->getFiltersForCategories();
+        $discounts = $this->discountService->getDiscountForCategoryList();
+
+        return view('admin.discount.assign-product.category-list', compact('discount', 'discounts', 'filters'));
+
+    }
+
     public function showAssignCategoriesForm(Discounts $discount, CategoryService $categoryService)
     {
         $categories = $categoryService->getAllCategoriesActive();
@@ -209,6 +264,7 @@ class DiscountController extends Controller
         ];
         return view('admin.discount.assign-product.assign', compact('data', 'discount'));
     }
+
     public function assignCategories(Request $request, Discounts $discount)
     {
         $request->validate([
@@ -233,21 +289,55 @@ class DiscountController extends Controller
             dd($exception->getMessage());
         }
     }
+
+    public function removeCategory(Discounts $discount, Category $category)
+    {
+        try {
+            $discount->categories()->updateExistingPivot($category->id, ['deleted_at' => now()]);
+            alert()->success('Başarılı', 'Kategori indirimden kaldırıldı.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Kategori indirimden kaldırılamadı.");
+        }
+
+    }
+
+    public function restoreCategory(Request $request)
+    {
+        try {
+            $discountCategoryId = $request->discount_category_id;
+            $discountCategory   = $this->discountService->getDiscountCategoryWT($discountCategoryId);
+            if ($discountCategory) {
+                $discountCategory->restore();
+                alert()->success('Başarılı', 'Kategori geri getirildi.');
+                return redirect()->back();
+            }
+            alert()->error('Başarısız', 'Kategoriye tanımlanmış indirim bulunamadı ve geri getirilemedi.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Kategori geri getirilemedi.");
+        }
+
+    }
+
     public function showAssignBrandsForm(Discounts $discount, BrandService $brandService)
     {
         $brands = $brandService->getAllActive();
 
-        $data       = (object)['items'       => $brands,
-                               'title'       => 'Markaya İndirim Ekleme',
-                               'label'       => 'İndirim Yapılacak Marka',
-                               'select_id'   => 'brands_ids',
-                               'select_name' => 'brands_ids',
-                               'option'      => 'İndirim Yapılacak Markayı Seçebilirsiniz.',
-                               'route'       => route('admin.discount.assign-brands', $discount->id),
-                               'message'     => 'Lütfen indirim yapılacak markayı seçiniz.'
+        $data = (object)['items'       => $brands,
+                         'title'       => 'Markaya İndirim Ekleme',
+                         'label'       => 'İndirim Yapılacak Marka',
+                         'select_id'   => 'brands_ids',
+                         'select_name' => 'brands_ids',
+                         'option'      => 'İndirim Yapılacak Markayı Seçebilirsiniz.',
+                         'route'       => route('admin.discount.assign-brands', $discount->id),
+                         'message'     => 'Lütfen indirim yapılacak markayı seçiniz.'
         ];
         return view('admin.discount.assign-product.assign', compact('data', 'discount'));
     }
+
     public function assignBrands(Request $request, Discounts $discount)
     {
         $request->validate([
@@ -272,20 +362,45 @@ class DiscountController extends Controller
             dd($exception->getMessage());
         }
     }
-    public function showCategoriesList(Request $request, Discounts $discount)
-    {
-        $filters = $this->discountService->getFiltersForCategories();
-        $discounts = $this->discountService->getDiscountForCategoryList();
 
-        return view('admin.discount.assign-product.category-list', compact('discount','discounts', 'filters'));
-
-    }
     public function showBrandsList(Request $request, Discounts $discount)
     {
-        $filters = $this->discountService->getFiltersForBrands();
+        $filters   = $this->discountService->getFiltersForBrands();
         $discounts = $this->discountService->getDiscountForBrandList();
 
-        return view('admin.discount.assign-product.brand-list', compact('discount','discounts', 'filters'));
+        return view('admin.discount.assign-product.brand-list', compact('discount', 'discounts', 'filters'));
+
+    }
+
+    public function removeBrand(Discounts $discount, Brand $brand)
+    {
+        try {
+            $discount->brands()->updateExistingPivot($brand->id, ['deleted_at' => now()]);
+            alert()->success('Başarılı', 'Marka indirimden kaldırıldı.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Marka indirimden kaldırılamadı.");
+        }
+
+    }
+
+    public function restoreBrand(Request $request)
+    {
+        try {
+            $discountBrandId = $request->discount_brand_id;
+            $discountBrand   = $this->discountService->getDiscountBrandWT($discountBrandId);
+            if ($discountBrand) {
+                $discountBrand->restore();
+                alert()->success('Başarılı', 'Marka geri getirildi.');
+                return redirect()->back();
+            }
+            alert()->error('Başarısız', 'Marka tanımlanmış indirim bulunamadı ve geri getirilemedi.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "Marka geri getirilemedi.");
+        }
 
     }
 

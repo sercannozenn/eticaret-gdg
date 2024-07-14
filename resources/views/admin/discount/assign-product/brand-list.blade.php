@@ -53,15 +53,26 @@
                             </thead>
                             <tbody>
                             @foreach($discounts as $item)
-                                <tr>
+                                <tr @class(['bg-info' => !is_null($item->deleted_at)])>
                                     <td>{{ $item->bId }}</td>
                                     <td>{{ $item->bName }}</td>
                                     <td>
-                                        <a href="javascript:void(0)">
-                                            <i data-discount-id="{{ $discount->id }}" data-product-id="{{ $item->bId }}"
-                                               data-name="{{ $item->bName }}"
-                                               class="text-danger btn-delete-discount"
-                                               data-feather="trash"></i></a>
+                                        @if(is_null($item->deleted_at))
+                                            <a href="javascript:void(0)">
+                                                <i data-discount-id="{{ $discount->id }}"
+                                                   data-brand-id="{{ $item->bId }}"
+                                                   data-name="{{ $item->bName }}"
+                                                   class="text-danger btn-delete-discount"
+                                                   data-feather="trash"></i></a>
+                                        @else
+                                            <a href="javascript:void(0)">
+                                                <i data-discount-id="{{ $discount->id }}"
+                                                   data-brand-id="{{ $item->bId }}"
+                                                   data-discount-brand-id="{{ $item->dbId }}"
+                                                   data-name="{{ $item->bName }}"
+                                                   class="text-success btn-restore-discount"
+                                                   data-feather="rotate-cw"></i></a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -70,6 +81,11 @@
                         <form action="" method="POST" id="deleteForm">
                             @csrf
                             @method('DELETE')
+                        </form>
+                        <form action="" method="POST" id="putForm">
+                            <input type="hidden" name="discount_brand_id" id="discount_brand_id">
+                            @csrf
+                            @method('PUT')
                         </form>
                         <div class="col-6 mx-auto mt-3">
                             {{ $discounts->withQueryString()->links() }}
@@ -87,41 +103,76 @@
     <script>
         document.addEventListener('DOMContentLoaded', function ()
         {
-            // let deleteForm = document.querySelector("#deleteForm");
+            let deleteForm = document.querySelector("#deleteForm");
+            let putForm = document.querySelector("#putForm");
+            let discountBrandIdElement = document.querySelector("#discount_brand_id");
             let defaultOrderDirection = "{{ request('order_direction') }}";
 
-            // feather.replace();
+            feather.replace();
 
             document.querySelector('.table').addEventListener('click', function (event)
             {
                 let element = event.target;
 
-                {{--if (element.classList.contains('btn-delete-discount'))--}}
-                    {{--{--}}
-                    {{--    let catName = element.getAttribute('data-name');--}}
-                    {{--    Swal.fire({--}}
-                    {{--                  title            : catName + " İndirimini silmek istediğinize emin misiniz?",--}}
-                    {{--                  showCancelButton : true,--}}
-                    {{--                  cancelButtonText : "Hayır",--}}
-                    {{--                  confirmButtonText: "Evet",--}}
-                    {{--              }).then((result) =>--}}
-                    {{--                      {--}}
-                    {{--                          if (result.isConfirmed)--}}
-                    {{--                          {--}}
-                    {{--                              let dataID = element.getAttribute('data-id');--}}
-                    {{--                              let route = '{{ route('admin.discount.destroy', ['discount' => 'gdg_cat']) }}';--}}
-                    {{--                              route = route.replace('gdg_cat', dataID);--}}
-                    {{--                              deleteForm.action = route;--}}
+                if (element.classList.contains('btn-delete-discount'))
+                    {
+                        let catName = element.getAttribute('data-name');
+                        Swal.fire({
+                                      title            : catName + " İndirimini silmek istediğinize emin misiniz?",
+                                      showCancelButton : true,
+                                      cancelButtonText : "Hayır",
+                                      confirmButtonText: "Evet",
+                                  }).then((result) =>
+                                          {
+                                              if (result.isConfirmed)
+                                              {
+                                                  let dataDiscountID = element.getAttribute('data-discount-id');
+                                                  let dataBrandID = element.getAttribute('data-brand-id');
+                                                  let route = '{{ route('admin.discount.remove-brand', ['discount' => 'gdg_cat_discount',
+                                                                                                        'brand' => 'gdg_cat_brand']) }}';
+                                                  route = route.replace('gdg_cat_discount', dataDiscountID)
+                                                               .replace('gdg_cat_brand', dataBrandID);
+                                                  deleteForm.action = route;
 
-                    {{--                              setTimeout(deleteForm.submit(), 100);--}}
-                    {{--                          }--}}
-                    {{--                          else if (result.isDenied)--}}
-                    {{--                          {--}}
-                    {{--                              Swal.fire("İndirim silinmedi.", "", "info");--}}
-                    {{--                          }--}}
-                    {{--                      });--}}
+                                                  setTimeout(deleteForm.submit(), 100);
+                                              }
+                                              else if (result.isDenied)
+                                              {
+                                                  Swal.fire("İndirim silinmedi.", "", "info");
+                                              }
+                                          });
 
-                    {{--}--}}
+                    }
+                if (element.classList.contains('btn-restore-discount'))
+                {
+                    let catName = element.getAttribute('data-name');
+                    Swal.fire({
+                                  title            : catName + " İndirimini geri almak istediğinize emin misiniz?",
+                                  showCancelButton : true,
+                                  cancelButtonText : "Hayır",
+                                  confirmButtonText: "Evet",
+                              }).then((result) =>
+                                      {
+                                          if (result.isConfirmed)
+                                          {
+                                              let dataDiscountID = element.getAttribute('data-discount-id');
+                                              let dataBrandID = element.getAttribute('data-brand-id');
+                                              discountBrandIdElement.value = element.getAttribute('data-discount-brand-id');
+                                              let route = '{{ route('admin.discount.restore-brand', ['discount' => 'gdg_cat_discount',
+                                                                                                     'brand' => 'gdg_cat_brand']) }}';
+                                              route = route.replace('gdg_cat_discount', dataDiscountID)
+                                                           .replace('gdg_cat_brand', dataBrandID);
+                                              putForm.action = route;
+
+                                              setTimeout(putForm.submit(), 100);
+                                          }
+                                          else if (result.isDenied)
+                                          {
+                                              Swal.fire("İndirim silinmedi.", "", "info");
+                                          }
+                                      });
+
+                }
 
 
                 if (element.classList.contains('order-by'))

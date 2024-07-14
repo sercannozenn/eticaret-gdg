@@ -57,7 +57,7 @@
                     </thead>
                     <tbody>
                     @foreach($discounts as $discount)
-                        <tr>
+                        <tr @class(['bg-info' => !is_null($discount->deleted_at)])>
                             <td>{{ $discount->id }}</td>
                             <td>{{ $discount->name }}</td>
                             <td>{{ getDiscountType(\App\Enums\DiscountType::tryFrom($discount->type)) }}</td>
@@ -76,10 +76,22 @@
                             <td>
                                 <a href="{{ route('admin.discount.edit', ['discount' => $discount->id]) }}"><i
                                         class="text-warning" data-feather="edit"></i></a>
-                                <a href="javascript:void(0)">
-                                    <i data-id="{{ $discount->id }}" data-name="{{ $discount->name }}"
-                                       class="text-danger btn-delete-discount"
-                                       data-feather="trash"></i></a>
+
+
+                                @if(is_null($discount->deleted_at))
+                                    <a href="javascript:void(0)">
+                                        <i data-id="{{ $discount->id }}"
+                                           data-name="{{ $discount->name }}"
+                                           class="text-danger btn-delete-discount"
+                                           data-feather="trash"></i>
+                                    </a>
+                                @else
+                                    <a href="javascript:void(0)">
+                                        <i data-discount-id="{{ $discount->id }}"
+                                           data-name="{{ $discount->name }}"
+                                           class="text-success btn-restore-discount"
+                                           data-feather="rotate-cw"></i></a>
+                                @endif
 
                             </td>
                             <td>
@@ -112,6 +124,10 @@
                     @csrf
                     @method('DELETE')
                 </form>
+                <form action="" method="POST" id="putForm">
+                    @csrf
+                    @method('PUT')
+                </form>
                 <div class="col-6 mx-auto mt-3">
                     {{ $discounts->withQueryString()->links() }}
                 </div>
@@ -125,6 +141,7 @@
         document.addEventListener('DOMContentLoaded', function ()
         {
             let deleteForm = document.querySelector("#deleteForm");
+            let putForm = document.querySelector("#putForm");
             let defaultOrderDirection = "{{ request('order_direction') }}";
 
             feather.replace();
@@ -151,6 +168,33 @@
                                               deleteForm.action = route;
 
                                               setTimeout(deleteForm.submit(), 100);
+                                          }
+                                          else if (result.isDenied)
+                                          {
+                                              Swal.fire("İndirim silinmedi.", "", "info");
+                                          }
+                                      });
+
+                }
+
+                if (element.classList.contains('btn-restore-discount'))
+                {
+                    let catName = element.getAttribute('data-name');
+                    Swal.fire({
+                                  title            : catName + " İndirimini geri almak istediğinize emin misiniz?",
+                                  showCancelButton : true,
+                                  cancelButtonText : "Hayır",
+                                  confirmButtonText: "Evet",
+                              }).then((result) =>
+                                      {
+                                          if (result.isConfirmed)
+                                          {
+                                              let dataDiscountID = element.getAttribute('data-discount-id');
+                                              let route = '{{ route('admin.discount.restore', ['discount_restore' => 'gdg_cat_discount']) }}';
+                                              route = route.replace('gdg_cat_discount', dataDiscountID);
+                                              putForm.action = route;
+
+                                              setTimeout(putForm.submit(), 100);
                                           }
                                           else if (result.isDenied)
                                           {

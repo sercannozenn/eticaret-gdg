@@ -23,8 +23,7 @@ class BrandController extends Controller
 
     public function index()
     {
-        $brands = $this->brandService->getBrands(1);
-        dd($brands);
+        $brands = $this->brandService->getBrands(10);
         $filters = $this->brandService->getFilters();
 
         return view('admin.brand.index', compact('brands', 'filters'));

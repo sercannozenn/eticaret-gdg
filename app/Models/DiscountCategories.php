@@ -14,4 +14,6 @@ class DiscountCategories extends Model
         'discount_id',
         'category_id',
     ];
+
+    public $timestamps = false;
 }

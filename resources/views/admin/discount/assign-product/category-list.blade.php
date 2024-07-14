@@ -59,16 +59,28 @@
                             </thead>
                             <tbody>
                             @foreach($discounts as $item)
-                                <tr>
-                                    <td>{{ $item->cId }}</td>
+                                <tr @class(['bg-info' => !is_null($item->deleted_at)])>
+                                    <td>{{ $item->dcId }}</td>
                                     <td>{{ $item->cName }}</td>
                                     <td>{{ $item->parentCategoryName }}</td>
                                     <td>
-                                        <a href="javascript:void(0)">
-                                            <i data-discount-id="{{ $discount->id }}" data-product-id="{{ $item->cId }}"
-                                               data-name="{{ $item->cName }}"
-                                               class="text-danger btn-delete-discount"
-                                               data-feather="trash"></i></a>
+                                        @if(is_null($item->deleted_at))
+                                            <a href="javascript:void(0)">
+                                                <i data-discount-id="{{ $discount->id }}"
+                                                   data-category-id="{{ $item->cId }}"
+                                                   data-name="{{ $item->cName }}"
+                                                   class="text-danger btn-delete-discount"
+                                                   data-feather="trash"></i></a>
+                                        @else
+                                            <a href="javascript:void(0)">
+                                                <i data-discount-id="{{ $discount->id }}"
+                                                   data-category-id="{{ $item->cId }}"
+                                                   data-discount-category-id="{{ $item->dcId }}"
+                                                   data-name="{{ $item->cName }}"
+                                                   class="text-success btn-restore-discount"
+                                                   data-feather="rotate-cw"></i></a>
+                                        @endif
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -77,6 +89,11 @@
                         <form action="" method="POST" id="deleteForm">
                             @csrf
                             @method('DELETE')
+                        </form>
+                        <form action="" method="POST" id="putForm">
+                            <input type="hidden" name="discount_category_id" id="discount_category_id">
+                            @csrf
+                            @method('PUT')
                         </form>
                         <div class="col-6 mx-auto mt-3">
                             {{ $discounts->withQueryString()->links() }}
@@ -94,41 +111,77 @@
     <script>
         document.addEventListener('DOMContentLoaded', function ()
         {
-            // let deleteForm = document.querySelector("#deleteForm");
+            let deleteForm = document.querySelector("#deleteForm");
+            let putForm = document.querySelector("#putForm");
+            let discountCategoryIdElement = document.querySelector("#discount_category_id");
             let defaultOrderDirection = "{{ request('order_direction') }}";
 
-            // feather.replace();
+            feather.replace();
 
             document.querySelector('.table').addEventListener('click', function (event)
             {
                 let element = event.target;
 
-                {{--if (element.classList.contains('btn-delete-discount'))--}}
-                    {{--{--}}
-                    {{--    let catName = element.getAttribute('data-name');--}}
-                    {{--    Swal.fire({--}}
-                    {{--                  title            : catName + " İndirimini silmek istediğinize emin misiniz?",--}}
-                    {{--                  showCancelButton : true,--}}
-                    {{--                  cancelButtonText : "Hayır",--}}
-                    {{--                  confirmButtonText: "Evet",--}}
-                    {{--              }).then((result) =>--}}
-                    {{--                      {--}}
-                    {{--                          if (result.isConfirmed)--}}
-                    {{--                          {--}}
-                    {{--                              let dataID = element.getAttribute('data-id');--}}
-                    {{--                              let route = '{{ route('admin.discount.destroy', ['discount' => 'gdg_cat']) }}';--}}
-                    {{--                              route = route.replace('gdg_cat', dataID);--}}
-                    {{--                              deleteForm.action = route;--}}
+                if (element.classList.contains('btn-delete-discount'))
+                {
+                    let catName = element.getAttribute('data-name');
+                    Swal.fire({
+                                  title            : catName + " İndirimini silmek istediğinize emin misiniz?",
+                                  showCancelButton : true,
+                                  cancelButtonText : "Hayır",
+                                  confirmButtonText: "Evet",
+                              }).then((result) =>
+                                      {
+                                          if (result.isConfirmed)
+                                          {
+                                              let dataDiscountID = element.getAttribute('data-discount-id');
+                                              let dataCategoryID = element.getAttribute('data-category-id');
+                                              let route = '{{ route('admin.discount.remove-category', ['discount' => 'gdg_cat_discount',
+                                                                                                      'category' => 'gdg_cat_category']) }}';
+                                              route = route.replace('gdg_cat_discount', dataDiscountID)
+                                                           .replace('gdg_cat_category', dataCategoryID);
+                                              deleteForm.action = route;
 
-                    {{--                              setTimeout(deleteForm.submit(), 100);--}}
-                    {{--                          }--}}
-                    {{--                          else if (result.isDenied)--}}
-                    {{--                          {--}}
-                    {{--                              Swal.fire("İndirim silinmedi.", "", "info");--}}
-                    {{--                          }--}}
-                    {{--                      });--}}
+                                              setTimeout(deleteForm.submit(), 100);
+                                          }
+                                          else if (result.isDenied)
+                                          {
+                                              Swal.fire("İndirim silinmedi.", "", "info");
+                                          }
+                                      });
 
-                    {{--}--}}
+                }
+
+                if (element.classList.contains('btn-restore-discount'))
+                {
+                    let catName = element.getAttribute('data-name');
+                    Swal.fire({
+                                  title            : catName + " İndirimini geri almak istediğinize emin misiniz?",
+                                  showCancelButton : true,
+                                  cancelButtonText : "Hayır",
+                                  confirmButtonText: "Evet",
+                              }).then((result) =>
+                                      {
+                                          if (result.isConfirmed)
+                                          {
+                                              let dataDiscountID = element.getAttribute('data-discount-id');
+                                              let dataCategoryID = element.getAttribute('data-category-id');
+                                              discountCategoryIdElement.value = element.getAttribute('data-discount-category-id');
+                                              let route = '{{ route('admin.discount.restore-category', ['discount' => 'gdg_cat_discount',
+                                                                                                      'category' => 'gdg_cat_category']) }}';
+                                              route = route.replace('gdg_cat_discount', dataDiscountID)
+                                                           .replace('gdg_cat_category', dataCategoryID);
+                                              putForm.action = route;
+
+                                              setTimeout(putForm.submit(), 100);
+                                          }
+                                          else if (result.isDenied)
+                                          {
+                                              Swal.fire("İndirim silinmedi.", "", "info");
+                                          }
+                                      });
+
+                }
 
 
                 if (element.classList.contains('order-by'))
