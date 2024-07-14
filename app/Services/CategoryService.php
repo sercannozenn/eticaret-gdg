@@ -107,7 +107,7 @@ class CategoryService
                 'operator' => '',
                 'options'  => [
                     'id'          => 'ID',
-                    'name'        => 'Marka Adı',
+                    'name'        => 'Kategori Adı',
                     'status'      => 'Durum',
                     'parent_id'      => 'Üst Kategori',
                 ],

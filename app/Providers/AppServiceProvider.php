@@ -4,10 +4,8 @@ namespace App\Providers;
 
 use App\Events\UserRegisterEvent;
 use App\Listeners\UserRegisterListener;
-use App\Models\Product;
 use App\Services\BrandService;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,17 +36,6 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('front.*', function ($view) use ($brandsColumns)
         {
             $view->with("brandsColumns", $brandsColumns);
-        });
-
-        Route::bind('product', function ($value)
-        {
-            return Product::query()
-                          ->with(['productsMain', 'productsMain.category', 'productsMain.brand', 'variantImages', 'sizeStock'])
-                          ->whereHas('sizeStock', function ($q){
-                              $q->where('remaining_stock', '>', 0);
-                          })
-                          ->where('slug', $value)
-                          ->firstOrFail();
         });
     }
 }

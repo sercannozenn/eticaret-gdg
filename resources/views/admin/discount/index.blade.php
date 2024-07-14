@@ -52,6 +52,7 @@
                         </th>
                         <th>İşlemler</th>
                         <th>Atamalar</th>
+                        <th>Listeler</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -84,6 +85,23 @@
                             <td>
                                 <a href="{{ route('admin.discount.assign-products', $discount->id) }}" class="btn btn-primary p-1" title="Ürüne İndirim Atama">
                                     <i data-feather="box"></i>
+                                </a>
+                                <a href="{{ route('admin.discount.assign-categories', $discount->id) }}" class="btn btn-success p-1" title="Kategoriye İndirim Atama">
+                                    <i data-feather="grid"></i>
+                                </a>
+                                <a href="{{ route('admin.discount.assign-brands', $discount->id) }}" class="btn btn-info p-1" title="Markaya İndirim Atama">
+                                    <i data-feather="shield"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.discount.show-products-list', $discount->id) }}" class="btn btn-primary p-1" title="Ürüne Listesi">
+                                    <i data-feather="box"></i>
+                                </a>
+                                <a href="{{ route('admin.discount.show-categories-list', $discount->id) }}" class="btn btn-success p-1" title="Kategoriye Listesi">
+                                    <i data-feather="grid"></i>
+                                </a>
+                                <a href="{{ route('admin.discount.show-brands-list', $discount->id) }}" class="btn btn-info p-1" title="Markaya Listesi">
+                                    <i data-feather="shield"></i>
                                 </a>
                             </td>
                         </tr>

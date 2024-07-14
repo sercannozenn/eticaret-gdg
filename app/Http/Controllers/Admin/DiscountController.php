@@ -6,7 +6,11 @@ use App\Enums\DiscountType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DiscountAssignProductsRequest;
 use App\Http\Requests\DiscountStoreRequest;
+use App\Models\DiscountProducts;
 use App\Models\Discounts;
+use App\Models\Product;
+use App\Services\BrandService;
+use App\Services\CategoryService;
 use App\Services\DiscountService;
 use App\Services\ProductService;
 use App\Traits\GdgException;
@@ -157,17 +161,12 @@ class DiscountController extends Controller
         ];
         return view('admin.discount.assign-product.assign', compact('data', 'discount'));
     }
-
     public function assignProducts(DiscountAssignProductsRequest $request, Discounts $discount)
     {
         try {
-            $oldAssignProducts = $this->discountService->setDiscount($discount)->getAssignProducts()->pluck('id')->toArray();
-            $newProductsIds    = array_diff($request->product_ids, $oldAssignProducts);
-            if (count($newProductsIds)) {
-                $this->discountService
-                    ->setDiscount($discount)
-                    ->assignProducts($request->product_ids);
+            $result = $this->discountService->setDiscount($discount)->assignProductsProcess($request->product_ids);
 
+            if ($result) {
                 alert()->success('Başarılı', 'Atama yapıldı.');
                 return redirect()->back();
             }
@@ -176,9 +175,118 @@ class DiscountController extends Controller
                 return redirect()->back();
             }
         }
-        catch (Throwable $exception)
-        {
+        catch (Throwable $exception) {
             dd($exception->getMessage());
         }
     }
+
+    public function showProductsList(Request $request, Discounts $discount)
+    {
+        $filters = $this->discountService->getFiltersForProduct();
+        $discounts = $this->discountService->getDiscountForProductList();
+
+        return view('admin.discount.assign-product.product-list', compact('discount','discounts', 'filters'));
+    }
+
+    public function removeProduct(Discounts $discount, Product $product)
+    {
+        $productID = \request()->product_remove;
+        $discount->products()->updateExistingPivot($productID, ['deleted_at' => now()]);
+        alert()->success('Başarılı', 'Ürün indirimden kaldırıldı.');
+        return redirect()->back();
+    }
+    public function showAssignCategoriesForm(Discounts $discount, CategoryService $categoryService)
+    {
+        $categories = $categoryService->getAllCategoriesActive();
+        $data       = (object)['items'       => $categories,
+                               'title'       => 'Kategoriye İndirim Ekleme',
+                               'label'       => 'İndirim Yapılacak Kategori',
+                               'select_id'   => 'category_ids',
+                               'select_name' => 'category_ids',
+                               'option'      => 'İndirim Yapılacak Kategoriyi Seçebilirsiniz.',
+                               'route'       => route('admin.discount.assign-categories', $discount->id),
+                               'message'     => 'Lütfen indirim yapılacak kategoriyi seçiniz.'
+        ];
+        return view('admin.discount.assign-product.assign', compact('data', 'discount'));
+    }
+    public function assignCategories(Request $request, Discounts $discount)
+    {
+        $request->validate([
+                               'category_ids'   => ['required', 'array'],
+                               'category_ids.*' => ['exists:categories,id']
+                           ]);
+        try {
+            $result = $this->discountService
+                ->setDiscount($discount)
+                ->assignCategoryProcess($request->category_ids);
+
+            if ($result) {
+                alert()->success('Başarılı', 'Atama yapıldı.');
+                return redirect()->back();
+            }
+            else {
+                alert()->info('Atama yapılmadı', 'Daha önceden kategoriye aynı indirim eklenmiştir.');
+                return redirect()->back();
+            }
+        }
+        catch (Throwable $exception) {
+            dd($exception->getMessage());
+        }
+    }
+    public function showAssignBrandsForm(Discounts $discount, BrandService $brandService)
+    {
+        $brands = $brandService->getAllActive();
+
+        $data       = (object)['items'       => $brands,
+                               'title'       => 'Markaya İndirim Ekleme',
+                               'label'       => 'İndirim Yapılacak Marka',
+                               'select_id'   => 'brands_ids',
+                               'select_name' => 'brands_ids',
+                               'option'      => 'İndirim Yapılacak Markayı Seçebilirsiniz.',
+                               'route'       => route('admin.discount.assign-brands', $discount->id),
+                               'message'     => 'Lütfen indirim yapılacak markayı seçiniz.'
+        ];
+        return view('admin.discount.assign-product.assign', compact('data', 'discount'));
+    }
+    public function assignBrands(Request $request, Discounts $discount)
+    {
+        $request->validate([
+                               'brands_ids'   => ['required', 'array'],
+                               'brands_ids.*' => ['exists:brands,id']
+                           ]);
+        try {
+            $result = $this->discountService
+                ->setDiscount($discount)
+                ->assignBrandProcess($request->brands_ids);
+
+            if ($result) {
+                alert()->success('Başarılı', 'Atama yapıldı.');
+                return redirect()->back();
+            }
+            else {
+                alert()->info('Atama yapılmadı', 'Daha önceden kategoriye aynı indirim eklenmiştir.');
+                return redirect()->back();
+            }
+        }
+        catch (Throwable $exception) {
+            dd($exception->getMessage());
+        }
+    }
+    public function showCategoriesList(Request $request, Discounts $discount)
+    {
+        $filters = $this->discountService->getFiltersForCategories();
+        $discounts = $this->discountService->getDiscountForCategoryList();
+
+        return view('admin.discount.assign-product.category-list', compact('discount','discounts', 'filters'));
+
+    }
+    public function showBrandsList(Request $request, Discounts $discount)
+    {
+        $filters = $this->discountService->getFiltersForBrands();
+        $discounts = $this->discountService->getDiscountForBrandList();
+
+        return view('admin.discount.assign-product.brand-list', compact('discount','discounts', 'filters'));
+
+    }
+
 }

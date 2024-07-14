@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -22,10 +23,11 @@ class Product extends Model
       'status',
       'publish_date'
     ];
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
+//    public function getRouteKeyName(): string
+//    {
+//        return 'slug';
+//    }
+
     public function variantImages(): HasMany
     {
         return $this->hasMany(ProductImages::class);
@@ -54,6 +56,12 @@ class Product extends Model
     public function scopeWithRelations($query)
     {
         return $query->with(['productsMain', 'productsMain.category', 'productsMain.brand', 'variantImages']);
+    }
+
+    public function discounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Discounts::class, 'discount_products', 'product_id', 'discount_id')
+            ->withPivot('deleted_at');
     }
 
     protected static function booted()

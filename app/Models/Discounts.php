@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Discounts extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -22,15 +23,18 @@ class Discounts extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'discount_products', 'discount_id', 'product_id');
+        return $this->belongsToMany(Product::class, 'discount_products', 'discount_id', 'product_id')
+            ->withPivot('deleted_at');
     }
 
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'discount_categories');
+        return $this->belongsToMany(Category::class, 'discount_categories', 'discount_id', 'category_id')
+            ->withPivot('deleted_at');
     }
     public function brands(): BelongsToMany
     {
-        return $this->belongsToMany(Brand::class, 'discount_brands');
+        return $this->belongsToMany(Brand::class, 'discount_brands', 'discount_id', 'brand_id')
+            ->withPivot('deleted_at');
     }
 }

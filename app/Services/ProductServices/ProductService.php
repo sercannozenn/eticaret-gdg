@@ -105,10 +105,10 @@ class ProductService
             });
         }
         if ($request->has('min_price')){
-            $query->where('final_price', '>=', number_format((float)$request->min_price, 2, thousands_separator: ''));
+            $query->where('final_price', '>=', (float)$request->min_price);
         }
         if ($request->has('max_price')){
-            $query->where('final_price', '<=', number_format((float)$request->max_price, 2, thousands_separator: ''));
+            $query->where('final_price', '<=', (float)$request->max_price);
         }
 
         $query = $query->whereHas('activeProductsMain')
