@@ -143,7 +143,7 @@
                 {
                     let catName = element.getAttribute('data-name');
                     Swal.fire({
-                                  title            : catName + " İndirimini geri almak istediğinize emin misiniz?",
+                                  title            : catName + " İndirim kodunu geri almak istediğinize emin misiniz?",
                                   showCancelButton : true,
                                   cancelButtonText : "Hayır",
                                   confirmButtonText: "Evet",
@@ -152,7 +152,7 @@
                                           if (result.isConfirmed)
                                           {
                                               let dataDiscountID = element.getAttribute('data-discount-id');
-                                              let route = '{{ route('admin.discount.restore', ['discount_restore' => 'gdg_cat_discount']) }}';
+                                              let route = '{{ route('admin.discount-coupons.restore', ['discount_coupon' => 'gdg_cat_discount']) }}';
                                               route = route.replace('gdg_cat_discount', dataDiscountID);
                                               putForm.action = route;
 

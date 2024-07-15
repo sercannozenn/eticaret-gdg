@@ -76,13 +76,19 @@
                     <span class="link-title">İndirim Yönetimi</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                <div class="collapse {{ Route::is('admin.discount.index') || Route::is('admin.discount.create') ? 'show' : '' }}" id="discounts">
+                <div class="collapse {{ Route::is('admin.discount.index') || Route::is('admin.discount.create') || Route::is('admin.discount-coupons.index') || Route::is('admin.discount-coupons.create') ? 'show' : '' }}" id="discounts">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
                             <a href="{{ route('admin.discount.index') }}" class="nav-link {{ Route::is('admin.discount.index') ? 'active' : '' }}">İndirim Listesi</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.discount.create') }}" class="nav-link {{ Route::is('admin.discount.create') ? 'active' : '' }}">İndirim Ekleme</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.discount-coupons.index') }}" class="nav-link {{ Route::is('admin.discount-coupons.index') ? 'active' : '' }}">İndirim Kodu Listeleme</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.discount-coupons.create') }}" class="nav-link {{ Route::is('admin.discount-coupons.create') ? 'active' : '' }}">İndirim Kodu Ekleme</a>
                         </li>
                     </ul>
                 </div>

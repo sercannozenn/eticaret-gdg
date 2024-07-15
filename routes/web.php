@@ -119,7 +119,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
     });
     Route::resource('discount-coupons', DiscountCouponsController::class);
-
+    Route::put('discount-coupons/{discount_coupon}/restore', [DiscountCouponsController::class, 'restore'])->name('discount-coupons.restore');
 
     Route::group(['prefix' => 'gdg-filemanager', 'middleware' => ['web', 'auth']], function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();

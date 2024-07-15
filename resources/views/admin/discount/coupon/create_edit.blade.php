@@ -44,7 +44,12 @@
 
                 <div class="col-md-6 mb-3">
                     <label for="discount_id" class="form-label">İndirim Tanımlaması</label>
-                    <select class="form-select select-discounts" id="discount_id" name="discount_id" data-width="100%">
+                    <select class="form-select select-discounts"
+                            id="discount_id"
+                            name="discount_id"
+                            data-width="100%"
+                            {{ isset($discount) ? ($discount->used_count ? 'disabled' : '') : '' }}
+                    >
                         <option selected="selected" value="-1">İndirim Türü Seçebilirsiniz</option>
                         @foreach($discounts as $itemDiscount)
                             <option value="{{ $itemDiscount->id }}" {{ isset($discount) && $itemDiscount->id === $discount->discount_id ? 'selected' : '' }}>
@@ -140,6 +145,7 @@
                 wrap      : true,
                 enableTime: false,
                 dateFormat: "Y-m-d",
+                minDate: '{{ now()->subDay()->format('Y-m-d') }}'
             });
         });
     </script>

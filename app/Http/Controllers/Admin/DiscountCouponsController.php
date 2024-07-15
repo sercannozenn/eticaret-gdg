@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DiscountCouponStoreRequest;
 use App\Http\Requests\DiscountCouponUpdateRequest;
+use App\Models\DiscountCoupons;
 use App\Services\DiscountCouponService;
 use App\Services\DiscountService;
 use App\Traits\GdgException;
@@ -118,8 +119,25 @@ class DiscountCouponsController extends Controller
             return redirect()->route('admin.discount-coupons.index');
         }
         catch (Throwable $exception) {
-            dd($exception->getMessage());
             return $this->exception($exception, "admin.discount-coupons.index", "İndirim Kuponu silinemedi");
+        }
+    }
+
+    public function restore(Request $request)
+    {
+        try {
+            $discountCouponID = $request->discount_coupon;
+            $discountCoupon   = $this->discountCouponService->getByIdWT($discountCouponID);
+            if ($discountCoupon) {
+                $this->discountCouponService->setDiscountCoupon($discountCoupon)->restore();
+                alert()->success('Başarılı', 'İndirim Kodu geri getirildi.');
+                return redirect()->back();
+            }
+            alert()->error('Başarısız', 'İndirim Kodu bulunamadı ve geri getirilemedi.');
+            return redirect()->back();
+        }
+        catch (Throwable $exception) {
+            return $this->exception($exception, 'admin.discount.index', "İndirim tanımlaması geri getirilemedi.");
         }
     }
 }
