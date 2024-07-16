@@ -17,6 +17,7 @@
         "laravel/socialite": "^5.13",
         "laravel/tinker": "^2.9",
         "realrashid/sweet-alert": "^7.1",
+        "roach-php/laravel": "^3.1",
         "sercannozenn/laravel-filemanager": "dev-master",
         "spatie/laravel-permission": "^6.7"
     },

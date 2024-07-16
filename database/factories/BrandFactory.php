@@ -18,9 +18,10 @@ class BrandFactory extends Factory
     public function definition(): array
     {
         $name = fake('tr')->title;
+        $test = fake()->unique(true)->slug;
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => fake()->unique(true)->slug,
             'status' => fake()->boolean,
             'is_featured' => fake()->boolean,
             'order' => fake()->randomNumber()
