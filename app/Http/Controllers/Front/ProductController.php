@@ -22,32 +22,10 @@ class ProductController extends Controller
         foreach ($request->all() as $itemKey => $itemValue){
             $selectedValues[$itemKey] = explode(',', $itemValue);
         }
-        $categories = $categoryService->getAllCategoriesActive();
+        $categories = $categoryService->getAllParentCategoriesActive();
         $genders = Gender::cases();
 
-//        dd($selectedValues);
-//        $products = $this->productService->getAllProductsActive();
-
         $products = $this->productService->getSearchProducts($request, $selectedValues);
-//        if ($selectedValues){
-//            $perPage= 1;
-//            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-//            $currentPageProducts = $products->slice(($currentPage -1) * $perPage, $perPage)->all();
-//            $paginateProducts = new LengthAwarePaginator(
-//                $currentPageProducts,
-//                $products->count(),
-//                $perPage,
-//                $currentPage,
-//                ['path' => LengthAwarePaginator::resolveCurrentPath()]
-//            );
-//            $products = $paginateProducts;
-//            dd($products);
-//        }else{
-//            $products = $this->productService->getAllProductsActive();
-//        }
-
-
-//        dd($products);
         return view("front.product-list", compact('categories', 'genders', 'products', 'selectedValues'));
     }
 

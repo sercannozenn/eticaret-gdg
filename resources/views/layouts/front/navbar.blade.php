@@ -9,8 +9,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link active dropdown-toggle" aria-current="page" href="javascript:void(0)"
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" aria-current="page" href="javascript:void(0)"
                            data-bs-toggle="dropdown"
                            role="button">
                             MARKALAR
@@ -61,14 +61,158 @@
                         </div>
 
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link"  href="#">KADIN</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" aria-current="page" href="javascript:void(0)"
+                           data-bs-toggle="dropdown"
+                           role="button">
+                            KADIN
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="row">
+                                <div class="col-md-9 nav-brands">
+                                    <h4 class="mb-4">Tüm Kategoriler</h4>
+                                    <div class="row">
+                                        @foreach($womanCategories->chunk(9) as $womanCategoryCols)
+                                            <div class="col navbar-column">
+                                                @foreach($womanCategoryCols as $category)
+                                                    <a href="{{ route('product.list', ['categories' => $category->slug . ',' . $womanCategorySlug]) }}" class="dropdown-link">{{ $category->name }}</a>
+                                                @endforeach
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="mb-4">Trendler</h4>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="nav-brand-swiper swiper-container">
+                                                <div class="swiper-wrapper">
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product2.webp" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product3.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product4.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">MARKALAR</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" aria-current="page" href="javascript:void(0)"
+                           data-bs-toggle="dropdown"
+                           role="button">
+                            ERKEK
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="row">
+                                <div class="col-md-9 nav-brands">
+                                    <h4 class="mb-4">Tüm Kategoriler</h4>
+                                    <div class="row">
+                                        @foreach($manCategories->chunk(9) as $manCategoryCols)
+                                            <div class="col navbar-column">
+                                                @foreach($manCategoryCols as $category)
+                                                    <a href="{{ route('product.list', ['categories' => $category->slug . ',' . $manCategorySlug]) }}" class="dropdown-link">{{ $category->name }}</a>
+                                                @endforeach
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="mb-4">Trendler</h4>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="nav-brand-swiper swiper-container">
+                                                <div class="swiper-wrapper">
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product2.webp" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product3.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product4.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">ÇOCUK</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" aria-current="page" href="javascript:void(0)"
+                           data-bs-toggle="dropdown"
+                           role="button">
+                            ÇOCUK
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="row">
+                                <div class="col-md-9 nav-brands">
+                                    <h4 class="mb-4">Tüm Kategoriler</h4>
+                                    <div class="row">
+                                        @foreach($childCategories->chunk(9) as $childCategoryCols)
+                                            <div class="col navbar-column">
+                                                @foreach($childCategoryCols as $category)
+                                                    <a href="{{ route('product.list', ['categories' => $category->slug . ',' . $childCategorySlug]) }}" class="dropdown-link">{{ $category->name }}</a>
+                                                @endforeach
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="mb-4">Trendler</h4>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="nav-brand-swiper swiper-container">
+                                                <div class="swiper-wrapper">
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product2.webp" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product3.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="swiper-slide">
+                                                        <a href="">
+                                                            <img src="assets/images/product4.jpeg" class="img-fluid" alt="">
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">YENİ</a>
@@ -76,18 +220,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">İNDİRİMLER</a>
                     </li>
-
-                    <!--                    <li class="nav-item dropdown">-->
-                    <!--                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
-                    <!--                            Dropdown-->
-                    <!--                        </a>-->
-                    <!--                        <ul class="dropdown-menu">-->
-                    <!--                            <li><a class="dropdown-item" href="#">Action</a></li>-->
-                    <!--                            <li><a class="dropdown-item" href="#">Another action</a></li>-->
-                    <!--                            <li><hr class="dropdown-divider"></li>-->
-                    <!--                            <li><a class="dropdown-item" href="#">Something else here</a></li>-->
-                    <!--                        </ul>-->
-                    <!--                    </li>-->
 
                 </ul>
             </div>

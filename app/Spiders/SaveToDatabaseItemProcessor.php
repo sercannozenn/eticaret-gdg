@@ -31,7 +31,7 @@ class SaveToDatabaseItemProcessor implements ItemProcessorInterface
                 if (!str_contains($subCat, '&')){
                     try {
                         $this->categoryService->setPrepareData([
-                                                                   'name'      => $item.' '.$subCat,
+                                                                   'name'      => $subCat,
                                                                    'status'    => 1,
                                                                    'slug'      => str_slug($item.' '.$subCat),
                                                                    'parent_id' => $mainCategory->id

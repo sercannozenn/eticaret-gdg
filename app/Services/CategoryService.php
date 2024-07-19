@@ -16,7 +16,7 @@ class CategoryService
     /**
      * @param Category $category
      */
-    public function __construct(public Category $category,
+    public function __construct(public Category      $category,
                                 public FilterService $filterService)
     {
     }
@@ -26,7 +26,7 @@ class CategoryService
      *
      * @return $this
      */
-    public function setCategory(Category $category):self
+    public function setCategory(Category $category): self
     {
         $this->category = $category;
 
@@ -40,6 +40,7 @@ class CategoryService
     {
         return $this->category::all();
     }
+
     /**
      * @param int $page
      * @param     $orderBy
@@ -64,55 +65,55 @@ class CategoryService
 
     public function getFilters(): array
     {
-        $categories  = Category::all()->pluck('name', 'id')->toArray();
+        $categories = Category::all()->pluck('name', 'id')->toArray();
         $categories = ['all' => 'Tümü'] + $categories;
 
         return [
-            'name'            => [
+            'name'              => [
                 'label'    => 'Kategori Adı',
                 'type'     => 'text',
                 'column'   => 'name',
                 'operator' => 'like'
             ],
-            'short_description'            => [
+            'short_description' => [
                 'label'    => 'Kısa Açıklama',
                 'type'     => 'text',
                 'column'   => 'short_description',
                 'operator' => 'like'
             ],
-            'description'            => [
+            'description'       => [
                 'label'    => 'Açıklama',
                 'type'     => 'text',
                 'column'   => 'description',
                 'operator' => 'like'
             ],
-            'parent_id'          => [
+            'parent_id'         => [
                 'label'    => 'Üst Kategori',
                 'type'     => 'select',
                 'column'   => 'parent_id',
                 'operator' => '=',
                 'options'  => $categories,
             ],
-            'status'          => [
+            'status'            => [
                 'label'    => 'Durum',
                 'type'     => 'select',
                 'column'   => 'status',
                 'operator' => '=',
                 'options'  => ['all' => 'Tümü', 'pasif', 'aktif'],
             ],
-            'order_by'        => [
+            'order_by'          => [
                 'label'    => 'Sıralama Türü',
                 'type'     => 'select',
                 'column'   => 'order_by',
                 'operator' => '',
                 'options'  => [
-                    'id'          => 'ID',
-                    'name'        => 'Kategori Adı',
-                    'status'      => 'Durum',
-                    'parent_id'      => 'Üst Kategori',
+                    'id'        => 'ID',
+                    'name'      => 'Kategori Adı',
+                    'status'    => 'Durum',
+                    'parent_id' => 'Üst Kategori',
                 ],
             ],
-            'order_direction' => [
+            'order_direction'   => [
                 'label'    => 'Sıralama Yönü',
                 'type'     => 'select',
                 'column'   => 'order_direction',
@@ -137,7 +138,7 @@ class CategoryService
 
         $slug = $this->slugGenerate($data['name'], request()->slug);
 
-        $data['slug'] = $slug;
+        $data['slug']   = $slug;
         $data['status'] = request()->has('status');
         if (request()->parent_id != -1) {
             $data['parent_id'] = request()->parent_id;
@@ -166,8 +167,7 @@ class CategoryService
      */
     public function create(array $data = null): Category
     {
-        if (is_null($data))
-        {
+        if (is_null($data)) {
             $data = $this->prepareData;
         }
         return $this->category::create($data);
@@ -180,8 +180,7 @@ class CategoryService
      */
     public function update(array $data = null): bool
     {
-        if (is_null($data))
-        {
+        if (is_null($data)) {
             $data = $this->prepareData;
         }
         return $this->category->update($data);
@@ -214,17 +213,14 @@ class CategoryService
      */
     public function slugGenerate(string $name, string|null $slug): string
     {
-        if (is_null($slug))
-        {
+        if (is_null($slug)) {
             $slug  = Str::slug(mb_substr($name, 0, 70));
             $check = $this->checkSlug($slug);
-            if ($check)
-            {
+            if ($check) {
                 throw new \Exception('Slug değeriniz boş veya daha önce farklı bir kategori tarafından kullanılıyor olablir.', 400);
             }
         }
-        else
-        {
+        else {
             $slug = Str::slug($slug);
         }
 
@@ -241,10 +237,30 @@ class CategoryService
         return $this->category::query()->where('id', $id)->first();
     }
 
+    public function getBySlugName(string $slug): Category|null
+    {
+        return $this->category::query()
+                              ->with(['subCategoriesActive'])
+                              ->where('slug', $slug)
+                              ->first();
+    }
+
     public function getAllCategoriesActive(): Collection
     {
         return $this->category::query()
-            ->where('status', 1)
-            ->get();
+                              ->where('status', 1)
+                              ->get();
+    }
+
+    public function getAllParentCategoriesActive(): Collection
+    {
+        return $this->category::query()
+                              ->with(['subCategories' => function ($query)
+                              {
+                                  $query->where('status', 1);
+                              }])
+                              ->where('status', 1)
+                              ->whereNull('parent_id')
+                              ->get();
     }
 }
