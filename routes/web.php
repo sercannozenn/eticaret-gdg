@@ -58,7 +58,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
     Route::resource('category', CategoryController::class);
     Route::post('category/change-status', [CategoryController::class, 'changeStatus'])->name('category.change-status');
-
+    Route::get('category/{category}/discounts', [CategoryController::class, 'showDiscounts'])->name('category.show-discounts');
     Route::prefix('brand')->name('brand.')->group(function (){
        Route::get("/", [BrandController::class, 'index'])->name('index');
        Route::get("/create", [BrandController::class, 'create'])->name('create');
@@ -69,6 +69,7 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
 
        Route::post('/change-status', [BrandController::class, 'changeStatus'])->name('change-status');
        Route::post('/change-is-featured', [BrandController::class, 'changeIsFeatured'])->name('change-is-featured');
+       Route::get('{brand}/discounts', [BrandController::class, 'showDiscounts'])->name('show-discounts');
     });
 
     Route::prefix('product')->name('product.')->group(function (){
@@ -81,6 +82,8 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('change-status');
         Route::delete('/delete/{products_main}', [AdminProductController::class, 'delete'])->name('destroy');
         Route::get('/search', [AdminProductController::class, 'search'])->name('search');
+
+        Route::get('{products}/discounts', [AdminProductController::class, 'showDiscounts'])->name('show-discounts');
     });
 
     Route::prefix('slider')->name('slider.')->group(function (){

@@ -44,7 +44,7 @@ class DiscountService
                 'label'    => 'Minimum Harcama Değeri',
                 'type'     => 'text',
                 'column'   => 'minimum_spend',
-                'operator' => 'like'
+                'operator' => '>='
             ],
             'type'            => [
                 'label'    => 'İndirim Türü',
@@ -75,13 +75,13 @@ class DiscountService
                 'column'   => 'order_by',
                 'operator' => '',
                 'options'  => [
-                    'id'         => 'ID',
-                    'name'       => 'İndirim Adı',
-                    'status'     => 'Durum',
-                    'value'      => 'İndirim Değeri',
-                    'type'       => 'İndrim Türü',
-                    'start_date' => 'İndrim Başlangıç Tarihi',
-                    'end_date'   => 'İndrim Bitiş Tarihi',
+                    'discounts.id'         => 'ID',
+                    'discounts.name'       => 'İndirim Adı',
+                    'discounts.status'     => 'Durum',
+                    'discounts.value'      => 'İndirim Değeri',
+                    'discounts.type'       => 'İndrim Türü',
+                    'discounts.start_date' => 'İndrim Başlangıç Tarihi',
+                    'discounts.end_date'   => 'İndrim Bitiş Tarihi',
                 ],
             ],
             'order_direction' => [
@@ -378,6 +378,21 @@ class DiscountService
     public function getDiscountWT(int $id): ?Discounts
     {
         return  $this->discount::query()->withTrashed()->find($id);
+    }
+
+    public function getDiscountsForCategories($query, int $perPage = 10): array
+    {
+        $filters = $this->getFilters();
+        $filters['with_trashed']['table'] = 'discount_categories';
+        $filterQuery = $this->filterService->applyFilters($query, $filters);
+        return [$this->filterService->paginate($filterQuery, $perPage), $filters];
+    }
+    public function getDiscountsForBrands($query, int $perPage = 10): array
+    {
+        $filters = $this->getFilters();
+        $filters['with_trashed']['table'] = 'discount_brands';
+        $filterQuery = $this->filterService->applyFilters($query, $filters);
+        return [$this->filterService->paginate($filterQuery, $perPage), $filters];
     }
 
     public function getById(int $id): Discounts|ModelNotFoundException

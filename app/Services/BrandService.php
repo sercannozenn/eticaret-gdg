@@ -140,7 +140,7 @@ class BrandService
         $data['slug']        = $slug;
         $data['status']      = request()->has('status');
         $data['is_featured'] = request()->has('is_featured');
-
+        $data['order'] = isset($data['order']) ? $data['order'] : 0;
 
         $this->prepareData = $data;
 

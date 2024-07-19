@@ -75,9 +75,8 @@ class DiscountController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Discounts $discount)
     {
-        $discount = $this->discountService->getById($id);
         $types    = DiscountType::cases();
 
         return view('admin.discount.create_edit', compact('discount', 'types'));

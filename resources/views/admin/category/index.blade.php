@@ -64,6 +64,8 @@
                                     <i data-id="{{ $category->id }}" data-name="{{ $category->name }}"
                                        class="text-danger btn-delete-category"
                                        data-feather="trash"></i></a>
+                                <a href="{{ route('admin.category.show-discounts', ['category' => $category->id]) }}" title="İndirimleri Görüntüle"><i
+                                        class="text-primary" data-feather="eye"></i></a>
                             </td>
                         </tr>
                     @endforeach

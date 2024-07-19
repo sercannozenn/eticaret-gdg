@@ -206,8 +206,7 @@
 
                 if (element.classList.contains('btn-change-status'))
                 {
-                    // let dataID = element.getAttribute('data-id');
-                    let dataID = 5;
+                    let dataID = element.getAttribute('data-id');
 
                     let data = {
                         id: dataID

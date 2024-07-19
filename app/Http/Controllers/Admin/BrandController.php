@@ -7,6 +7,8 @@ use App\Http\Requests\BrandStoreRequest;
 use App\Http\Requests\BrandUpdateRequest;
 use App\Models\Brand;
 use App\Services\BrandService;
+use App\Services\DiscountService;
+use App\Services\FilterService;
 use App\Traits\GdgException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -45,6 +47,7 @@ class BrandController extends Controller
         }
         catch (Throwable $exception)
         {
+            dd($exception->getMessage());
             return $this->exception($exception, 'admin.brand.index',"Marka eklenmedi");
         }
 
@@ -153,4 +156,33 @@ class BrandController extends Controller
             ->setEncodingOptions(JSON_UNESCAPED_UNICODE);
 
     }
+
+    public function showDiscounts(Brand $brand, DiscountService $discountService, FilterService $filterService)
+    {
+        $query = $brand->discounts()->whereHas('brands', function ($query) use ($brand){
+            $query->where('brands.id', $brand->id);
+        });
+
+        list($discounts, $filters) = $discountService->getDiscountsForBrands($query, 10);
+        $data               = $brand;
+        $filterRoute        = route('admin.brand.show-discounts', $data->id);
+        $deleteRoute        = route('admin.discount.remove-brand', [
+            'discount' => 'gdg_cat_discount',
+            'brand' => $brand->id
+        ]);
+        $restoreRoute       = route('admin.discount.restore-brand', ['discount' => 'gdg_cat_discount',
+                                                                        'brand' => $brand->id]);
+        $restoreElementName = 'discount_brand_id';
+
+        return view('admin.discount.general-discount-list',
+                    compact('data',
+                            'discounts',
+                            'filters',
+                            'filterRoute',
+                            'deleteRoute',
+                            'restoreRoute',
+                            'restoreElementName'
+                    ));
+    }
+
 }

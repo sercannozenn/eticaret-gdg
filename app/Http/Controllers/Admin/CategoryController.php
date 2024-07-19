@@ -7,6 +7,8 @@ use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
+use App\Services\DiscountService;
+use App\Services\FilterService;
 use App\Traits\GdgException;
 use Illuminate\Http\Request;
 use Throwable;
@@ -25,7 +27,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = $this->categoryService->getCategories(10);
-        $filters = $this->categoryService->getFilters();
+        $filters    = $this->categoryService->getFilters();
 
         return view('admin.category.index', compact('categories', 'filters'));
     }
@@ -45,16 +47,14 @@ class CategoryController extends Controller
      */
     public function store(CategoryStoreRequest $request)
     {
-        try
-        {
+        try {
             $this->categoryService->prepareDataRequest()->create();
 
             alert()->success('Başarılı', 'Kategori kaydedildi');
             return redirect()->route('admin.category.index');
         }
-        catch (Throwable $exception)
-        {
-            return $this->exception($exception, "admin.category.index","Kategori eklenmedi");
+        catch (Throwable $exception) {
+            return $this->exception($exception, "admin.category.index", "Kategori eklenmedi");
         }
     }
 
@@ -80,8 +80,7 @@ class CategoryController extends Controller
      */
     public function update(CategoryUpdateRequest $request, Category $category)
     {
-        try
-        {
+        try {
             $this->categoryService
                 ->setCategory($category)
                 ->prepareDataRequest()
@@ -90,9 +89,8 @@ class CategoryController extends Controller
             alert()->success('Başarılı', 'Kategori güncellendi');
             return redirect()->route('admin.category.index');
         }
-        catch (Throwable $exception)
-        {
-            return $this->exception($exception, "admin.category.index","Kategori güncellenemedi");
+        catch (Throwable $exception) {
+            return $this->exception($exception, "admin.category.index", "Kategori güncellenemedi");
         }
     }
 
@@ -101,29 +99,16 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        try
-        {
+        try {
             $this->categoryService->setCategory($category)->delete();
             alert()->success('Başarılı', 'Kategori silindi');
 
             return redirect()->back();
         }
-        catch (Throwable $exception)
-        {
-            return $this->exception($exception, "admin.category.index",'Kategori Silinemedi');
+        catch (Throwable $exception) {
+            return $this->exception($exception, "admin.category.index", 'Kategori Silinemedi');
         }
 
-    }
-
-    public function front()
-    {
-        $categories = Category::query()
-                              ->with('children')
-                              ->whereHas('children')
-                              ->whereNull('parent_id')
-                              ->get();
-        dd($categories);
-        return view('categories', compact('categories'));
     }
 
     public function changeStatus(Request $request)
@@ -131,8 +116,7 @@ class CategoryController extends Controller
         $id = $request->id;
 
         $category = $this->categoryService->getById($id);
-        if (is_null($category))
-        {
+        if (is_null($category)) {
             return response()
                 ->json()
                 ->setData(['message' => 'Kategori bulunamadı'])
@@ -156,6 +140,34 @@ class CategoryController extends Controller
             ->setCharset('utf-8')
             ->header('Content-Type', 'application/json')
             ->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
 
+    public function showDiscounts(Category $category, DiscountService $discountService, FilterService $filterService)
+    {
+        $query = $category->discounts()->whereHas('categories', function ($query) use ($category)
+        {
+            $query->where('categories.id', $category->id);
+        });
+
+        list($discounts, $filters) = $discountService->getDiscountsForCategories($query, 10);
+        $data               = $category;
+        $filterRoute        = route('admin.category.show-discounts', $data->id);
+        $deleteRoute        = route('admin.discount.remove-category', [
+            'discount' => 'gdg_cat_discount',
+            'category' => $category->id
+        ]);
+        $restoreRoute       = route('admin.discount.restore-category', ['discount' => 'gdg_cat_discount',
+                                                                        'category' => $category->id]);
+        $restoreElementName = 'discount_category_id';
+
+        return view('admin.discount.general-discount-list',
+                    compact('data',
+                            'discounts',
+                            'filters',
+                            'filterRoute',
+                            'deleteRoute',
+                            'restoreRoute',
+                            'restoreElementName'
+                    ));
     }
 }

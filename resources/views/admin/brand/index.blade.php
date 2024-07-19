@@ -78,6 +78,8 @@
                                     <i data-id="{{ $brand->id }}" data-name="{{ $brand->name }}"
                                        class="text-danger btn-delete-category"
                                        data-feather="trash"></i></a>
+                                <a href="{{ route('admin.brand.show-discounts', ['brand' => $brand->id]) }}" title="İndirimleri Görüntüle"><i
+                                        class="text-primary" data-feather="eye"></i></a>
                             </td>
                         </tr>
                     @endforeach

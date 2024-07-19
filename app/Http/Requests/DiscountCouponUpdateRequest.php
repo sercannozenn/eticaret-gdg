@@ -23,8 +23,8 @@ class DiscountCouponUpdateRequest extends FormRequest
     {
         return [
             'code'        => ['required', 'string', 'unique:discount_coupons,code,' . $this->discount_coupon],
-            'discount_id' => ['required', 'exists:discounts,id'],
-            'usage_limit' => ['required', 'integer'],
+            'discount_id' => ['sometimes', 'exists:discounts,id'],
+            'usage_limit' => ['sometimes', 'integer'],
             'expiry_date' => ['required', 'date']
         ];
     }
