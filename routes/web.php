@@ -12,6 +12,7 @@ use App\Http\Controllers\Front\MyOrdersController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductVariantController as AdminProductVariantController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\DiscountCouponsController;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,13 @@ Route::prefix("admin")->name('admin.')->middleware(["auth", "admin.check"])->gro
         Route::get('/search', [AdminProductController::class, 'search'])->name('search');
 
         Route::get('{products}/discounts', [AdminProductController::class, 'showDiscounts'])->name('show-discounts');
+
+        Route::get('/variant-list', [AdminProductVariantController::class, 'showVariantList'])->name('variant.list');
+        Route::post('/variant/change-status', [AdminProductVariantController::class, 'changeVariantStatus'])->name('variant.change-status');
+        Route::delete('/variant/delete/{variant}', [AdminProductVariantController::class, 'delete'])->name('variant.delete');
+        Route::get('/variant/{variant}/edit', [AdminProductVariantController::class, 'edit'])->name('variant.edit');
+        Route::put('/variant/{variant}/update', [AdminProductVariantController::class, 'update'])->name('variant.update');
+        Route::post('/variant/delete-size-stock', [AdminProductVariantController::class, 'deleteSizeStock'])->name('variant.delete-size-stock');
     });
 
     Route::prefix('slider')->name('slider.')->group(function (){

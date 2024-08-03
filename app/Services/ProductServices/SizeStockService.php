@@ -48,6 +48,11 @@ class SizeStockService
                                ->first();
     }
 
+    public function getByID(int $id): ?SizeStock
+    {
+        return $this->sizeStock::find($id);
+    }
+
     public function prepareData(string $size, int $stock, int $productID): self
     {
         $this->preparedData = [

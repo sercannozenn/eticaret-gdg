@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 class ProductService
 {
     private array $preparedData = [];
+
     public function __construct(public Product $product)
     {
     }
@@ -33,6 +34,10 @@ class ProductService
     {
         return $this->product::destroy($ids);
     }
+    public function delete(): bool
+    {
+        return $this->product->delete();
+    }
 
     public function setProduct(Product $product): self
     {
@@ -40,33 +45,61 @@ class ProductService
 
         return $this;
     }
-    public function getById(int $productID): Product | ModelNotFoundException
+
+    public function getById(int $productID): Product|ModelNotFoundException
     {
         return $this->product::query()->findOrFail($productID);
     }
-    public function prepareData(array $variant, ProductsMain $productsMain):self
+
+    public function prepareData(array $variant, ProductsMain $productsMain): self
     {
-        $slug = $this->generateSlug($variant['slug']);
-        $finalPrice = $this->calculateFinalPrice($productsMain, $variant['additional_price']);
+        $slug       = $this->generateSlug($variant['slug']);
+        $finalPrice = $this->calculateFinalPrice($productsMain, $variant['additional_price'] ?? 0);
 
         $this->preparedData = [
             'main_product_id'   => $productsMain->id,
-            'name'              => $variant['name'],
+            'name'              => $variant['name'] ?? '',
             'variant_name'      => $variant['variant_name'],
             'slug'              => $slug,
-            'additional_price'  => $variant['additional_price'],
+            'additional_price'  => $variant['additional_price'] ?? 0,
             'final_price'       => $finalPrice,
-            'extra_description' => $variant['extra_description'],
+            'extra_description' => $variant['extra_description'] ?? '',
             'status'            => isset($variant['p_status']) && $variant['p_status'] ? 1 : 0,
             'publish_date'      => isset($variant['publish_date']) ? Carbon::parse($variant['publish_date'])->toDateTimeString() : null,
         ];
 
         return $this;
     }
+
+    public function getProductsQuery(): Builder
+    {
+        return $this->product::query()
+            //            ->with(['category', 'type', 'brand'])
+            //            ->join('products', 'products.main_product_id', '=', 'products_main.id')
+                             ->join('products_main', 'products_main.id', '=', 'products.main_product_id')
+                             ->join('categories', 'categories.id', '=', 'products_main.category_id')
+                             ->join('brands', 'brands.id', '=', 'products_main.brand_id')
+                             ->join('product_types', 'product_types.id', '=', 'products_main.type_id')
+                             ->select('products.*',
+                                      'categories.name as cname',
+                                      'brands.name as bname',
+                                      'product_types.name as typename',
+                                      'products_main.gender'
+                             );
+    }
+
+    public function setPrepareData(array $data): self
+    {
+        $this->preparedData = $data;
+
+        return $this;
+    }
+
     private function generateSlug(string $slug): string
     {
         return Str::slug($slug);
     }
+
     private function calculateFinalPrice(ProductsMain $productsMain, float $additionalPRice): string
     {
         $finalPrice = $productsMain->price + $additionalPRice;
@@ -77,53 +110,67 @@ class ProductService
     public function getAllActive(): Collection
     {
         return $this->product::query()
-            ->with(['activeProductsMain', 'activeProductsMain.brand', 'activeProductsMain.category', 'sizeStock', 'featuredImage'])
-            ->whereHas('activeProductsMain')
-            ->where('status', 1)
-            ->orderBy('id', 'DESC')
-            ->get();
+                             ->with(['activeProductsMain', 'activeProductsMain.brand', 'activeProductsMain.category', 'sizeStock', 'featuredImage'])
+                             ->whereHas('activeProductsMain')
+                             ->where('status', 1)
+                             ->orderBy('id', 'DESC')
+                             ->get();
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->product::query()
+                             ->with(['productsMain', 'productsMain.brand', 'productsMain.category', 'sizeStock', 'featuredImage'])
+                             ->whereHas('productsMain')
+                             ->orderBy('id', 'DESC')
+                             ->get();
     }
 
     public function getSearchProduct(Request $request, array $filterValues)
     {
         $query = $this->product::query()
-                                ->with(['activeProductsMain', 'activeProductsMain.category', 'activeProductsMain.brand']);
+                               ->with(['activeProductsMain', 'activeProductsMain.category', 'activeProductsMain.brand']);
 
-        if (isset($filterValues['categories'])){
-            $query->whereHas('activeProductsMain.category', function ($q) use($filterValues){
+        if (isset($filterValues['categories'])) {
+            $query->whereHas('activeProductsMain.category', function ($q) use ($filterValues)
+            {
                 $q->whereIn('slug', $filterValues['categories'])->where('status', 1);
             });
         }
-        if (isset($filterValues['brands'])){
-            $query->whereHas('activeProductsMain.brand', function ($q) use($filterValues){
+        if (isset($filterValues['brands'])) {
+            $query->whereHas('activeProductsMain.brand', function ($q) use ($filterValues)
+            {
                 $q->whereIn('slug', $filterValues['brands'])->where('status', 1);
             });
         }
-        if (isset($filterValues['genders'])){
-            $query->whereHas('activeProductsMain', function ($q) use($filterValues){
+        if (isset($filterValues['genders'])) {
+            $query->whereHas('activeProductsMain', function ($q) use ($filterValues)
+            {
                 $q->whereIn('gender', $filterValues['genders']);
             });
         }
-        if ($request->has('min_price')){
+        if ($request->has('min_price')) {
             $query->where('final_price', '>=', (float)$request->min_price);
         }
-        if ($request->has('max_price')){
+        if ($request->has('max_price')) {
             $query->where('final_price', '<=', (float)$request->max_price);
         }
 
         $query = $query->whereHas('activeProductsMain')
                        ->where('status', 1);
-        if ($request->has('q')){
+        if ($request->has('q')) {
 
             $searchTerm = $request->q;
-            $query = $query->where(function ($q) use ($searchTerm){
-                $q->where('name', 'LIKE', '%'. $searchTerm .'%')
-                  ->orWhereHas('activeProductsMain', function ($q) use($searchTerm){
-                    $q->where('name', 'LIKE', '%'. $searchTerm .'%');
-                });
+            $query      = $query->where(function ($q) use ($searchTerm)
+            {
+                $q->where('name', 'LIKE', '%'.$searchTerm.'%')
+                  ->orWhereHas('activeProductsMain', function ($q) use ($searchTerm)
+                  {
+                      $q->where('name', 'LIKE', '%'.$searchTerm.'%');
+                  });
             });
         }
-        if ($request->has('sort')){
+        if ($request->has('sort')) {
             $query = match ($request->sort) {
                 'id_desc'    => $query->orderBy('id', 'DESC'),
                 'price_asc'  => $query->orderBy('final_price', 'ASC'),
@@ -135,5 +182,6 @@ class ProductService
 
 
     }
+
 
 }

@@ -93,7 +93,7 @@ class ProductService
                 'column_live' => 'gender',
                 'table'       => 'products_main',
                 'operator'    => '=',
-                'options'     => ['all' => 'Tümü', "Kadın", 'Erkek'],
+                'options'     => ['all' => 'Tümü', 'Unisex',  'Erkek', "Kadın", 'Erkek Çocuk', 'Kız Çocuk'],
             ],
             'short_description' => [
                 'label'       => 'Kısa Açıklama',
@@ -180,6 +180,134 @@ class ProductService
                     'brands.name'            => 'Marka',
                     'products_main.type_id' => 'Ürün Türü',
                     'products_main.status'  => 'Durum',
+                ],
+            ],
+            'order_direction'   => [
+                'label'    => 'Sıralama Yönü',
+                'type'     => 'select',
+                'column'   => 'order_direction',
+                'operator' => '',
+                'options'  => [
+                    'asc'  => 'A-Z',
+                    'desc' => 'Z-A',
+                ],
+            ],
+        ];
+    }
+    public function getFiltersForVariantList(): array
+    {
+        $categories = Category::all()->pluck('name', 'id')->toArray();
+        $categories = ['all' => 'Tümü'] + $categories;
+
+        $brands = Brand::all()->pluck('name', 'id')->toArray();
+        $brands = ['all' => 'Tümü'] + $brands;
+
+        $types = ProductTypes::all()->pluck('name', 'id')->toArray();
+        $types = ['all' => 'Tümü'] + $types;
+
+        return [
+            'name'      => [
+                'label'       => 'Ürün Adı(Varyant)',
+                'type'        => 'text',
+                'column'      => 'name',
+                'column_live' => 'name',
+                'table'       => 'products',
+                'operator'    => 'like'
+            ],
+            'category_id'       => [
+                'label'       => 'Kategori',
+                'type'        => 'select',
+                'column'      => 'category_id',
+                'column_live' => 'category_id',
+                'table'       => 'products_main',
+                'operator'    => '=',
+                'options'     => $categories,
+            ],
+            'brand_id'          => [
+                'label'       => 'Marka',
+                'type'        => 'select',
+                'column'      => 'brand_id',
+                'column_live' => 'brand_id',
+                'table'       => 'products_main',
+                'operator'    => '=',
+                'options'     => $brands,
+            ],
+            'type_id'           => [
+                'label'       => 'Ürün Türü',
+                'type'        => 'select',
+                'column'      => 'type_id',
+                'column_live' => 'type_id',
+                'table'       => 'products_main',
+                'operator'    => '=',
+                'options'     => $types,
+            ],
+            'gender'            => [
+                'label'       => 'Cinsiyet',
+                'type'        => 'select',
+                'column'      => 'gender',
+                'column_live' => 'gender',
+                'table'       => 'products_main',
+                'operator'    => '=',
+                'options'     => ['all' => 'Tümü', 'Unisex',  'Erkek', "Kadın", 'Erkek Çocuk', 'Kız Çocuk'],
+            ],
+            'status'            => [
+                'label'       => 'Durum',
+                'type'        => 'select',
+                'column'      => 'status',
+                'column_live' => 'status',
+                'table'       => 'products',
+                'operator'    => '=',
+                'options'     => ['all' => 'Tümü', 'pasif', 'aktif'],
+            ],
+            'variant_name'      => [
+                'label'       => 'Varyant Adı',
+                'type'        => 'text',
+                'column'      => 'variant_name',
+                'column_live' => 'variant_name',
+                'table'       => 'products',
+                'operator'    => 'like'
+            ],
+            'final_price_min'   => [
+                'label'       => 'Fiyat(min)',
+                'type'        => 'number',
+                'column'      => 'final_price_min',
+                'column_live' => 'final_price',
+                'table'       => 'products',
+                'operator'    => '>='
+            ],
+            'final_price_max'   => [
+                'label'       => 'Fiyat(max)',
+                'type'        => 'number',
+                'column'      => 'final_price_max',
+                'column_live' => 'final_price',
+                'table'       => 'products',
+                'operator'    => '<='
+            ],
+            'extra_description' => [
+                'label'       => 'Extra Açıklama(Varyant)',
+                'type'        => 'text',
+                'column'      => 'extra_description',
+                'column_live' => 'extra_description',
+                'table'       => 'products',
+                'operator'    => 'like'
+            ],
+            'publish_date'      => [
+                'label'       => 'Yayınlanma Tarihi',
+                'type'        => 'date',
+                'column'      => 'publish_date',
+                'column_live' => 'publish_date',
+                'table'       => 'products',
+                'operator'    => 'like'
+            ],
+            'order_by'          => [
+                'label'    => 'Sıralama Türü',
+                'type'     => 'select',
+                'column'   => 'order_by',
+                'operator' => '',
+                'options'  => [
+                    'products.id'      => 'ID',
+                    'products.name'    => 'Ürün Adı',
+                    'products.status'  => 'Durum',
                 ],
             ],
             'order_direction'   => [
@@ -331,5 +459,18 @@ class ProductService
     {
         return $this->productService->getSearchProduct($request, $filterValues);
     }
+
+    public function getVariants(int $perPage = 0): Collection
+    {
+        $filters = $this->getFiltersForVariantList();
+        $query   = $this->productService->getProductsQuery();
+        $query   = $this->filterService->applyFilters($query, $filters);
+
+        if ($perPage) {
+            return $this->filterService->paginate($query, $perPage);
+        }
+
+        return $query->get();    }
+
 
 }

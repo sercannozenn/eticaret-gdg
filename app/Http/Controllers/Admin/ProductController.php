@@ -106,7 +106,8 @@ class ProductController extends Controller
             return redirect()->route('admin.product.index');
         }
         catch (Throwable $exception) {
-            return $this->exception($exception, "admin.product.index", 'Ürün Silinemedi');
+            dd($exception->getMessage());
+            return $this->exception($exception, "admin.product.index", 'Ürün düzenlenmedi');
         }
     }
 

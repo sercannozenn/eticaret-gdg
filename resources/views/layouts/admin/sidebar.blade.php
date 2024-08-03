@@ -59,13 +59,16 @@
                     <span class="link-title">Ürün Yönetimi</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                <div class="collapse {{ Route::is('admin.product.index') || Route::is('admin.product.create') ? 'show' : '' }}" id="products">
+                <div class="collapse {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.variant.list') ? 'show' : '' }}" id="products">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
                             <a href="{{ route('admin.product.index') }}" class="nav-link {{ Route::is('admin.product.index') ? 'active' : '' }}">Ürün Listesi</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.product.create') }}" class="nav-link {{ Route::is('admin.product.create') ? 'active' : '' }}">Ürün Ekleme</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.product.variant.list') }}" class="nav-link {{ Route::is('admin.product.variant.list') ? 'active' : '' }}">Ürün Varyant Listesi</a>
                         </li>
                     </ul>
                 </div>
