@@ -572,6 +572,7 @@ class DiscountService
                                  ->withTrashed()
                                  ->find($discountProductId);
     }
+
     public function getDiscountBrandWT(int $discountBrandId): ?DiscountBrands
     {
         return DiscountBrands::query()

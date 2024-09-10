@@ -18,6 +18,9 @@ use App\Http\Controllers\Admin\DiscountCouponsController;
 use Illuminate\Support\Facades\Route;
 use RoachPHP\Roach;
 
+Route::get('/token', function () {
+    return csrf_token();
+});
 
 /** Auth */
 Route::prefix("kayit-ol")->middleware(['throttle:registration', 'guest'])->group(function()
@@ -42,8 +45,10 @@ Route::post('/dogrula-mail', [RegisterController::class, 'sendVerifyMail']);
 
 Route::get('/', [FrontController::class, "index"])->name('index');
 
-
 Route::get("/sepet", [CardController::class, 'card']);
+Route::post('/sepet/ekle', [CardController::class, 'addToCard'])->name('card.add-to-card');
+Route::get('/sepet/getir', [CardController::class, 'renderCardView'])->name('card.get');
+
 Route::get("/odeme", [CheckoutController::class, 'index']);
 
 Route::get("/siparislerim", [MyOrdersController::class, "index"])->name('order.index');

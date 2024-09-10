@@ -87,7 +87,7 @@
 
                             <hr class="my-3">
                             <div class="col-md-12">
-                                <a href="" class="btn bg-orange add-to-card w-100 text-white">Sepete Ekle</a>
+                                <a href="javascript:void(0)" data-product-id="{{ $product->id }}" class="btn bg-orange add-to-card w-100 text-white">Sepete Ekle</a>
                             </div>
                         </div>
                     </div>
@@ -151,5 +151,10 @@
 @endsection
 
 @push("js")
+    <script>
+        var addToCardRoute = '{{ route('card.add-to-card') }}';
+    </script>
+    <script src="{{ asset('assets/js/axios/dist/axios.min.js') }}"></script>
     <script src="{{ asset('assets/js/product-detail.js') }}"></script>
+    <script src="{{ asset('assets/js/card/card.js') }}"></script>
 @endpush

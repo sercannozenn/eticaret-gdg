@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Events\UserLoggedIn;
 use App\Events\UserRegisterEvent;
+use App\Listeners\CardTransferListener;
 use App\Listeners\UserRegisterListener;
 use App\Services\BrandService;
 use App\Services\CategoryService;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
     protected $listen = [
         UserRegisterEvent::class => [
             UserRegisterListener::class
+        ],
+        UserLoggedIn::class => [
+            CardTransferListener::class
         ]
     ];
 
@@ -56,6 +63,14 @@ class AppServiceProvider extends ServiceProvider
                  ->with('childCategories', $childCategories->subCategoriesActive)
                  ->with('childCategorySlug', $childCategories->slug);
 
+        });
+
+        Event::listen(Login::class, function ($event){
+            $oldSessionID = session()->getId();
+
+            session()->regenerate();
+
+            event(new UserLoggedIn($event->user, $oldSessionID));
         });
     }
 }

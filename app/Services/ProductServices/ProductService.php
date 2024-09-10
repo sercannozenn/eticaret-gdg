@@ -2,6 +2,7 @@
 
 namespace App\Services\ProductServices;
 
+use App\Enums\DiscountType;
 use App\Models\Product;
 use App\Models\ProductsMain;
 use Carbon\Carbon;
@@ -181,6 +182,30 @@ class ProductService
         return $query->paginate(1);
 
 
+    }
+
+    public function getMaxDiscountProduct(): float
+    {
+        $discounts = $this->product
+                          ->discounts()
+                          ->where('status', 1)
+                          ->wherePivotNull('deleted_at')
+                          ->get();
+        $basePrice = $this->product->final_price;
+
+        $highestDiscountValue = 0;
+        foreach ($discounts as $discount){
+            if ($discount->type == DiscountType::Percentage->value){
+                $calculatedDiscountPrice = $basePrice * $discount->value / 100;
+                if ($calculatedDiscountPrice > $highestDiscountValue){
+                    $highestDiscountValue = $calculatedDiscountPrice;
+                }
+            }else if ($discount->type == DiscountType::Amount->value && $discount->value > $highestDiscountValue){
+                $highestDiscountValue = $discount->value;
+            }
+        }
+
+        return (float)$highestDiscountValue;
     }
 
 

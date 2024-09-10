@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DiscountType;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\Request;
@@ -262,5 +263,27 @@ class CategoryService
                               ->where('status', 1)
                               ->whereNull('parent_id')
                               ->get();
+    }
+
+    public function getMaxDiscountCategory(float $basePrice): float
+    {
+        $discounts = $this->category
+                          ->discounts()
+                          ->where('status', 1)
+                          ->wherePivotNull('deleted_at')
+                          ->get();
+        $highestDiscountValue = 0;
+        foreach ($discounts as $discount){
+            if ($discount->type == DiscountType::Percentage->value){
+                $calculatedDiscountPrice = $basePrice * $discount->value / 100;
+                if ($calculatedDiscountPrice > $highestDiscountValue){
+                    $highestDiscountValue = $calculatedDiscountPrice;
+                }
+            }else if ($discount->type == DiscountType::Amount->value && $discount->value > $highestDiscountValue){
+                $highestDiscountValue = $discount->value;
+            }
+        }
+
+        return (float)$highestDiscountValue;
     }
 }
